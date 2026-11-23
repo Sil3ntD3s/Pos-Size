@@ -5,23 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>POS-SIZE // JOURNAL — USDT</title>
 
-  <!-- Konfiguracja iOS Standalone PWA oraz ikony ekranu głównego -->
+  <!-- Konfiguracja iOS PWA oraz ikony ekranu głównego (GitHub Pages) -->
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="POS-SIZE">
-  <meta name="apple-mobile-web-app-status-bar-style" id="iosStatusBarMeta" content="default">
-  <meta name="theme-color" id="themeColorMeta" content="#ECEBE6">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" id="metaStatusBar">
+  <meta name="theme-color" content="#ECEBE6" id="metaThemeColor">
 
-  <!-- Natychmiastowa aplikacja zapisanego motywu przed renderem (eliminacja migotania FOUC) -->
+  <!-- Natychmiastowa aplikacja zapisanego motywu przed renderem (eliminacja białego błysku) -->
   <script>
     (function () {
       try {
-        var saved = localStorage.getItem('braun_lab70_theme_v1');
-        var theme = saved === 'dark' ? 'dark' : 'light';
+        var savedTheme = localStorage.getItem('braun_lab70_theme_v1');
+        var theme = savedTheme === 'dark' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
-        var tc = document.getElementById('themeColorMeta');
-        var sb = document.getElementById('iosStatusBarMeta');
+        var tc = document.getElementById('metaThemeColor');
+        var sb = document.getElementById('metaStatusBar');
         if (tc) tc.setAttribute('content', theme === 'dark' ? '#131312' : '#ECEBE6');
         if (sb) sb.setAttribute('content', theme === 'dark' ? 'black-translucent' : 'default');
       } catch (e) {}
@@ -31,22 +31,22 @@
   <!-- Google Fonts: IBM Plex Sans (UI) & IBM Plex Mono (dane liczbowe tabular-nums) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     /* =========================================================================
-       DESIGN TOKENS: BRAUN LAB 70 (LIGHT) & BRAUN ET66 DARK (DARK)
-       Matowe powierzchnie, obramowania 1px, zero cieni, zero gradientów
+       DESIGN SYSTEM: BRAUN LAB 70 (LIGHT) & BRAUN ET66 DARK (DARK)
+       Surowy minimalizm sprzętowy: zero cieni, zero gradientów, siatka 1px
        ========================================================================= */
     :root,
     [data-theme="light"] {
       --bg: #ECEBE6;
       --surface: #F7F6F2;
-      --surface-inset: #EFECE6;
+      --surface-2: #E4E2DB;
       --input-bg: #FFFFFF;
       --input-manual-bg: #FFF9F7;
       --border: #D5D3CA;
-      --border-strong: #B8B5A9;
+      --border-strong: #B8B5AA;
       --text: #141413;
       --text-muted: #6B6A65;
       --accent: #E6482E;
@@ -55,11 +55,11 @@
       --loss: #C93636;
       --profit-soft: rgba(27, 122, 80, 0.11);
       --loss-soft: rgba(201, 54, 54, 0.11);
-      --accent-soft: rgba(230, 72, 46, 0.11);
+      --accent-soft: rgba(230, 72, 46, 0.12);
       --switch-track: #141413;
       --switch-knob-idle: #F7F6F2;
       --chart-bg: #FFFFFF;
-      --chart-grid: #E3E1D8;
+      --chart-grid: #E4E2DB;
       --chart-dot-stroke: #FFFFFF;
       --modal-backdrop: rgba(20, 20, 19, 0.56);
       --toast-bg: #141413;
@@ -74,13 +74,13 @@
     [data-theme="dark"] {
       --bg: #131312;
       --surface: #1C1C1A;
-      --surface-inset: #161614;
+      --surface-2: #252522;
       --input-bg: #121210;
       --input-manual-bg: #231917;
       --border: #2E2E2A;
-      --border-strong: #45443E;
+      --border-strong: #45453F;
       --text: #ECEBE6;
-      --text-muted: #94928A;
+      --text-muted: #9A9890;
       --accent: #E6482E;
       --accent-hover: #F25A41;
       --profit: #34B37E;
@@ -88,7 +88,7 @@
       --profit-soft: rgba(52, 179, 126, 0.14);
       --loss-soft: rgba(224, 82, 82, 0.15);
       --accent-soft: rgba(230, 72, 46, 0.16);
-      --switch-track: #2E2E2A;
+      --switch-track: #252522;
       --switch-knob-idle: #ECEBE6;
       --chart-bg: #161614;
       --chart-grid: #292925;
@@ -129,7 +129,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Wymuszone wyrównanie cyfr tabular-nums dla wszystkich danych liczbowych */
+    /* Wymuszone wyrównanie cyfr tabular-nums dla wszystkich wartości liczbowych */
     .mono,
     input[inputmode="decimal"],
     input[type="number"],
@@ -143,13 +143,13 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Główny kontener aplikacji z bezpiecznymi marginesami iOS safe-area */
+    /* Kontener główny z obsługą iOS safe-area */
     .app-shell {
       max-width: 1220px;
       margin: 0 auto;
       padding-top: calc(14px + env(safe-area-inset-top, 0px));
       padding-right: calc(14px + env(safe-area-inset-right, 0px));
-      padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
       padding-left: calc(14px + env(safe-area-inset-left, 0px));
       display: flex;
       flex-direction: column;
@@ -168,7 +168,7 @@
     }
 
     /* =========================================================================
-       GÓRNA BELKA STERUJĄCA (TYTUŁ + PRZEŁĄCZNIK ZAKŁADEK + PRZEŁĄCZNIK MOTYWU)
+       GÓRNY PANEL STERUJĄCY (HEADER, NAWIGACJA, SYNC LED, MOTYW)
        ========================================================================= */
     .top-bar {
       background-color: var(--surface);
@@ -213,8 +213,8 @@
 
     .brand-title {
       font-family: var(--font-mono);
-      font-size: 0.98rem;
-      font-weight: 700;
+      font-size: 0.96rem;
+      font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--text);
       margin: 0;
@@ -223,18 +223,18 @@
     .usdt-pill {
       font-family: var(--font-mono);
       font-size: 0.66rem;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: 0.08em;
       padding: 2px 6px;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       color: var(--text-muted);
     }
 
     .brand-sub {
       font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -244,18 +244,18 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 860px) {
       .header-controls {
         width: auto;
         justify-content: flex-end;
       }
     }
 
-    /* Fizyczny przełącznik zakładek (Kalkulator / Dziennik) */
+    /* Dwustanowy sprzętowy przełącznik zakładek */
     .hw-nav-group {
       display: flex;
       align-items: center;
@@ -269,7 +269,7 @@
       flex: 1 1 220px;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 860px) {
       .hw-nav-group {
         flex: 0 0 auto;
         justify-content: center;
@@ -283,7 +283,7 @@
       padding: 8px 4px;
       min-height: 36px;
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.77rem;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -324,39 +324,72 @@
       transform: translateX(26px);
     }
 
-    /* Mechaniczny przełącznik motywu (JASNY / CIEMNY) z diodą LED */
-    .theme-switch-btn {
+    /* Kompaktowe przyciski sprzętowe: Sync Status + Motyw */
+    .hw-pill-btn {
       appearance: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 7px;
       min-height: var(--touch-min);
-      padding: 0 12px;
+      padding: 0 11px;
       background-color: var(--bg);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
+      font-size: 0.71rem;
+      font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
+      white-space: nowrap;
     }
 
-    .theme-switch-btn:hover {
+    @media (min-width: 860px) {
+      .hw-pill-btn {
+        flex: 0 0 auto;
+      }
+    }
+
+    .hw-pill-btn:hover {
       border-color: var(--text);
     }
 
-    .theme-led {
+    .led-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background-color: var(--border-strong);
       border: 1px solid var(--text-muted);
       flex-shrink: 0;
+    }
+
+    .led-dot.is-local {
+      background-color: var(--border-strong);
+      border-color: var(--text-muted);
+    }
+
+    .led-dot.is-ok {
+      background-color: var(--profit);
+      border-color: var(--profit);
+    }
+
+    .led-dot.is-syncing {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      animation: ledPulse 0.9s infinite ease-in-out;
+    }
+
+    .led-dot.is-error {
+      background-color: var(--loss);
+      border-color: var(--loss);
+    }
+
+    @keyframes ledPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
     }
 
     [data-theme="dark"] .theme-led {
@@ -377,7 +410,7 @@
     }
 
     /* =========================================================================
-       UKŁAD ZAKŁADEK I KART TECHNICZNYCH
+       PANELE ZAKŁADEK I KARTY TECHNICZNE
        ========================================================================= */
     .tab-panel {
       display: none;
@@ -424,8 +457,8 @@
 
     .lab-card-title {
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.77rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.09em;
       color: var(--text);
@@ -434,7 +467,7 @@
 
     .lab-card-sub {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -452,8 +485,8 @@
 
     .section-kicker {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.69rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
@@ -502,7 +535,7 @@
     }
 
     .field-label {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -511,7 +544,7 @@
 
     .field-hint {
       font-family: var(--font-mono);
-      font-size: 0.71rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       font-weight: 400;
       text-transform: none;
@@ -544,7 +577,7 @@
       border: none;
       background: transparent;
       padding: 10px 12px;
-      font-size: 1rem; /* 16px zapobiega automatycznemu zoomowaniu na iOS */
+      font-size: 1rem; /* 16px zapobiega auto-zoomowi na iOS */
       font-weight: 500;
       color: var(--text);
       outline: none;
@@ -572,14 +605,34 @@
       display: flex;
       align-items: center;
       padding: 0 11px;
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       border-left: 1px solid var(--border);
       font-family: var(--font-mono);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: var(--text-muted);
       white-space: nowrap;
       user-select: none;
+    }
+
+    .input-action-btn {
+      appearance: none;
+      border: none;
+      border-left: 1px solid var(--border);
+      background-color: var(--surface-2);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0 11px;
+      min-width: 60px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .input-action-btn:hover {
+      background-color: var(--border);
     }
 
     textarea.lab-textarea {
@@ -607,16 +660,16 @@
       outline: 1px solid var(--text);
     }
 
-    /* Przycisk zmiany znaku +/- (ergonomia klawiatury numerycznej iOS) */
+    /* Przycisk zmiany znaku ± dla wygody na iOS */
     .sign-toggle-btn {
       appearance: none;
       border: none;
       border-right: 1px solid var(--border);
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       color: var(--text);
       font-family: var(--font-mono);
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 600;
       min-width: 44px;
       padding: 0 8px;
       cursor: pointer;
@@ -655,7 +708,7 @@
       background: transparent;
       color: var(--text-muted);
       font-family: var(--font-mono);
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -708,7 +761,7 @@
       background-color: var(--surface);
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -717,7 +770,7 @@
     }
 
     .btn:hover:not(:disabled) {
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       border-color: var(--text);
     }
 
@@ -752,7 +805,7 @@
     .btn-table {
       min-height: 36px;
       padding: 6px 10px;
-      font-size: 0.72rem;
+      font-size: 0.71rem;
     }
 
     /* Znaczniki statusu */
@@ -763,12 +816,12 @@
       padding: 2px 7px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       border: 1px solid var(--border-strong);
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       color: var(--text-muted);
       white-space: nowrap;
     }
@@ -809,6 +862,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      touch-action: pan-y;
     }
 
     .leverage-top {
@@ -826,6 +880,7 @@
 
     .slider-track-wrap {
       padding: 6px 0 2px;
+      touch-action: pan-y;
     }
 
     input[type="range"].lab-slider {
@@ -867,7 +922,7 @@
       padding-top: 6px;
       border-top: 1px dashed var(--border-strong);
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       color: var(--text-muted);
       user-select: none;
     }
@@ -902,8 +957,8 @@
 
     .tp-index {
       font-family: var(--font-mono);
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.73rem;
+      font-weight: 600;
       color: var(--text-muted);
       text-align: center;
     }
@@ -918,7 +973,7 @@
       color: var(--loss);
       font-family: var(--font-mono);
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -953,7 +1008,7 @@
     }
 
     /* =========================================================================
-       TRZY NIEZALEŻNE PRZEŁĄCZNIKI MAKER / TAKER
+       FIZYCZNE PRZEŁĄCZNIKI DWUSTANOWE (MAKER/TAKER ORAZ AUTO-SYNC)
        ========================================================================= */
     .fee-switch-list {
       display: flex;
@@ -983,7 +1038,7 @@
 
     .fee-switch-rate {
       font-family: var(--font-mono);
-      font-size: 0.71rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       display: block;
     }
@@ -996,7 +1051,7 @@
 
     .hw-mini-label {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       font-weight: 600;
       text-transform: uppercase;
       color: var(--text-muted);
@@ -1073,8 +1128,8 @@
 
     .readout-lbl {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.69rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-muted);
@@ -1086,8 +1141,8 @@
     }
 
     .readout-big {
-      font-size: 1.65rem;
-      font-weight: 700;
+      font-size: 1.62rem;
+      font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.15;
       color: var(--text);
@@ -1095,15 +1150,15 @@
     }
 
     .readout-mid {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-size: 1.18rem;
+      font-weight: 600;
       line-height: 1.2;
       color: var(--text);
     }
 
     .readout-sub {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       color: var(--text-muted);
     }
 
@@ -1182,8 +1237,8 @@
       text-align: left;
       padding: 9px 10px;
       font-family: var(--font-mono);
-      font-size: 0.69rem;
-      font-weight: 700;
+      font-size: 0.68rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-muted);
@@ -1211,8 +1266,8 @@
     table.tech-table tfoot td {
       padding: 9px 10px;
       font-family: var(--font-mono);
-      font-weight: 700;
-      background-color: var(--surface-inset);
+      font-weight: 600;
+      background-color: var(--surface-2);
       border-top: 1px solid var(--border-strong);
     }
 
@@ -1243,7 +1298,7 @@
       flex-wrap: wrap;
       align-items: flex-end;
       gap: 12px;
-      flex: 1 1 280px;
+      flex: 1 1 260px;
     }
 
     .start-balance-field {
@@ -1264,8 +1319,8 @@
 
     .current-balance-pill .lbl {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
-      font-weight: 700;
+      font-size: 0.64rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-muted);
@@ -1273,8 +1328,8 @@
 
     .current-balance-pill .val {
       font-family: var(--font-mono);
-      font-size: 0.96rem;
-      font-weight: 700;
+      font-size: 0.95rem;
+      font-weight: 600;
       color: var(--text);
     }
 
@@ -1312,16 +1367,16 @@
 
     .kpi-label {
       font-family: var(--font-mono);
-      font-size: 0.67rem;
-      font-weight: 700;
+      font-size: 0.66rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-muted);
     }
 
     .kpi-value {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-size: 1.18rem;
+      font-weight: 600;
       line-height: 1.2;
       color: var(--text);
       word-break: break-word;
@@ -1329,7 +1384,7 @@
 
     .kpi-meta {
       font-family: var(--font-mono);
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
     }
 
@@ -1374,7 +1429,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.73rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       display: flex;
       flex-wrap: wrap;
@@ -1393,7 +1448,7 @@
       align-items: center;
       gap: 12px;
       font-family: var(--font-mono);
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
     }
 
@@ -1427,7 +1482,7 @@
 
     .balance-delta-note {
       font-family: var(--font-mono);
-      font-size: 0.71rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       margin-top: 2px;
     }
@@ -1446,7 +1501,7 @@
     .filters-bar {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border);
-      background-color: var(--surface-inset);
+      background-color: var(--surface-2);
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
@@ -1465,8 +1520,8 @@
       padding: 2px 7px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.69rem;
-      font-weight: 700;
+      font-size: 0.68rem;
+      font-weight: 600;
       letter-spacing: 0.05em;
     }
 
@@ -1487,7 +1542,7 @@
       padding: 1px 5px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.64rem;
+      font-size: 0.63rem;
       font-weight: 600;
       background-color: var(--accent-soft);
       color: var(--accent);
@@ -1570,13 +1625,13 @@
       align-items: center;
       gap: 8px;
       font-family: var(--font-mono);
-      font-weight: 700;
+      font-weight: 600;
       font-size: 0.94rem;
     }
 
     .trade-card-date {
       font-family: var(--font-mono);
-      font-size: 0.71rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
     }
 
@@ -1595,7 +1650,7 @@
 
     .trade-card-metric .m-lbl {
       font-family: var(--font-mono);
-      font-size: 0.64rem;
+      font-size: 0.63rem;
       text-transform: uppercase;
       color: var(--text-muted);
     }
@@ -1603,7 +1658,7 @@
     .trade-card-metric .m-val {
       font-family: var(--font-mono);
       font-size: 0.88rem;
-      font-weight: 700;
+      font-weight: 600;
       margin-top: 2px;
     }
 
@@ -1632,7 +1687,7 @@
     }
 
     /* =========================================================================
-       MODAL DIALOG ORAZ POWIADOMIENIE TOAST (ZERO alert() / confirm())
+       MODALE (SYNC GOOGLE SHEETS + POTWIERDZENIA) ORAZ TOAST
        ========================================================================= */
     .modal-backdrop {
       position: fixed;
@@ -1642,20 +1697,30 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 1000;
+      z-index: 950;
+      overflow-y: auto;
     }
 
     .modal-backdrop.open {
       display: flex;
     }
 
+    .modal-backdrop.confirm-layer {
+      z-index: 1050;
+    }
+
     .modal-box {
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       background-color: var(--surface);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       overflow: hidden;
+      margin: auto;
+    }
+
+    .modal-box.sync-modal-box {
+      max-width: 580px;
     }
 
     .modal-head {
@@ -1663,10 +1728,30 @@
       background-color: var(--text);
       color: var(--bg);
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .modal-close-x {
+      appearance: none;
+      background: transparent;
+      border: 1px solid currentColor;
+      color: inherit;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .modal-body {
@@ -1674,6 +1759,11 @@
       font-size: 0.9rem;
       color: var(--text);
       line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: calc(100dvh - 140px);
+      overflow-y: auto;
     }
 
     .modal-actions {
@@ -1683,6 +1773,97 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 8px;
+      background-color: var(--surface-2);
+    }
+
+    /* Status panel wewnątrz modalu synchronizacji */
+    .sync-status-panel {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+    }
+
+    .sync-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sync-status-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .sync-status-msg {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .sync-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 520px) {
+      .sync-btn-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Sekcja z gotowym kodem Apps Script w modalu */
+    details.gas-details {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background-color: var(--bg);
+    }
+
+    details.gas-details summary {
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .gas-details-body {
+      padding: 0 12px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gas-code-preview {
+      width: 100%;
+      height: 140px;
+      padding: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      line-height: 1.35;
+      background-color: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      resize: vertical;
+      white-space: pre;
+      overflow: auto;
     }
 
     .toast-bar {
@@ -1697,11 +1878,11 @@
       border-radius: var(--radius);
       padding: 10px 16px;
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.77rem;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 1100;
+      z-index: 1200;
       max-width: calc(100vw - 32px);
       text-align: center;
     }
@@ -1730,7 +1911,9 @@
 </head>
 <body>
   <div class="app-shell">
-    <!-- GÓRNA BELKA STERUJĄCA -->
+    <!-- =======================================================================
+         GÓRNY PASEK STERUJĄCY
+         ======================================================================= -->
     <header class="top-bar">
       <div class="brand-block">
         <div class="brand-title-row">
@@ -1738,20 +1921,28 @@
           <h1 class="brand-title">POS-SIZE // JOURNAL</h1>
           <span class="usdt-pill">USDT</span>
         </div>
-        <span class="brand-sub" id="brandSubText">BRAUN LAB 70 · STANDALONE</span>
+        <span class="brand-sub" id="brandSubText">BRAUN LAB 70 · PWA</span>
       </div>
 
       <div class="header-controls">
+        <!-- Przełącznik zakładek: KALKULATOR | DZIENNIK -->
         <nav class="hw-nav-group" aria-label="Główna nawigacja zakładek">
-          <button type="button" id="navCalcLabel" class="nav-label-btn active">Kalkulator</button>
+          <button type="button" id="navCalcLabel" class="nav-label-btn active">KALKULATOR</button>
           <button type="button" id="mainTabSwitch" class="hw-toggle-switch" role="switch" aria-checked="false" aria-label="Przełącz między Kalkulatorem a Dziennikiem">
             <span class="hw-knob"></span>
           </button>
-          <button type="button" id="navJournalLabel" class="nav-label-btn">Dziennik</button>
+          <button type="button" id="navJournalLabel" class="nav-label-btn">DZIENNIK</button>
         </nav>
 
-        <button type="button" id="themeToggleBtn" class="theme-switch-btn" aria-label="Przełącz motyw jasny lub ciemny" aria-pressed="false">
-          <span class="theme-led" aria-hidden="true"></span>
+        <!-- Przycisk statusu synchronizacji z diodą LED -->
+        <button type="button" id="headerSyncBtn" class="hw-pill-btn" aria-label="Ustawienia synchronizacji Google Sheets" title="Kliknij, aby skonfigurować synchronizację Google Sheets">
+          <span id="headerSyncLed" class="led-dot is-local" aria-hidden="true"></span>
+          <span id="headerSyncLabel">LOKALNIE</span>
+        </button>
+
+        <!-- Przełącznik motywu JASNY / CIEMNY -->
+        <button type="button" id="themeToggleBtn" class="hw-pill-btn" aria-label="Przełącz motyw jasny lub ciemny" aria-pressed="false">
+          <span class="led-dot theme-led" aria-hidden="true"></span>
           <span id="themeLightLbl" class="theme-opt active">JASNY</span>
           <span class="theme-sep">/</span>
           <span id="themeDarkLbl" class="theme-opt">CIEMNY</span>
@@ -1776,7 +1967,7 @@
             <div class="section-kicker">
               <span>Kapitał i zarządzanie ryzykiem</span>
               <div class="seg-switch compact" role="group" aria-label="Tryb ryzyka">
-                <button type="button" id="riskModePctBtn" class="active-accent">% Kapitału</button>
+                <button type="button" id="riskModePctBtn" class="active-accent">% kapitału</button>
                 <button type="button" id="riskModeUsdtBtn">Kwota USDT</button>
               </div>
             </div>
@@ -1803,7 +1994,7 @@
             </div>
           </div>
 
-          <!-- Dźwignia: suwak 1x-100x + ręczny wpis dowolnej wartości >= 1 -->
+          <!-- Dźwignia: suwak 1x-100x + ręczny wpis bez górnego limitu -->
           <div class="lab-section">
             <div class="section-kicker">
               <span>Dźwignia (Leverage)</span>
@@ -1843,7 +2034,7 @@
             <div class="field">
               <div class="field-label-row">
                 <label class="field-label" for="calcSlPct">Stop Loss (%)</label>
-                <span class="field-hint">Bez poziomów cenowych</span>
+                <span class="field-hint">Bez wpisywania poziomów cenowych</span>
               </div>
               <div class="input-box">
                 <input id="calcSlPct" type="text" inputmode="decimal" placeholder="0.50" autocomplete="off">
@@ -1855,7 +2046,7 @@
           <!-- Multi-TP -->
           <div class="lab-section">
             <div class="section-kicker">
-              <span>Take Profit (Multi-TP)</span>
+              <span>Poziomy Take Profit (Multi-TP)</span>
               <div class="tp-alloc-status">
                 <span id="tpSumBadge" class="tech-badge ok">Suma udziałów: 100%</span>
                 <button type="button" id="tpNormalizeBtn" class="btn btn-table" style="display:none;">Wyrównaj do 100%</button>
@@ -1873,7 +2064,7 @@
           <!-- Prowizje Maker / Taker -->
           <div class="lab-section">
             <div class="section-kicker">
-              <span>Prowizje giełdowe (Maker / Taker)</span>
+              <span>Prowizje (Maker / Taker)</span>
               <span class="field-hint">Wliczane w realne SL i TP</span>
             </div>
 
@@ -1898,7 +2089,7 @@
               <!-- Wejście -->
               <div class="fee-switch-row">
                 <div>
-                  <span class="fee-switch-name">Wejście (Entry)</span>
+                  <span class="fee-switch-name">Wejście</span>
                   <span class="fee-switch-rate" id="entryFeeAppliedText">Maker · 0.02%</span>
                 </div>
                 <div class="hw-mini-toggle">
@@ -1943,19 +2134,19 @@
           </div>
         </section>
 
-        <!-- PRAWA KOLUMNA: ODCZYTY TELEMETRYCZNE -->
+        <!-- PRAWA KOLUMNA: ODCZYTY TELEMETRYCZNE NA ŻYWO -->
         <section class="lab-card" aria-label="Odczyty wynikowe kalkulatora">
           <div class="lab-card-header">
             <h2 class="lab-card-title">02 // Odczyt telemetrii</h2>
             <span class="lab-card-sub">LIVE · NET RISK</span>
           </div>
 
-          <!-- Wielkość pozycji + Net R:R -->
+          <!-- Wielkość pozycji + Realne Net R:R -->
           <div class="readout-hero-grid">
             <div class="readout-hero-cell">
-              <span class="readout-lbl">Wielkość pozycji (USDT)</span>
+              <span class="readout-lbl">Wielkość pozycji (Notional)</span>
               <div class="readout-big" id="outPositionSize">0.00 USDT</div>
-              <span class="readout-sub" id="outPositionSub">Uwzględnia prowizję wejścia i wyjścia SL</span>
+              <span class="readout-sub" id="outPositionSub">Skalowana o prowizję wejścia i wyjścia SL</span>
             </div>
             <div class="readout-hero-cell">
               <span class="readout-lbl">Realne R:R (Netto)</span>
@@ -2031,7 +2222,7 @@
             </div>
           </div>
 
-          <!-- Rozbicie Multi-TP -->
+          <!-- Tabela rozbicia poziomów Multi-TP -->
           <div class="lab-section">
             <div class="section-kicker">
               <span>Rozbicie poziomów Take Profit (Netto)</span>
@@ -2066,8 +2257,8 @@
          ======================================================================= -->
     <main id="tabJournal" class="tab-panel" aria-label="Dziennik transakcji">
       <div class="journal-stack">
-        <!-- Pasek kapitału początkowego, aktualnego salda i eksportu/importu -->
-        <section class="journal-topbar" aria-label="Zarządzanie kapitałem i kopiami zapasowymi">
+        <!-- Górny pasek narzędzi dziennika -->
+        <section class="journal-topbar" aria-label="Kapitał początkowy i narzędzia dziennika">
           <div class="start-balance-group">
             <div class="field start-balance-field">
               <label class="field-label" for="journalStartBalance">Kapitał początkowy dziennika</label>
@@ -2078,22 +2269,23 @@
             </div>
 
             <div class="current-balance-pill">
-              <span class="lbl">Aktualne saldo konta</span>
+              <span class="lbl">Bieżące saldo konta</span>
               <span class="val" id="headerCurrentBalance">10 000.00 USDT</span>
             </div>
           </div>
 
           <div class="journal-actions-bar">
+            <button type="button" id="toggleAddFormBtn" class="btn btn-primary">+ Dodaj transakcję</button>
             <button type="button" id="exportJsonBtn" class="btn">Eksport JSON</button>
             <button type="button" id="importJsonBtn" class="btn">Import JSON</button>
             <input type="file" id="importJsonFile" accept=".json,application/json" class="sr-only">
             <button type="button" id="exportCsvBtn" class="btn">Eksport CSV</button>
-            <button type="button" id="toggleAddFormBtn" class="btn btn-primary">+ Dodaj transakcję</button>
+            <button type="button" id="journalSyncBtn" class="btn">Sync Google Sheets</button>
           </div>
         </section>
 
-        <!-- Formularz dodawania / edycji wpisu (rozwijany) -->
-        <section id="tradeFormWrap" class="lab-card trade-form-wrap" aria-label="Formularz transakcji">
+        <!-- Rozwijany formularz dodawania / edycji transakcji (bez Entry, Exit, Wielkość) -->
+        <section id="tradeFormWrap" class="lab-card trade-form-wrap" aria-label="Formularz wpisu transakcji">
           <div class="lab-card-header">
             <h2 class="lab-card-title" id="tradeFormTitle">Nowa transakcja</h2>
             <button type="button" id="closeTradeFormBtn" class="btn btn-table">Zamknij</button>
@@ -2262,7 +2454,7 @@
           </div>
         </section>
 
-        <!-- Interaktywna krzywa kapitału SVG (kolorowanie segmentowe) -->
+        <!-- Interaktywny wykres krzywej kapitału SVG -->
         <section class="lab-card" aria-label="Wykres krzywej kapitału">
           <div class="lab-card-header">
             <div>
@@ -2375,10 +2567,94 @@
     </main>
   </div>
 
-  <!-- MODAL POTWIERDZENIA / IMPORTU -->
-  <div id="appModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <!-- =========================================================================
+       MODAL: SYNCHRONIZACJA GOOGLE SHEETS (APPS SCRIPT WEB APP)
+       ========================================================================= -->
+  <div id="syncModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="syncModalTitle">
+    <div class="modal-box sync-modal-box">
+      <div class="modal-head">
+        <span id="syncModalTitle">Synchronizacja Google Sheets</span>
+        <button type="button" id="closeSyncModalBtn" class="modal-close-x" aria-label="Zamknij okno synchronizacji">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Panel statusu połączenia -->
+        <div class="sync-status-panel">
+          <div class="sync-status-row">
+            <span class="sync-status-main">
+              <span id="syncModalLed" class="led-dot is-local" aria-hidden="true"></span>
+              <span id="syncModalStateText">LOKALNIE</span>
+            </span>
+            <span id="syncModalLastTime" class="val-muted">Ostatnia synchr.: brak</span>
+          </div>
+          <div id="syncModalMessage" class="sync-status-msg">
+            Dane zapisywane są wyłącznie lokalnie w tej przeglądarce. Podaj URL wdrożonego skryptu Apps Script oraz tajny klucz, aby włączyć synchronizację między urządzeniami.
+          </div>
+        </div>
+
+        <!-- Pole URL Apps Script -->
+        <div class="field">
+          <label class="field-label" for="syncScriptUrl">URL aplikacji Google Apps Script</label>
+          <div class="input-box">
+            <input id="syncScriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <!-- Pole Tajny klucz (Token) z przełącznikiem widoczności -->
+        <div class="field">
+          <label class="field-label" for="syncToken">Tajny klucz (Token)</label>
+          <div class="input-box">
+            <input id="syncToken" type="password" placeholder="Twój tajny klucz z Code.gs" autocomplete="off" spellcheck="false">
+            <button type="button" id="toggleTokenVisBtn" class="input-action-btn">Pokaż</button>
+          </div>
+        </div>
+
+        <!-- Przełącznik fizyczny: Auto-synchronizacja w tle -->
+        <div class="fee-switch-row" style="margin-top:0;">
+          <div>
+            <span class="fee-switch-name">Auto-synchronizacja w tle</span>
+            <span class="fee-switch-rate">Pobiera przy starcie/powrocie i wysyła 1.2s po każdej edycji</span>
+          </div>
+          <div class="hw-mini-toggle">
+            <span class="hw-mini-label active" id="autoSyncOffLbl">WYŁ</span>
+            <button type="button" id="autoSyncSwitch" class="hw-mini-btn" role="switch" aria-checked="false" aria-label="Auto-synchronizacja w tle">
+              <span class="knob"></span>
+            </button>
+            <span class="hw-mini-label" id="autoSyncOnLbl">WŁ</span>
+          </div>
+        </div>
+
+        <!-- Przyciski akcji synchronizacji -->
+        <div class="sync-btn-grid">
+          <button type="button" id="syncSaveTestBtn" class="btn btn-primary">Zapisz i testuj połączenie</button>
+          <button type="button" id="syncPullBtn" class="btn">↓ Pobierz z Arkusza</button>
+          <button type="button" id="syncPushBtn" class="btn">↑ Wyślij do Arkusza</button>
+          <button type="button" id="syncDisconnectBtn" class="btn btn-danger-ghost">Rozłącz</button>
+        </div>
+
+        <!-- Wbudowany kod backendu Google Apps Script (Code.gs) do łatwego skopiowania -->
+        <details class="gas-details">
+          <summary>Kod skryptu Google Apps Script (Code.gs) — kliknij, aby rozwinąć</summary>
+          <div class="gas-details-body">
+            <span class="field-hint">
+              W Google Sheets wybierz: Rozszerzenia → Apps Script → wklej poniższy kod, ustaw własny <strong>SECRET_TOKEN</strong>, kliknij <strong>Wdróż → Nowe wdrożenie → Aplikacja internetowa</strong> (Wykonaj jako: <em>Ja</em>, Dostęp: <em>Każdy</em>) i skopiuj adres <code>/exec</code>.
+            </span>
+            <textarea id="gasCodeBox" class="gas-code-preview" readonly aria-label="Kod Google Apps Script"></textarea>
+            <button type="button" id="copyGasCodeBtn" class="btn btn-table">Kopiuj kod Code.gs</button>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL POTWIERDZENIA / IMPORTU (WARSTWA NAD SYNC MODALEM)
+       ========================================================================= -->
+  <div id="appModal" class="modal-backdrop confirm-layer" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-box">
-      <div class="modal-head" id="modalTitle">Potwierdzenie</div>
+      <div class="modal-head">
+        <span id="modalTitle">Potwierdzenie</span>
+      </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-actions" id="modalActions"></div>
     </div>
@@ -2398,6 +2674,8 @@
       const STORAGE_CALC_KEY = 'braun_lab70_calc_v1';
       const STORAGE_JOURNAL_KEY = 'braun_lab70_journal_trades_v1';
       const STORAGE_JOURNAL_META_KEY = 'braun_lab70_journal_meta_v1';
+      const STORAGE_UPDATED_AT_KEY = 'braun_lab70_updated_at_v1';
+      const STORAGE_SYNC_CFG_KEY = 'pos_size_sync_cfg_v1';
 
       const DEFAULT_CALC_STATE = {
         capital: '10000',
@@ -2417,6 +2695,134 @@
         startingBalance: '10000',
         chartMode: 'pnl' // 'pnl' | 'balance'
       };
+
+      const DEFAULT_SYNC_CFG = {
+        scriptUrl: '',
+        token: '',
+        autoSync: true,
+        lastSyncedAt: null
+      };
+
+      /* Gotowy kod Google Apps Script (Code.gs) zgodny z protokołem GET/POST bez preflightu CORS */
+      const APPS_SCRIPT_CODE = [
+        '// =========================================================================',
+        '// POS-SIZE // JOURNAL — USDT · Google Sheets Sync Backend (Apps Script)',
+        '// =========================================================================',
+        "const SECRET_TOKEN = 'ZMIEN_NA_SWOJ_TAJNY_KLUCZ_123';",
+        "const SHEET_TRADES = 'Transakcje';",
+        "const SHEET_STATE = '_AppState';",
+        '',
+        'function jsonOut(obj) {',
+        '  return ContentService',
+        '    .createTextOutput(JSON.stringify(obj))',
+        '    .setMimeType(ContentService.MimeType.JSON);',
+        '}',
+        '',
+        'function getOrCreateSheet(ss, name, headers) {',
+        '  let sh = ss.getSheetByName(name);',
+        '  if (!sh) {',
+        '    sh = ss.insertSheet(name);',
+        '    if (headers && headers.length) {',
+        '      sh.getRange(1, 1, 1, headers.length).setValues([headers]);',
+        '      sh.getRange(1, 1, 1, headers.length).setFontWeight("bold");',
+        '      sh.setFrozenRows(1);',
+        '    }',
+        '  }',
+        '  return sh;',
+        '}',
+        '',
+        'function doGet(e) {',
+        '  try {',
+        '    const params = (e && e.parameter) ? e.parameter : {};',
+        '    if (!params.token || params.token !== SECRET_TOKEN) {',
+        '      return jsonOut({ ok: false, error: "Nieprawidłowy token autoryzacji." });',
+        '    }',
+        '    const ss = SpreadsheetApp.getActiveSpreadsheet();',
+        '    const stateSh = ss.getSheetByName(SHEET_STATE);',
+        '    if (!stateSh || stateSh.getLastRow() < 2) {',
+        '      return jsonOut({',
+        '        ok: true,',
+        '        data: { trades: [], journalMeta: null, calcSettings: null, theme: null, updatedAt: null }',
+        '      });',
+        '    }',
+        '    const raw = stateSh.getRange(2, 1).getValue();',
+        '    if (!raw) {',
+        '      return jsonOut({',
+        '        ok: true,',
+        '        data: { trades: [], journalMeta: null, calcSettings: null, theme: null, updatedAt: null }',
+        '      });',
+        '    }',
+        '    const parsed = JSON.parse(String(raw));',
+        '    return jsonOut({ ok: true, data: parsed });',
+        '  } catch (err) {',
+        '    return jsonOut({ ok: false, error: "Błąd odczytu: " + err.message });',
+        '  }',
+        '}',
+        '',
+        'function doPost(e) {',
+        '  const lock = LockService.getScriptLock();',
+        '  try {',
+        '    lock.waitLock(10000);',
+        '    const body = JSON.parse((e && e.postData && e.postData.contents) ? e.postData.contents : "{}");',
+        '    if (!body.token || body.token !== SECRET_TOKEN) {',
+        '      return jsonOut({ ok: false, error: "Nieprawidłowy token autoryzacji." });',
+        '    }',
+        '    if (body.action !== "save" || !body.payload) {',
+        '      return jsonOut({ ok: false, error: "Nieznana akcja lub brak danych." });',
+        '    }',
+        '',
+        '    const payload = body.payload;',
+        '    const trades = Array.isArray(payload.trades) ? payload.trades : [];',
+        '    const updatedAt = payload.updatedAt || new Date().toISOString();',
+        '    const stateObj = {',
+        '      trades: trades,',
+        '      journalMeta: payload.journalMeta || null,',
+        '      calcSettings: payload.calcSettings || null,',
+        '      theme: payload.theme || "light",',
+        '      updatedAt: updatedAt',
+        '    };',
+        '',
+        '    const ss = SpreadsheetApp.getActiveSpreadsheet();',
+        '    const headers = [',
+        '      "Data", "Para", "Kierunek", "P&L (USDT)", "P&L (%)",',
+        '      "Konto po (USDT)", "Korekta (USDT)", "R-multiple", "MAE (%)", "MFE (%)", "Notatka", "ID"',
+        '    ];',
+        '    const tradesSh = getOrCreateSheet(ss, SHEET_TRADES, headers);',
+        '    if (tradesSh.getLastRow() > 1) {',
+        '      tradesSh.getRange(2, 1, tradesSh.getLastRow() - 1, headers.length).clearContent();',
+        '    }',
+        '    if (trades.length > 0) {',
+        '      const rows = trades.map(function (t) {',
+        '        return [',
+        '          String(t.date || "").replace("T", " "),',
+        '          t.pair || "",',
+        '          t.direction || "LONG",',
+        '          Number(t.pnlUsdt) || 0,',
+        '          Number(t.pnlPct) || 0,',
+        '          (t.balanceAfter !== null && t.balanceAfter !== undefined) ? Number(t.balanceAfter) : "",',
+        '          (t.balanceAdjustment !== null && t.balanceAdjustment !== undefined) ? Number(t.balanceAdjustment) : 0,',
+        '          (t.rMultiple !== null && t.rMultiple !== undefined) ? Number(t.rMultiple) : "",',
+        '          (t.mae !== null && t.mae !== undefined) ? Number(t.mae) : "",',
+        '          (t.mfe !== null && t.mfe !== undefined) ? Number(t.mfe) : "",',
+        '          t.note || "",',
+        '          t.id || ""',
+        '        ];',
+        '      });',
+        '      tradesSh.getRange(2, 1, rows.length, headers.length).setValues(rows);',
+        '    }',
+        '',
+        '    const stateSh = getOrCreateSheet(ss, SHEET_STATE, ["StateJSON", "UpdatedAt"]);',
+        '    stateSh.getRange(2, 1, 1, 2).setValues([[JSON.stringify(stateObj), updatedAt]]);',
+        '    if (!stateSh.isSheetHidden()) { stateSh.hideSheet(); }',
+        '',
+        '    return jsonOut({ ok: true, updatedAt: updatedAt, count: trades.length });',
+        '  } catch (err) {',
+        '    return jsonOut({ ok: false, error: "Błąd zapisu: " + err.message });',
+        '  } finally {',
+        '    try { lock.releaseLock(); } catch (e2) {}',
+        '  }',
+        '}'
+      ].join('\n');
 
       /* =======================================================================
          FUNKCJE POMOCNICZE (STORAGE, PARSOWANIE, FORMATOWANIE, BEZPIECZEŃSTWO)
@@ -2439,9 +2845,7 @@
       function saveStorage(key, value) {
         try {
           window.localStorage.setItem(key, JSON.stringify(value));
-        } catch (err) {
-          // Bezpieczne wyciszenie w trybach z ograniczonym dostępem do storage
-        }
+        } catch (err) {}
       }
 
       function parseNum(raw) {
@@ -2486,6 +2890,22 @@
         return String(isoLike).replace('T', ' ').slice(0, 16);
       }
 
+      function formatTimeHHMM(isoStr) {
+        if (!isoStr) return 'brak';
+        const d = new Date(isoStr);
+        if (Number.isNaN(d.getTime())) return '—';
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
+      function formatDateTimeShort(isoStr) {
+        if (!isoStr) return 'brak';
+        const d = new Date(isoStr);
+        if (Number.isNaN(d.getTime())) return '—';
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
       function downloadFile(content, filename, mimeType) {
         const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -2507,7 +2927,38 @@
         }
       }
 
-      /* Powiadomienie Toast & Modal (zastępują alert() / confirm()) */
+      function normalizeTradeItem(item, idx = 0) {
+        const pnlUsdt = Number(item.pnlUsdt);
+        const pnlPct = Number(item.pnlPct);
+        return {
+          id: String(item.id || `tr_${Date.now()}_${idx}`),
+          pair: String(item.pair || 'BTC/USDT').toUpperCase(),
+          direction: item.direction === 'SHORT' ? 'SHORT' : 'LONG',
+          date: String(item.date || nowLocalDatetimeValue()),
+          pnlUsdt: Number.isFinite(pnlUsdt) ? pnlUsdt : 0,
+          pnlPct: Number.isFinite(pnlPct) ? pnlPct : 0,
+          rMultiple:
+            item.rMultiple === null || item.rMultiple === undefined || item.rMultiple === ''
+              ? null
+              : (Number.isFinite(Number(item.rMultiple)) ? Number(item.rMultiple) : null),
+          manualBalanceAfter:
+            item.manualBalanceAfter === null || item.manualBalanceAfter === undefined || item.manualBalanceAfter === ''
+              ? null
+              : (Number.isFinite(Number(item.manualBalanceAfter)) ? Number(item.manualBalanceAfter) : null),
+          mae:
+            item.mae === null || item.mae === undefined || item.mae === ''
+              ? null
+              : (Number.isFinite(Number(item.mae)) ? Number(item.mae) : null),
+          mfe:
+            item.mfe === null || item.mfe === undefined || item.mfe === ''
+              ? null
+              : (Number.isFinite(Number(item.mfe)) ? Number(item.mfe) : null),
+          note: String(item.note || ''),
+          createdOrder: Number.isFinite(Number(item.createdOrder)) ? Number(item.createdOrder) : idx + 1
+        };
+      }
+
+      /* Powiadomienie Toast & Modal potwierdzenia (zero alert() / confirm()) */
       let toastTimer = null;
       const elToast = document.getElementById('appToast');
 
@@ -2517,7 +2968,7 @@
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => {
           elToast.classList.remove('show');
-        }, 3200);
+        }, 3400);
       }
 
       const elModal = document.getElementById('appModal');
@@ -2552,50 +3003,7 @@
       });
 
       /* =======================================================================
-         ZARZĄDZANIE MOTYWEM (BRAUN LAB 70 LIGHT <-> BRAUN ET66 DARK)
-         ======================================================================= */
-      const elThemeToggleBtn = document.getElementById('themeToggleBtn');
-      const elThemeLightLbl = document.getElementById('themeLightLbl');
-      const elThemeDarkLbl = document.getElementById('themeDarkLbl');
-      const elBrandSubText = document.getElementById('brandSubText');
-      const elThemeColorMeta = document.getElementById('themeColorMeta');
-      const elIosStatusBarMeta = document.getElementById('iosStatusBarMeta');
-
-      let currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-
-      function applyTheme(theme, shouldRerenderChart = true) {
-        currentTheme = theme === 'dark' ? 'dark' : 'light';
-        const isDark = currentTheme === 'dark';
-
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        elThemeToggleBtn.setAttribute('aria-pressed', String(isDark));
-        elThemeLightLbl.classList.toggle('active', !isDark);
-        elThemeDarkLbl.classList.toggle('active', isDark);
-        elBrandSubText.textContent = isDark ? 'BRAUN ET66 DARK · STANDALONE' : 'BRAUN LAB 70 · STANDALONE';
-
-        if (elThemeColorMeta) {
-          elThemeColorMeta.setAttribute('content', isDark ? '#131312' : '#ECEBE6');
-        }
-        if (elIosStatusBarMeta) {
-          elIosStatusBarMeta.setAttribute('content', isDark ? 'black-translucent' : 'default');
-        }
-
-        try {
-          window.localStorage.setItem(STORAGE_THEME_KEY, currentTheme);
-        } catch (err) {}
-
-        // Przerysuj wykres SVG z aktualnymi zmiennymi CSS motywu
-        if (shouldRerenderChart) {
-          renderJournal();
-        }
-      }
-
-      elThemeToggleBtn.addEventListener('click', () => {
-        applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
-      });
-
-      /* =======================================================================
-         STAN APLIKACJI
+         STAN APLIKACJI I KONFIGURACJA SYNCHRONIZACJI
          ======================================================================= */
       let calcState = Object.assign(cloneObj(DEFAULT_CALC_STATE), loadStorage(STORAGE_CALC_KEY, DEFAULT_CALC_STATE));
       if (!Array.isArray(calcState.tpLevels) || calcState.tpLevels.length === 0) {
@@ -2604,40 +3012,96 @@
 
       let journalMeta = Object.assign(cloneObj(DEFAULT_JOURNAL_META), loadStorage(STORAGE_JOURNAL_META_KEY, DEFAULT_JOURNAL_META));
 
-      let trades = loadStorage(STORAGE_JOURNAL_KEY, []);
-      if (!Array.isArray(trades)) trades = [];
-      trades = trades.map((t, idx) => ({
-        id: String(t.id || `tr_${Date.now()}_${idx}`),
-        pair: String(t.pair || 'BTC/USDT').toUpperCase(),
-        direction: t.direction === 'SHORT' ? 'SHORT' : 'LONG',
-        date: String(t.date || nowLocalDatetimeValue()),
-        pnlUsdt: Number(t.pnlUsdt) || 0,
-        pnlPct: Number(t.pnlPct) || 0,
-        rMultiple:
-          t.rMultiple === null || t.rMultiple === undefined || t.rMultiple === ''
-            ? null
-            : (Number.isFinite(Number(t.rMultiple)) ? Number(t.rMultiple) : null),
-        manualBalanceAfter:
-          t.manualBalanceAfter === null || t.manualBalanceAfter === undefined || t.manualBalanceAfter === ''
-            ? null
-            : (Number.isFinite(Number(t.manualBalanceAfter)) ? Number(t.manualBalanceAfter) : null),
-        mae:
-          t.mae === null || t.mae === undefined || t.mae === ''
-            ? null
-            : (Number.isFinite(Number(t.mae)) ? Number(t.mae) : null),
-        mfe:
-          t.mfe === null || t.mfe === undefined || t.mfe === ''
-            ? null
-            : (Number.isFinite(Number(t.mfe)) ? Number(t.mfe) : null),
-        note: String(t.note || ''),
-        createdOrder: Number.isFinite(Number(t.createdOrder)) ? Number(t.createdOrder) : idx + 1
-      }));
+      let rawTrades = loadStorage(STORAGE_JOURNAL_KEY, []);
+      let trades = Array.isArray(rawTrades) ? rawTrades.map((t, idx) => normalizeTradeItem(t, idx)) : [];
+
+      let localUpdatedAt = null;
+      try {
+        localUpdatedAt = window.localStorage.getItem(STORAGE_UPDATED_AT_KEY) || null;
+      } catch (err) {
+        localUpdatedAt = null;
+      }
+
+      let syncCfg = Object.assign(cloneObj(DEFAULT_SYNC_CFG), loadStorage(STORAGE_SYNC_CFG_KEY, DEFAULT_SYNC_CFG));
 
       let activeTab = 'calculator';
       let formDirection = 'LONG';
       let formManualBalanceActive = false;
       let formLastPnlSource = null; // 'usdt' | 'pct' | null
       let activeChartPoints = [];
+
+      let pushDebounceTimer = null;
+      let syncInFlight = false;
+      let syncUiState = {
+        mode: 'local', // 'local' | 'ok' | 'syncing' | 'error'
+        message: ''
+      };
+
+      function isSyncConfigured() {
+        return Boolean(syncCfg.scriptUrl && syncCfg.scriptUrl.trim() && syncCfg.token && syncCfg.token.trim());
+      }
+
+      function setLocalUpdatedAt(isoVal) {
+        localUpdatedAt = isoVal;
+        try {
+          if (isoVal) {
+            window.localStorage.setItem(STORAGE_UPDATED_AT_KEY, isoVal);
+          } else {
+            window.localStorage.removeItem(STORAGE_UPDATED_AT_KEY);
+          }
+        } catch (err) {}
+      }
+
+      /* Wywoływane przy każdej lokalnej edycji danych */
+      function markLocalChanged() {
+        setLocalUpdatedAt(new Date().toISOString());
+        scheduleAutoPush();
+      }
+
+      /* =======================================================================
+         ZARZĄDZANIE MOTYWEM (BRAUN LAB 70 LIGHT <-> BRAUN ET66 DARK)
+         ======================================================================= */
+      const elThemeToggleBtn = document.getElementById('themeToggleBtn');
+      const elThemeLightLbl = document.getElementById('themeLightLbl');
+      const elThemeDarkLbl = document.getElementById('themeDarkLbl');
+      const elBrandSubText = document.getElementById('brandSubText');
+      const elMetaThemeColor = document.getElementById('metaThemeColor');
+      const elMetaStatusBar = document.getElementById('metaStatusBar');
+
+      let currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
+      function applyTheme(theme, { rerenderChart = true, notifyChange = false } = {}) {
+        currentTheme = theme === 'dark' ? 'dark' : 'light';
+        const isDark = currentTheme === 'dark';
+
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        elThemeToggleBtn.setAttribute('aria-pressed', String(isDark));
+        elThemeLightLbl.classList.toggle('active', !isDark);
+        elThemeDarkLbl.classList.toggle('active', isDark);
+        elBrandSubText.textContent = isDark ? 'BRAUN ET66 DARK · PWA' : 'BRAUN LAB 70 · PWA';
+
+        if (elMetaThemeColor) {
+          elMetaThemeColor.setAttribute('content', isDark ? '#131312' : '#ECEBE6');
+        }
+        if (elMetaStatusBar) {
+          elMetaStatusBar.setAttribute('content', isDark ? 'black-translucent' : 'default');
+        }
+
+        try {
+          window.localStorage.setItem(STORAGE_THEME_KEY, currentTheme);
+        } catch (err) {}
+
+        if (rerenderChart) {
+          renderJournal();
+        }
+        if (notifyChange) {
+          markLocalChanged();
+        }
+      }
+
+      elThemeToggleBtn.addEventListener('click', () => {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark', { rerenderChart: true, notifyChange: true });
+      });
 
       /* =======================================================================
          NAWIGACJA GŁÓWNA (KALKULATOR <-> DZIENNIK)
@@ -2785,20 +3249,20 @@
         });
       }
 
-      function persistAndRecalc() {
+      function persistCalcAndRecalc() {
         saveStorage(STORAGE_CALC_KEY, calcState);
         recalculate();
+        markLocalChanged();
       }
 
-      /* Zdarzenia kalkulatora */
       elCalcCapital.addEventListener('input', () => {
         calcState.capital = elCalcCapital.value;
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elCalcRiskInput.addEventListener('input', () => {
         calcState.riskValue = elCalcRiskInput.value;
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       function switchRiskMode(nextMode) {
@@ -2815,7 +3279,7 @@
         }
         calcState.riskMode = nextMode;
         syncCalcInputsFromState();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       }
 
       elRiskModePctBtn.addEventListener('click', () => switchRiskMode('pct'));
@@ -2825,51 +3289,50 @@
         calcState.leverage = elLeverageSlider.value;
         elLeverageInput.value = calcState.leverage;
         syncLeverageSliderUI();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elLeverageInput.addEventListener('input', () => {
         calcState.leverage = elLeverageInput.value;
         syncLeverageSliderUI();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elCalcSlPct.addEventListener('input', () => {
         calcState.slPct = elCalcSlPct.value;
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elMakerFee.addEventListener('input', () => {
         calcState.makerFee = elMakerFee.value;
         syncFeeSwitchesUI();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elTakerFee.addEventListener('input', () => {
         calcState.takerFee = elTakerFee.value;
         syncFeeSwitchesUI();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       Object.values(feeSwitches).forEach((sw) => {
         sw.btn.addEventListener('click', () => {
           calcState[sw.stateKey] = calcState[sw.stateKey] === 'taker' ? 'maker' : 'taker';
           syncFeeSwitchesUI();
-          persistAndRecalc();
+          persistCalcAndRecalc();
         });
         sw.makerLbl.addEventListener('click', () => {
           calcState[sw.stateKey] = 'maker';
           syncFeeSwitchesUI();
-          persistAndRecalc();
+          persistCalcAndRecalc();
         });
         sw.takerLbl.addEventListener('click', () => {
           calcState[sw.stateKey] = 'taker';
           syncFeeSwitchesUI();
-          persistAndRecalc();
+          persistCalcAndRecalc();
         });
       });
 
-      /* Zdarzenia Multi-TP */
       elTpList.addEventListener('input', (e) => {
         const input = e.target.closest('input[data-tp-field]');
         if (!input) return;
@@ -2877,7 +3340,7 @@
         const field = input.dataset.tpField;
         if (calcState.tpLevels[idx]) {
           calcState.tpLevels[idx][field] = input.value;
-          persistAndRecalc();
+          persistCalcAndRecalc();
         }
       });
 
@@ -2888,7 +3351,7 @@
         if (calcState.tpLevels.length > 1) {
           calcState.tpLevels.splice(idx, 1);
           renderTpInputs();
-          persistAndRecalc();
+          persistCalcAndRecalc();
         }
       });
 
@@ -2905,7 +3368,7 @@
         const remaining = Math.max(0, Number((100 - currentSum).toFixed(2)));
         calcState.tpLevels.push({ pct: nextPct, alloc: remaining > 0 ? String(remaining) : '0' });
         renderTpInputs();
-        persistAndRecalc();
+        persistCalcAndRecalc();
       });
 
       elTpNormalizeBtn.addEventListener('click', () => {
@@ -2943,11 +3406,11 @@
         }
 
         renderTpInputs();
-        persistAndRecalc();
+        persistCalcAndRecalc();
         showToast('Wyrównano sumę udziałów TP do 100%.', 'ok');
       });
 
-      /* Główny silnik matematyczny kalkulatora */
+      /* Główny silnik matematyczny kalkulatora (Net Risk & Multi-TP) */
       function recalculate() {
         const capital = parseNum(calcState.capital);
         const riskInputVal = parseNum(calcState.riskValue);
@@ -2984,9 +3447,9 @@
         elTpSumBadge.className = `tech-badge ${allocOk ? 'ok' : 'warn'}`;
         elTpNormalizeBtn.style.display = allocOk ? 'none' : 'inline-flex';
 
-        const feeEntryRate = (calcState.entryFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
-        const feeSlRate = (calcState.slFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
-        const feeTpRate = (calcState.tpFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+        const fIn = (calcState.entryFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+        const fSl = (calcState.slFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+        const fTp = (calcState.tpFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
 
         const slRate = Number.isFinite(slPct) && slPct > 0 ? slPct / 100 : NaN;
         const validBase =
@@ -3041,15 +3504,15 @@
           return;
         }
 
-        // N = Risk_USDT / (SL%/100 + fee_entry + fee_SL)
-        const totalSlCostRate = slRate + feeEntryRate + feeSlRate;
+        // N = Risk_USDT / ((SL_pct / 100) + f_in + f_sl)
+        const totalSlCostRate = slRate + fIn + fSl;
         const notional = riskUsdt / totalSlCostRate;
         const margin = notional / leverage;
 
         // Rozbicie realnej straty na SL
         const slPriceLoss = notional * slRate;
-        const slEntryFee = notional * feeEntryRate;
-        const slExitFee = notional * feeSlRate;
+        const slEntryFee = notional * fIn;
+        const slExitFee = notional * fSl;
         const slTotalFees = slEntryFee + slExitFee;
         const realSlLoss = slPriceLoss + slTotalFees;
 
@@ -3065,10 +3528,10 @@
           const safeTpPct = Number.isFinite(tpPct) && tpPct >= 0 ? tpPct : 0;
           const safeAllocPct = Number.isFinite(allocPct) && allocPct >= 0 ? allocPct : 0;
 
-          const share = safeAllocPct / 100;
-          const partNotional = notional * share;
+          const w = safeAllocPct / 100;
+          const partNotional = notional * w;
           const gross = partNotional * (safeTpPct / 100);
-          const fees = partNotional * (feeEntryRate + feeTpRate);
+          const fees = partNotional * (fIn + fTp);
           const net = gross - fees;
           const levelRR = realSlLoss > 0 ? net / realSlLoss : 0;
 
@@ -3237,7 +3700,7 @@
         };
       }
 
-      /* Kontekst salda tuż przed aktualnie wpisywaną/edytowaną transakcją */
+      /* Kontekst salda tuż przed aktualnie tworzoną/edytowaną transakcją */
       function computeFormExpectedContext() {
         const startBal = getStartingBalanceNum();
         const editId = elTradeEditId.value.trim();
@@ -3261,7 +3724,7 @@
         return { prevBalance, expectedBalanceAfter };
       }
 
-      /* Dwukierunkowe powiązanie P&L (USDT) <-> P&L (%) względem Bazy konta */
+      /* Dwukierunkowe przeliczanie P&L (USDT) <-> P&L (%) względem Bazy konta */
       function syncLinkedPnlField(source) {
         const ctx = computeFormExpectedContext();
         const baseBalance = ctx.prevBalance;
@@ -3407,7 +3870,7 @@
       elCloseTradeFormBtn.addEventListener('click', closeTradeForm);
       elCancelTradeBtn.addEventListener('click', closeTradeForm);
 
-      /* Przyciski zmiany znaku ± dla iOS */
+      /* Przyciski ± do szybkiej zmiany znaku na iOS */
       document.querySelectorAll('button[data-toggle-sign]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const targetId = btn.dataset.toggleSign;
@@ -3438,7 +3901,7 @@
         });
       });
 
-      /* Zdarzenia formularza i kapitału początkowego */
+      /* Zdarzenia kapitału początkowego i pól formularza */
       elJournalStartBalance.value = journalMeta.startingBalance;
       elJournalStartBalance.addEventListener('input', () => {
         journalMeta.startingBalance = elJournalStartBalance.value;
@@ -3448,6 +3911,7 @@
         }
         refreshFormBalancePreview();
         renderJournal();
+        markLocalChanged();
       });
 
       elTradePnlUsdt.addEventListener('input', () => {
@@ -3481,7 +3945,7 @@
         refreshFormBalancePreview();
       });
 
-      /* Zapis / aktualizacja wpisu */
+      /* Zapis / aktualizacja transakcji */
       elTradeForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -3596,21 +4060,23 @@
         saveStorage(STORAGE_JOURNAL_KEY, trades);
         closeTradeForm();
         renderJournal();
+        markLocalChanged();
       });
 
       /* Tryb wykresu */
-      function setChartMode(mode) {
+      function setChartMode(mode, notifyChange = true) {
         journalMeta.chartMode = mode === 'balance' ? 'balance' : 'pnl';
         saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
         elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
         elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
         renderJournal();
+        if (notifyChange) markLocalChanged();
       }
 
-      elChartModePnlBtn.addEventListener('click', () => setChartMode('pnl'));
-      elChartModeBalBtn.addEventListener('click', () => setChartMode('balance'));
+      elChartModePnlBtn.addEventListener('click', () => setChartMode('pnl', true));
+      elChartModeBalBtn.addEventListener('click', () => setChartMode('balance', true));
 
-      /* Filtry */
+      /* Filtry dziennika */
       function getFilteredTrades() {
         const q = elFilterSearch.value.trim().toLowerCase();
         const dir = elFilterDir.value;
@@ -3650,7 +4116,7 @@
         renderJournal();
       });
 
-      /* Obliczanie 8 metryk KPI */
+      /* Obliczanie 8 metryk KPI na przefiltrowanych transakcjach */
       function computeMetrics(filteredList, chainById, startBal) {
         const count = filteredList.length;
         if (count === 0) {
@@ -3750,7 +4216,7 @@
         const expectancy = totalPnl / count;
         const avgR = rCount > 0 ? sumR / rCount : NaN;
 
-        // Kryterium Kelly'ego: W - (1 - W) / (AvgWin / AvgLoss)
+        // Kryterium Kelly'ego: Kelly % = (W - (1 - W) / (AvgWin / AvgLoss)) * 100
         let kellyPct = NaN;
         if (wins > 0 && losses > 0) {
           const W = wins / (wins + losses);
@@ -3844,7 +4310,7 @@
         maeMfeMeta.textContent = `MAE: n=${m.maeCount} · MFE: n=${m.mfeCount}`;
       }
 
-      /* Wykres SVG krzywej kapitału z dynamicznymi kolorami motywu i segmentami wzrost/spadek */
+      /* Wykres SVG krzywej kapitału z segmentowym kolorowaniem i kolorami aktywnego motywu */
       function renderEquityChart(chronoTrades, chainById, startBal) {
         const isBalanceMode = journalMeta.chartMode === 'balance';
 
@@ -3855,13 +4321,12 @@
           return;
         }
 
-        // Pobranie aktywnych kolorów z bieżącego motywu CSS
         const cProfit = getCssVar('--profit', '#1B7A50');
         const cLoss = getCssVar('--loss', '#C93636');
         const cMuted = getCssVar('--text-muted', '#6B6A65');
         const cText = getCssVar('--text', '#141413');
         const cAccent = getCssVar('--accent', '#E6482E');
-        const cGrid = getCssVar('--chart-grid', '#E3E1D8');
+        const cGrid = getCssVar('--chart-grid', '#E4E2DB');
         const cDotStroke = getCssVar('--chart-dot-stroke', '#FFFFFF');
 
         const points = [];
@@ -3954,11 +4419,8 @@
           const y2 = yOf(curr.val).toFixed(1);
 
           let segColor = cMuted;
-          if (curr.val < prev.val) {
-            segColor = cLoss;
-          } else if (curr.val > prev.val) {
-            segColor = cProfit;
-          }
+          if (curr.val < prev.val) segColor = cLoss;
+          else if (curr.val > prev.val) segColor = cProfit;
 
           segmentsSvg += `
             <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${segColor}" stroke-width="2.5" stroke-linecap="round" />
@@ -4216,6 +4678,7 @@
                   saveStorage(STORAGE_JOURNAL_KEY, trades);
                   if (elTradeEditId.value === targetId) closeTradeForm();
                   renderJournal();
+                  markLocalChanged();
                   showToast('Usunięto transakcję z dziennika.');
                 }
               }
@@ -4228,12 +4691,12 @@
       document.getElementById('journalCardsMobile').addEventListener('click', handleLogClick);
 
       /* =======================================================================
-         EKSPORT / IMPORT JSON ORAZ EKSPORT CSV (UTF-8 BOM)
+         EKSPORT / IMPORT JSON (BEZ DANYCH DOSTĘPOWYCH SYNC) ORAZ CSV (UTF-8 BOM)
          ======================================================================= */
       document.getElementById('exportJsonBtn').addEventListener('click', () => {
         const payload = {
           app: 'POS-SIZE // JOURNAL — USDT',
-          version: '2.0',
+          version: '2.1',
           exportedAt: new Date().toISOString(),
           theme: currentTheme,
           startingBalance: getStartingBalanceNum(),
@@ -4280,32 +4743,7 @@
 
             const sanitized = list
               .filter((item) => item && typeof item === 'object')
-              .map((item, idx) => ({
-                id: String(item.id || `imp_${Date.now()}_${idx}`),
-                pair: String(item.pair || 'UNKNOWN').toUpperCase(),
-                direction: item.direction === 'SHORT' ? 'SHORT' : 'LONG',
-                date: String(item.date || nowLocalDatetimeValue()),
-                pnlUsdt: Number(item.pnlUsdt),
-                pnlPct: Number(item.pnlPct),
-                rMultiple:
-                  item.rMultiple === null || item.rMultiple === undefined || item.rMultiple === ''
-                    ? null
-                    : (Number.isFinite(Number(item.rMultiple)) ? Number(item.rMultiple) : null),
-                manualBalanceAfter:
-                  item.manualBalanceAfter === null || item.manualBalanceAfter === undefined || item.manualBalanceAfter === ''
-                    ? null
-                    : (Number.isFinite(Number(item.manualBalanceAfter)) ? Number(item.manualBalanceAfter) : null),
-                mae:
-                  item.mae === null || item.mae === undefined || item.mae === ''
-                    ? null
-                    : (Number.isFinite(Number(item.mae)) ? Number(item.mae) : null),
-                mfe:
-                  item.mfe === null || item.mfe === undefined || item.mfe === ''
-                    ? null
-                    : (Number.isFinite(Number(item.mfe)) ? Number(item.mfe) : null),
-                note: String(item.note || ''),
-                createdOrder: Number.isFinite(Number(item.createdOrder)) ? Number(item.createdOrder) : idx + 1
-              }))
+              .map((item, idx) => normalizeTradeItem(item, idx))
               .filter((t) => Number.isFinite(t.pnlUsdt) && Number.isFinite(t.pnlPct));
 
             if (sanitized.length === 0) {
@@ -4329,7 +4767,7 @@
                 recalculate();
               }
               if (importedTheme) {
-                applyTheme(importedTheme, false);
+                applyTheme(importedTheme, { rerenderChart: false, notifyChange: false });
               }
             };
 
@@ -4338,6 +4776,7 @@
               trades = sanitized;
               saveStorage(STORAGE_JOURNAL_KEY, trades);
               renderJournal();
+              markLocalChanged();
               showToast(`Zaimportowano ${sanitized.length} transakcji.`, 'ok');
               return;
             }
@@ -4355,6 +4794,7 @@
                     trades = [...trades, ...added];
                     saveStorage(STORAGE_JOURNAL_KEY, trades);
                     renderJournal();
+                    markLocalChanged();
                     showToast(`Dołączono ${added.length} nowych wpisów.`, 'ok');
                   }
                 },
@@ -4366,6 +4806,7 @@
                     trades = sanitized;
                     saveStorage(STORAGE_JOURNAL_KEY, trades);
                     renderJournal();
+                    markLocalChanged();
                     showToast(`Zastąpiono dziennik (${sanitized.length} wpisów).`, 'ok');
                   }
                 }
@@ -4424,15 +4865,471 @@
       });
 
       /* =======================================================================
+         MODUŁ 3: GOOGLE SHEETS CLOUD SYNC (APPS SCRIPT WEB APP PROTOCOL)
+         ======================================================================= */
+      const elHeaderSyncBtn = document.getElementById('headerSyncBtn');
+      const elHeaderSyncLed = document.getElementById('headerSyncLed');
+      const elHeaderSyncLabel = document.getElementById('headerSyncLabel');
+      const elJournalSyncBtn = document.getElementById('journalSyncBtn');
+
+      const elSyncModal = document.getElementById('syncModal');
+      const elCloseSyncModalBtn = document.getElementById('closeSyncModalBtn');
+      const elSyncModalLed = document.getElementById('syncModalLed');
+      const elSyncModalStateText = document.getElementById('syncModalStateText');
+      const elSyncModalLastTime = document.getElementById('syncModalLastTime');
+      const elSyncModalMessage = document.getElementById('syncModalMessage');
+
+      const elSyncScriptUrl = document.getElementById('syncScriptUrl');
+      const elSyncToken = document.getElementById('syncToken');
+      const elToggleTokenVisBtn = document.getElementById('toggleTokenVisBtn');
+      const elAutoSyncSwitch = document.getElementById('autoSyncSwitch');
+      const elAutoSyncOffLbl = document.getElementById('autoSyncOffLbl');
+      const elAutoSyncOnLbl = document.getElementById('autoSyncOnLbl');
+
+      const elSyncSaveTestBtn = document.getElementById('syncSaveTestBtn');
+      const elSyncPullBtn = document.getElementById('syncPullBtn');
+      const elSyncPushBtn = document.getElementById('syncPushBtn');
+      const elSyncDisconnectBtn = document.getElementById('syncDisconnectBtn');
+      const elGasCodeBox = document.getElementById('gasCodeBox');
+      const elCopyGasCodeBtn = document.getElementById('copyGasCodeBtn');
+
+      elGasCodeBox.value = APPS_SCRIPT_CODE;
+
+      function updateSyncStatusUI(mode, message) {
+        syncUiState.mode = mode;
+        if (message !== undefined) syncUiState.message = message;
+
+        const labelMap = {
+          local: 'LOKALNIE',
+          ok: 'SYNC OK',
+          syncing: 'SYNC...',
+          error: 'BŁĄD'
+        };
+        const ledClassMap = {
+          local: 'led-dot is-local',
+          ok: 'led-dot is-ok',
+          syncing: 'led-dot is-syncing',
+          error: 'led-dot is-error'
+        };
+
+        const lbl = labelMap[mode] || 'LOKALNIE';
+        const ledCls = ledClassMap[mode] || 'led-dot is-local';
+        const hhmm = syncCfg.lastSyncedAt ? formatTimeHHMM(syncCfg.lastSyncedAt) : null;
+
+        elHeaderSyncLed.className = ledCls;
+        elHeaderSyncLabel.textContent = mode === 'ok' && hhmm ? `SYNC OK` : lbl;
+        elHeaderSyncBtn.title = syncUiState.message
+          ? `${lbl}${hhmm ? ` (${hhmm})` : ''} — ${syncUiState.message}`
+          : `${lbl}${hhmm ? ` · ostatnio ${hhmm}` : ''}`;
+
+        elSyncModalLed.className = ledCls;
+        elSyncModalStateText.textContent = mode === 'ok' && hhmm ? `SYNC OK · ${hhmm}` : lbl;
+        elSyncModalLastTime.textContent = `Ostatnia synchr.: ${formatDateTimeShort(syncCfg.lastSyncedAt)}`;
+        elSyncModalMessage.textContent =
+          syncUiState.message ||
+          (isSyncConfigured()
+            ? 'Połączenie z Google Sheets jest skonfigurowane.'
+            : 'Dane zapisywane są wyłącznie lokalnie. Podaj URL skryptu oraz token, aby włączyć synchronizację.');
+      }
+
+      function syncAutoToggleUI(val) {
+        const isOn = Boolean(val);
+        elAutoSyncSwitch.setAttribute('aria-checked', String(isOn));
+        elAutoSyncOffLbl.classList.toggle('active', !isOn);
+        elAutoSyncOnLbl.classList.toggle('active', isOn);
+      }
+
+      function openSyncModal() {
+        elSyncScriptUrl.value = syncCfg.scriptUrl || '';
+        elSyncToken.value = syncCfg.token || '';
+        elSyncToken.type = 'password';
+        elToggleTokenVisBtn.textContent = 'Pokaż';
+        syncAutoToggleUI(syncCfg.autoSync);
+        updateSyncStatusUI(syncUiState.mode, syncUiState.message);
+        elSyncModal.classList.add('open');
+      }
+
+      function closeSyncModal() {
+        elSyncModal.classList.remove('open');
+      }
+
+      elHeaderSyncBtn.addEventListener('click', openSyncModal);
+      elJournalSyncBtn.addEventListener('click', openSyncModal);
+      elCloseSyncModalBtn.addEventListener('click', closeSyncModal);
+      elSyncModal.addEventListener('click', (e) => {
+        if (e.target === elSyncModal) closeSyncModal();
+      });
+
+      elToggleTokenVisBtn.addEventListener('click', () => {
+        const isPass = elSyncToken.type === 'password';
+        elSyncToken.type = isPass ? 'text' : 'password';
+        elToggleTokenVisBtn.textContent = isPass ? 'Ukryj' : 'Pokaż';
+      });
+
+      const toggleAutoSync = (forcedVal = null) => {
+        const nextVal = forcedVal === null ? !syncCfg.autoSync : Boolean(forcedVal);
+        syncCfg.autoSync = nextVal;
+        saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+        syncAutoToggleUI(syncCfg.autoSync);
+      };
+
+      elAutoSyncSwitch.addEventListener('click', () => toggleAutoSync(null));
+      elAutoSyncOffLbl.addEventListener('click', () => toggleAutoSync(false));
+      elAutoSyncOnLbl.addEventListener('click', () => toggleAutoSync(true));
+
+      /* Kopiowanie kodu Apps Script przez document.execCommand('copy') (zgodne z iFrame / iOS) */
+      elCopyGasCodeBtn.addEventListener('click', () => {
+        try {
+          elGasCodeBox.focus();
+          elGasCodeBox.select();
+          elGasCodeBox.setSelectionRange(0, elGasCodeBox.value.length);
+          const copied = document.execCommand('copy');
+          if (copied) {
+            showToast('Skopiowano kod Google Apps Script do schowka.', 'ok');
+          } else {
+            showToast('Zaznaczono kod — skopiuj ręcznie (Ctrl/Cmd+C).');
+          }
+        } catch (err) {
+          showToast('Nie udało się skopiować automatycznie — zaznacz kod ręcznie.');
+        }
+      });
+
+      /* Zbudowanie czystego ładunku do wysłania (z wyliczonym balanceAfter i balanceAdjustment) */
+      function buildSyncPayload() {
+        const startBal = getStartingBalanceNum();
+        const chain = buildBalanceChain(trades, startBal);
+        const enrichedTrades = chain.sortedChrono.map((t) => {
+          const info = chain.byId.get(t.id);
+          return {
+            id: t.id,
+            pair: t.pair,
+            direction: t.direction,
+            date: t.date,
+            pnlUsdt: t.pnlUsdt,
+            pnlPct: t.pnlPct,
+            rMultiple: t.rMultiple,
+            manualBalanceAfter: t.manualBalanceAfter,
+            balanceAfter: info ? Number(info.effectiveBalanceAfter.toFixed(2)) : Number(startBal.toFixed(2)),
+            balanceAdjustment: info && info.isManualBalance ? Number(info.adjustmentDelta.toFixed(2)) : 0,
+            mae: t.mae,
+            mfe: t.mfe,
+            note: t.note,
+            createdOrder: t.createdOrder
+          };
+        });
+
+        const ts = localUpdatedAt || new Date().toISOString();
+        if (!localUpdatedAt) setLocalUpdatedAt(ts);
+
+        return {
+          trades: enrichedTrades,
+          journalMeta: {
+            startingBalance: journalMeta.startingBalance,
+            chartMode: journalMeta.chartMode
+          },
+          calcSettings: cloneObj(calcState),
+          theme: currentTheme,
+          updatedAt: ts
+        };
+      }
+
+      /* Zastosowanie stanu pobranego z Google Sheets bez wyzwalania pętli auto-push */
+      function applyRemoteState(remoteData) {
+        if (!remoteData || typeof remoteData !== 'object') return;
+
+        if (Array.isArray(remoteData.trades)) {
+          trades = remoteData.trades
+            .filter((item) => item && typeof item === 'object')
+            .map((item, idx) => normalizeTradeItem(item, idx));
+          saveStorage(STORAGE_JOURNAL_KEY, trades);
+        }
+
+        if (remoteData.journalMeta && typeof remoteData.journalMeta === 'object') {
+          journalMeta = Object.assign(cloneObj(DEFAULT_JOURNAL_META), remoteData.journalMeta);
+          elJournalStartBalance.value = journalMeta.startingBalance;
+          elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
+          elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
+          saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
+        }
+
+        if (remoteData.calcSettings && typeof remoteData.calcSettings === 'object') {
+          calcState = Object.assign(cloneObj(DEFAULT_CALC_STATE), remoteData.calcSettings);
+          if (!Array.isArray(calcState.tpLevels) || calcState.tpLevels.length === 0) {
+            calcState.tpLevels = [{ pct: '2.00', alloc: '100' }];
+          }
+          saveStorage(STORAGE_CALC_KEY, calcState);
+          syncCalcInputsFromState();
+          recalculate();
+        }
+
+        if (remoteData.theme === 'dark' || remoteData.theme === 'light') {
+          applyTheme(remoteData.theme, { rerenderChart: false, notifyChange: false });
+        }
+
+        if (remoteData.updatedAt) {
+          setLocalUpdatedAt(remoteData.updatedAt);
+        }
+
+        closeTradeForm();
+        renderJournal();
+      }
+
+      function validateSyncFieldsFromModal() {
+        const url = elSyncScriptUrl.value.trim();
+        const tok = elSyncToken.value.trim();
+        if (!url || !/^https:\/\/script\.google\.com\//i.test(url)) {
+          updateSyncStatusUI('error', 'Podaj poprawny adres URL aplikacji Google Apps Script (https://script.google.com/...).');
+          showToast('Nieprawidłowy URL skryptu Apps Script.');
+          elSyncScriptUrl.focus();
+          return null;
+        }
+        if (!tok) {
+          updateSyncStatusUI('error', 'Podaj tajny klucz (Token) zgodny z SECRET_TOKEN w Code.gs.');
+          showToast('Wpisz tajny klucz (Token).');
+          elSyncToken.focus();
+          return null;
+        }
+        return { url, tok };
+      }
+
+      /* PULL z Google Sheets (GET bez niestandardowych nagłówków -> zero CORS preflight) */
+      async function pullFromSheets({ mode = 'auto' } = {}) {
+        if (!isSyncConfigured()) {
+          updateSyncStatusUI('local', 'Synchronizacja nie jest skonfigurowana.');
+          return { ok: false, reason: 'unconfigured' };
+        }
+        if (syncInFlight) return { ok: false, reason: 'busy' };
+
+        syncInFlight = true;
+        updateSyncStatusUI('syncing', 'Pobieranie danych z Google Sheets...');
+
+        try {
+          const sep = syncCfg.scriptUrl.includes('?') ? '&' : '?';
+          const fetchUrl = `${syncCfg.scriptUrl}${sep}action=load&token=${encodeURIComponent(syncCfg.token)}`;
+          const res = await fetch(fetchUrl, { method: 'GET', redirect: 'follow' });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          const json = await res.json();
+          if (!json || json.ok !== true) {
+            throw new Error((json && json.error) ? json.error : 'Nieprawidłowa odpowiedź serwera.');
+          }
+
+          const remote = json.data || { trades: [], updatedAt: null };
+          const remoteTrades = Array.isArray(remote.trades) ? remote.trades : [];
+          const remoteEmpty = remoteTrades.length === 0 && !remote.updatedAt;
+
+          // Bezpiecznik: nie nadpisuj lokalnych danych pustym arkuszem w trybie auto lub test
+          if (remoteEmpty && trades.length > 0) {
+            const emptyNotice = 'Arkusz jest pusty — kliknij „↑ Wyślij do Arkusza”, aby zapisać lokalne dane.';
+            if (mode === 'manual') {
+              syncCfg.lastSyncedAt = new Date().toISOString();
+              saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+              updateSyncStatusUI('ok', emptyNotice);
+              openModal({
+                title: 'Arkusz Google Sheets jest pusty',
+                body: `W chmurze nie ma jeszcze zapisanych transakcji, a lokalnie masz ${trades.length} wpisów. Czy na pewno chcesz wyczyścić lokalny dziennik, czy wolisz zachować lokalne dane?`,
+                actions: [
+                  { label: 'Zachowaj lokalne' },
+                  {
+                    label: 'Nadpisz pustym',
+                    className: 'btn-primary',
+                    onClick: () => {
+                      applyRemoteState({ trades: [], updatedAt: null });
+                      showToast('Zastosowano pusty stan z Arkusza.');
+                    }
+                  }
+                ]
+              });
+            } else {
+              updateSyncStatusUI('ok', emptyNotice);
+              if (mode === 'test') {
+                showToast('Połączono! Arkusz jest pusty — użyj „Wyślij do Arkusza”.', 'ok');
+              }
+            }
+            return { ok: true, remoteEmpty: true };
+          }
+
+          const remoteTime = remote.updatedAt ? Date.parse(remote.updatedAt) : 0;
+          const localTime = localUpdatedAt ? Date.parse(localUpdatedAt) : 0;
+          const shouldApply =
+            mode === 'manual' ||
+            (trades.length === 0 && remoteTrades.length > 0) ||
+            (remoteTime > 0 && (!localTime || remoteTime > localTime));
+
+          syncCfg.lastSyncedAt = new Date().toISOString();
+          saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+
+          if (shouldApply && !remoteEmpty) {
+            applyRemoteState(remote);
+            updateSyncStatusUI('ok', `Pobrano ${remoteTrades.length} transakcji z Google Sheets.`);
+            if (mode === 'manual' || mode === 'test') {
+              showToast(`Pobrano ${remoteTrades.length} transakcji z Arkusza.`, 'ok');
+            }
+          } else {
+            updateSyncStatusUI('ok', `Dane lokalne są aktualne (${trades.length} transakcji).`);
+            if (mode === 'test') {
+              showToast('Połączenie z Google Sheets działa poprawnie.', 'ok');
+            }
+          }
+          return { ok: true, applied: shouldApply };
+        } catch (err) {
+          const msg = err && err.message ? err.message : 'Błąd połączenia z Google Sheets.';
+          updateSyncStatusUI('error', `Błąd pobierania: ${msg}`);
+          if (mode !== 'auto') {
+            showToast(`Błąd synchronizacji: ${msg}`);
+          }
+          return { ok: false, error: msg };
+        } finally {
+          syncInFlight = false;
+        }
+      }
+
+      /* PUSH do Google Sheets (POST jako text/plain;charset=utf-8 -> zero CORS preflight) */
+      async function pushToSheets({ manual = false } = {}) {
+        if (!isSyncConfigured()) {
+          updateSyncStatusUI('local', 'Synchronizacja nie jest skonfigurowana.');
+          return { ok: false, reason: 'unconfigured' };
+        }
+        if (syncInFlight) {
+          if (!manual) scheduleAutoPush();
+          return { ok: false, reason: 'busy' };
+        }
+
+        syncInFlight = true;
+        updateSyncStatusUI('syncing', 'Wysyłanie zmian do Google Sheets...');
+
+        try {
+          const payload = buildSyncPayload();
+          const res = await fetch(syncCfg.scriptUrl, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'save',
+              token: syncCfg.token,
+              payload
+            })
+          });
+
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          const json = await res.json();
+          if (!json || json.ok !== true) {
+            throw new Error((json && json.error) ? json.error : 'Nieprawidłowa odpowiedź serwera.');
+          }
+
+          if (json.updatedAt) setLocalUpdatedAt(json.updatedAt);
+          syncCfg.lastSyncedAt = new Date().toISOString();
+          saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+
+          const count = Number.isFinite(Number(json.count)) ? Number(json.count) : payload.trades.length;
+          updateSyncStatusUI('ok', `Zapisano w Google Sheets (${count} transakcji).`);
+          if (manual) {
+            showToast(`Wysłano ${count} transakcji do Arkusza.`, 'ok');
+          }
+          return { ok: true };
+        } catch (err) {
+          const msg = err && err.message ? err.message : 'Błąd zapisu w Google Sheets.';
+          updateSyncStatusUI('error', `Błąd wysyłania: ${msg}`);
+          if (manual) {
+            showToast(`Błąd wysyłania: ${msg}`);
+          }
+          return { ok: false, error: msg };
+        } finally {
+          syncInFlight = false;
+        }
+      }
+
+      /* Debounce 1200ms dla automatycznego wysyłania w tle */
+      function scheduleAutoPush() {
+        if (!isSyncConfigured() || !syncCfg.autoSync) return;
+        clearTimeout(pushDebounceTimer);
+        pushDebounceTimer = setTimeout(() => {
+          pushToSheets({ manual: false });
+        }, 1200);
+      }
+
+      /* Przyciski w modalu synchronizacji */
+      elSyncSaveTestBtn.addEventListener('click', async () => {
+        const creds = validateSyncFieldsFromModal();
+        if (!creds) return;
+        syncCfg.scriptUrl = creds.url;
+        syncCfg.token = creds.tok;
+        saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+        await pullFromSheets({ mode: 'test' });
+      });
+
+      elSyncPullBtn.addEventListener('click', async () => {
+        const creds = validateSyncFieldsFromModal();
+        if (!creds) return;
+        syncCfg.scriptUrl = creds.url;
+        syncCfg.token = creds.tok;
+        saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+        await pullFromSheets({ mode: 'manual' });
+      });
+
+      elSyncPushBtn.addEventListener('click', async () => {
+        const creds = validateSyncFieldsFromModal();
+        if (!creds) return;
+        syncCfg.scriptUrl = creds.url;
+        syncCfg.token = creds.tok;
+        saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+        if (!localUpdatedAt) setLocalUpdatedAt(new Date().toISOString());
+        await pushToSheets({ manual: true });
+      });
+
+      elSyncDisconnectBtn.addEventListener('click', () => {
+        openModal({
+          title: 'Rozłączyć Google Sheets?',
+          body: 'Usunięty zostanie wyłącznie adres URL skryptu i token z tej przeglądarki. Twoje lokalne transakcje oraz dane w arkuszu Google Sheets pozostaną nietknięte.',
+          actions: [
+            { label: 'Anuluj' },
+            {
+              label: 'Rozłącz',
+              className: 'btn-primary',
+              onClick: () => {
+                clearTimeout(pushDebounceTimer);
+                syncCfg = cloneObj(DEFAULT_SYNC_CFG);
+                saveStorage(STORAGE_SYNC_CFG_KEY, syncCfg);
+                elSyncScriptUrl.value = '';
+                elSyncToken.value = '';
+                syncAutoToggleUI(syncCfg.autoSync);
+                updateSyncStatusUI('local', 'Rozłączono synchronizację. Dane zapisywane są lokalnie.');
+                showToast('Rozłączono synchronizację Google Sheets.');
+              }
+            }
+          ]
+        });
+      });
+
+      /* Automatyczne pobieranie po powrocie do karty / aplikacji na iOS */
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && isSyncConfigured() && syncCfg.autoSync) {
+          pullFromSheets({ mode: 'auto' });
+        }
+      });
+
+      /* =======================================================================
          INICJALIZACJA APLIKACJI
          ======================================================================= */
       elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
       elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
 
-      applyTheme(currentTheme, false);
+      applyTheme(currentTheme, { rerenderChart: false, notifyChange: false });
       syncCalcInputsFromState();
       recalculate();
       renderJournal();
+
+      if (isSyncConfigured()) {
+        updateSyncStatusUI(syncCfg.lastSyncedAt ? 'ok' : 'local', 'Połączenie skonfigurowane.');
+        if (syncCfg.autoSync) {
+          pullFromSheets({ mode: 'auto' });
+        }
+      } else {
+        updateSyncStatusUI('local', 'Dane zapisywane wyłącznie lokalnie w przeglądarce.');
+      }
     })();
   </script>
 </body>
