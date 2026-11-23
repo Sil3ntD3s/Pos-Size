@@ -1,0 +1,4242 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts: IBM Plex Sans (UI) & IBM Plex Mono (dane liczbowe) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================================
+       BRAUN LAB 70 — INDUSTRIAL HARDWARE DESIGN TOKENS
+       Matowe powierzchnie, obramowania 1px, zero cieni, zero gradientów
+       ========================================================================= */
+    :root {
+      --bg-main: #ECEBE6;
+      --bg-card: #F7F6F2;
+      --bg-inset: #EFECE5;
+      --border: #D5D3CA;
+      --border-strong: #B8B5AA;
+      --text-primary: #141413;
+      --text-secondary: #6B6A65;
+      --accent: #E6482E;
+      --accent-hover: #CC3B23;
+      --profit: #1B7A50;
+      --loss: #C93636;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --radius: 2px;
+      --touch-min: 44px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* Wymuszone wyrównanie cyfr dla wszystkich wartości liczbowych */
+    .mono,
+    input[inputmode="decimal"],
+    input[type="number"],
+    input[type="datetime-local"],
+    input[type="date"],
+    .kpi-value,
+    .readout-big,
+    .num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Główny kontener aplikacji */
+    .app-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .app-shell {
+        padding: 24px 28px 36px;
+        gap: 20px;
+      }
+    }
+
+    /* =========================================================================
+       GÓRNY PANEL STERUJĄCY (HEADER + FIZYCZNY PRZEŁĄCZNIK ZAKŁADEK)
+       ========================================================================= */
+    .top-bar {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Fizyczny przełącznik sprzętowy zakładek */
+    .hw-nav-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 640px) {
+      .hw-nav-group {
+        width: auto;
+        justify-content: center;
+      }
+    }
+
+    .nav-label-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      padding: 8px 6px;
+      min-height: 36px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .nav-label-btn.active {
+      color: var(--text-primary);
+    }
+
+    .hw-toggle-switch {
+      appearance: none;
+      position: relative;
+      width: 58px;
+      height: 30px;
+      background-color: var(--text-primary);
+      border: 1px solid var(--text-primary);
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease;
+    }
+
+    .hw-toggle-switch .hw-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: block;
+    }
+
+    .hw-toggle-switch[aria-checked="true"] .hw-knob {
+      transform: translateX(28px);
+    }
+
+    .sys-status {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: right;
+    }
+
+    @media (min-width: 960px) {
+      .sys-status {
+        display: block;
+      }
+    }
+
+    /* =========================================================================
+       PANELE I SEKCJE TECHNICZNE
+       ========================================================================= */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (min-width: 960px) {
+      .calc-grid {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        gap: 20px;
+      }
+    }
+
+    .lab-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .lab-card-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background-color: var(--bg-card);
+    }
+
+    .lab-card-title {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .lab-card-sub {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .lab-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lab-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-secondary);
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================================
+       POLA FORMULARZY, KONTROLKI I PRZYCISKI
+       ========================================================================= */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .form-row.cols-2 {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 560px) {
+      .form-row.cols-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .form-row.cols-3 {
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 680px) {
+      .form-row.cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .field-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+    }
+
+    .field-hint {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      text-transform: none;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: stretch;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      min-height: var(--touch-min);
+      transition: border-color 0.15s ease;
+    }
+
+    .input-box:focus-within {
+      border-color: var(--text-primary);
+      outline: 1px solid var(--text-primary);
+    }
+
+    .input-box.is-manual {
+      border-color: var(--accent);
+      background-color: #FFFDFB;
+    }
+
+    .input-box input,
+    .input-box select {
+      flex: 1 1 auto;
+      min-width: 0;
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 10px 12px;
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .input-box input::placeholder {
+      color: #A2A097;
+      font-weight: 400;
+    }
+
+    .input-unit {
+      display: flex;
+      align-items: center;
+      padding: 0 11px;
+      background-color: var(--bg-inset);
+      border-left: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    textarea.lab-textarea {
+      width: 100%;
+      min-height: 78px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background-color: #FFFFFF;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea.lab-textarea:focus {
+      border-color: var(--text-primary);
+      outline: 1px solid var(--text-primary);
+    }
+
+    /* Przycisk zmiany znaku +/- dla wygody na iOS / mobile */
+    .sign-toggle-btn {
+      appearance: none;
+      border: none;
+      border-right: 1px solid var(--border);
+      background-color: var(--bg-inset);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      min-width: 40px;
+      padding: 0 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .sign-toggle-btn:hover {
+      background-color: var(--border);
+    }
+
+    .sign-toggle-btn:active {
+      background-color: var(--text-primary);
+      color: var(--bg-card);
+    }
+
+    /* Przełączniki segmentowe (% / USDT, LONG / SHORT, Tryb wykresu) */
+    .seg-switch {
+      display: inline-flex;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background-color: var(--bg-main);
+      overflow: hidden;
+    }
+
+    .seg-switch.full-width {
+      display: flex;
+      width: 100%;
+    }
+
+    .seg-switch button {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0 12px;
+      min-height: 36px;
+      cursor: pointer;
+      flex: 1 1 auto;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .seg-switch.tall button {
+      min-height: var(--touch-min);
+    }
+
+    .seg-switch button + button {
+      border-left: 1px solid var(--border-strong);
+    }
+
+    .seg-switch button.active {
+      background-color: var(--text-primary);
+      color: var(--bg-card);
+    }
+
+    .seg-switch button.active-accent {
+      background-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .seg-switch button.active-profit {
+      background-color: var(--profit);
+      color: #FFFFFF;
+    }
+
+    .seg-switch button.active-loss {
+      background-color: var(--loss);
+      color: #FFFFFF;
+    }
+
+    /* Standardowe przyciski techniczne */
+    .btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: var(--touch-min);
+      padding: 8px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      background-color: var(--bg-inset);
+      border-color: var(--text-primary);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #FFFFFF;
+    }
+
+    .btn-dark {
+      background-color: var(--text-primary);
+      border-color: var(--text-primary);
+      color: var(--bg-card);
+    }
+
+    .btn-dark:hover:not(:disabled) {
+      background-color: #2B2B28;
+      border-color: #2B2B28;
+      color: var(--bg-card);
+    }
+
+    .btn-sm {
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 0.73rem;
+    }
+
+    .btn-danger-ghost {
+      color: var(--loss);
+      border-color: var(--border-strong);
+    }
+
+    .btn-danger-ghost:hover:not(:disabled) {
+      background-color: var(--loss);
+      border-color: var(--loss);
+      color: #FFFFFF;
+    }
+
+    /* Znaczniki statusu (Tech Badges) */
+    .tech-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--border-strong);
+      background-color: var(--bg-inset);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .tech-badge.dark {
+      background-color: var(--text-primary);
+      border-color: var(--text-primary);
+      color: var(--bg-card);
+    }
+
+    .tech-badge.accent {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .tech-badge.ok {
+      background-color: rgba(27, 122, 80, 0.12);
+      border-color: var(--profit);
+      color: var(--profit);
+    }
+
+    .tech-badge.warn {
+      background-color: rgba(201, 54, 54, 0.12);
+      border-color: var(--loss);
+      color: var(--loss);
+    }
+
+    /* Kolory wartości */
+    .val-profit { color: var(--profit) !important; }
+    .val-loss { color: var(--loss) !important; }
+    .val-accent { color: var(--accent) !important; }
+    .val-muted { color: var(--text-secondary) !important; }
+
+    /* =========================================================================
+       SUWAK DŹWIGNI (1x - 100x) Z PODZIAŁKĄ TECHNICZNĄ
+       ========================================================================= */
+    .leverage-block {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .leverage-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .leverage-input-wrap {
+      width: 132px;
+      flex-shrink: 0;
+    }
+
+    .slider-track-wrap {
+      padding: 4px 0 2px;
+    }
+
+    input[type="range"].lab-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--border-strong);
+      border-radius: 1px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].lab-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 26px;
+      background: var(--text-primary);
+      border: 2px solid var(--accent);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    input[type="range"].lab-slider::-moz-range-thumb {
+      width: 20px;
+      height: 26px;
+      background: var(--text-primary);
+      border: 2px solid var(--accent);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
+    /* =========================================================================
+       MULTI-TP LISTA POZIOMÓW
+       ========================================================================= */
+    .tp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tp-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .tp-row {
+        grid-template-columns: 36px 1fr 1fr auto;
+        gap: 6px;
+        padding: 6px;
+      }
+    }
+
+    .tp-index {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .tp-remove-btn {
+      appearance: none;
+      min-width: 38px;
+      min-height: var(--touch-min);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background-color: var(--bg-card);
+      color: var(--loss);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tp-remove-btn:hover:not(:disabled) {
+      background-color: var(--loss);
+      border-color: var(--loss);
+      color: #FFFFFF;
+    }
+
+    .tp-remove-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .tp-footer {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tp-alloc-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================================
+       FIZYCZNE PRZEŁĄCZNIKI MAKER / TAKER
+       ========================================================================= */
+    .fee-switch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .fee-switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-wrap: wrap;
+    }
+
+    .fee-switch-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .fee-switch-rate {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .hw-mini-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hw-mini-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .hw-mini-label.active {
+      color: var(--text-primary);
+    }
+
+    .hw-mini-btn {
+      appearance: none;
+      position: relative;
+      width: 46px;
+      height: 26px;
+      background-color: var(--text-primary);
+      border: 1px solid var(--text-primary);
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .hw-mini-btn .knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--bg-card);
+      transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.16s ease;
+    }
+
+    .hw-mini-btn[aria-checked="true"] .knob {
+      transform: translateX(20px);
+      background-color: var(--accent);
+    }
+
+    /* =========================================================================
+       ODCZYTY TELEMETRYCZNE KALKULATORA (PRAWA KOLUMNA)
+       ========================================================================= */
+    .readout-hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (min-width: 560px) {
+      .readout-hero-grid {
+        grid-template-columns: 1.35fr 1fr;
+      }
+    }
+
+    .readout-hero-cell {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .readout-hero-cell + .readout-hero-cell {
+      border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 560px) {
+      .readout-hero-cell + .readout-hero-cell {
+        border-top: none;
+        border-left: 1px solid var(--border);
+      }
+    }
+
+    .readout-lbl {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .readout-big {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .readout-mid {
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .readout-sub {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+    }
+
+    .readout-2col {
+      display: grid;
+      grid-template-columns: 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (min-width: 560px) {
+      .readout-2col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .readout-cell {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .readout-cell + .readout-cell {
+      border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 560px) {
+      .readout-cell + .readout-cell {
+        border-top: none;
+        border-left: 1px solid var(--border);
+      }
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-strong);
+    }
+
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .breakdown-item .k {
+      color: var(--text-secondary);
+    }
+
+    .breakdown-item .v {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    /* Tabele techniczne (Multi-TP breakdown oraz Dziennik Desktop) */
+    .mini-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table.tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    table.tech-table th {
+      text-align: left;
+      padding: 9px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      background-color: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    table.tech-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text-primary);
+    }
+
+    table.tech-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.tech-table th.num,
+    table.tech-table td.num {
+      text-align: right;
+    }
+
+    table.tech-table tfoot td {
+      padding: 9px 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background-color: var(--bg-inset);
+      border-top: 1px solid var(--border-strong);
+    }
+
+    /* =========================================================================
+       ZAKŁADKA 2: DZIENNIK TRANSAKCJI
+       ========================================================================= */
+    .journal-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .journal-topbar {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .start-balance-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 12px;
+      flex: 1 1 280px;
+    }
+
+    .start-balance-field {
+      width: 210px;
+      max-width: 100%;
+    }
+
+    .current-balance-pill {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6px 12px;
+      min-height: var(--touch-min);
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .current-balance-pill .lbl {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+
+    .current-balance-pill .val {
+      font-family: var(--font-mono);
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .journal-actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Siatka KPI (8 wskaźników) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+    }
+
+    .kpi-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size: 1.22rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .kpi-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    /* Wykres krzywej kapitału SVG */
+    .chart-body {
+      padding: 14px 16px 12px;
+    }
+
+    .chart-canvas-wrap {
+      width: 100%;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      overflow-x: auto;
+    }
+
+    .chart-svg {
+      display: block;
+      width: 100%;
+      min-width: 300px;
+      height: auto;
+    }
+
+    .chart-empty {
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      padding: 20px;
+    }
+
+    .chart-telemetry {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 16px;
+      min-height: 38px;
+    }
+
+    .chart-telemetry strong {
+      color: var(--text-primary);
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* Rozwijany formularz dodawania/edycji transakcji */
+    .trade-form-wrap {
+      display: none;
+    }
+
+    .trade-form-wrap.open {
+      display: block;
+    }
+
+    .balance-inline-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .balance-inline-row .input-box {
+      flex: 1 1 auto;
+    }
+
+    .balance-delta-note {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .form-footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 14px;
+      margin-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Pasek filtrów dziennika */
+    .filters-bar {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-inset);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (min-width: 768px) {
+      .filters-bar {
+        grid-template-columns: 1.5fr 0.9fr 0.9fr 0.9fr 0.9fr auto;
+      }
+    }
+
+    /* Tagi kierunku i korekt */
+    .dir-pill {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .dir-pill.long {
+      background-color: rgba(27, 122, 80, 0.12);
+      color: var(--profit);
+      border: 1px solid var(--profit);
+    }
+
+    .dir-pill.short {
+      background-color: rgba(201, 54, 54, 0.12);
+      color: var(--loss);
+      border: 1px solid var(--loss);
+    }
+
+    .manual-delta-pill {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      background-color: rgba(230, 72, 46, 0.12);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      white-space: nowrap;
+    }
+
+    .balance-cell-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .note-cell {
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .note-cell.expanded {
+      white-space: normal;
+      overflow: visible;
+      color: var(--text-primary);
+    }
+
+    .row-actions {
+      display: inline-flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    /* Przełączanie Desktop Tabela <-> Mobile Karty (<768px) */
+    .journal-table-desktop {
+      display: none;
+    }
+
+    .journal-cards-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .journal-table-desktop {
+        display: block;
+      }
+
+      .journal-cards-mobile {
+        display: none;
+      }
+    }
+
+    .trade-card {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trade-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trade-card-pair {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    .trade-card-date {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    .trade-card-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .trade-card-metric {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 7px 9px;
+    }
+
+    .trade-card-metric .m-lbl {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .trade-card-metric .m-val {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .trade-card-extra {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .trade-card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+
+    .empty-state {
+      padding: 36px 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    /* =========================================================================
+       MODAL DIALOG ORAZ POWIADOMIENIE TOAST (BEZ alert() / confirm())
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(20, 20, 19, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 440px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--text-primary);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      padding: 12px 16px;
+      background-color: var(--text-primary);
+      color: var(--bg-card);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .modal-body {
+      padding: 16px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .toast-bar {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background-color: var(--text-primary);
+      color: var(--bg-card);
+      border: 1px solid var(--text-primary);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      z-index: 1100;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+    }
+
+    .toast-bar.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-bar.ok {
+      border-left-color: var(--profit);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+html {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding-bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  box-sizing: border-box;
+}
+
+body::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: calc(180px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+}
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- GÓRNA BELKA NAWIGACJI (BRAUN LAB 70) -->
+    <header class="top-bar">
+      <div class="brand-block">
+        <h1 class="brand-title"><span class="brand-dot" aria-hidden="true"></span>POS-SIZE // JOURNAL</h1>
+        <span class="brand-sub">Rozliczenie: wyłącznie USDT · Braun Lab 70</span>
+      </div>
+
+      <nav class="hw-nav-group" aria-label="Główna nawigacja zakładek">
+        <button type="button" id="navCalcLabel" class="nav-label-btn active" data-tab-target="calculator">Kalkulator</button>
+        <button type="button" id="mainTabSwitch" class="hw-toggle-switch" role="switch" aria-checked="false" aria-label="Przełącz między Kalkulatorem a Dziennikiem">
+          <span class="hw-knob"></span>
+        </button>
+        <button type="button" id="navJournalLabel" class="nav-label-btn" data-tab-target="journal">Dziennik</button>
+      </nav>
+
+      <div class="sys-status">
+        <div>MODUŁ: <strong id="sysActiveModule">KALKULATOR</strong></div>
+        <div>STATUS: OK · LOCAL STORAGE</div>
+      </div>
+    </header>
+
+    <!-- =======================================================================
+         ZAKŁADKA 1: KALKULATOR WIELKOŚCI POZYCJI (100% PROCENTOWY, USDT)
+         ======================================================================= -->
+    <main id="tabCalculator" class="tab-panel active" aria-label="Kalkulator wielkości pozycji">
+      <div class="calc-grid">
+        <!-- LEWA KOLUMNA: PARAMETRY WEJŚCIOWE -->
+        <section class="lab-card" aria-label="Parametry pozycji">
+          <div class="lab-card-header">
+            <h2 class="lab-card-title">01 // Parametry wejściowe</h2>
+            <span class="lab-card-sub">Tryb procentowy · USDT</span>
+          </div>
+
+          <!-- Kapitał i Ryzyko -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Kapitał i zarządzanie ryzykiem</span>
+              <div class="seg-switch" role="group" aria-label="Tryb ryzyka">
+                <button type="button" id="riskModePctBtn" class="active-accent">% Kapitału</button>
+                <button type="button" id="riskModeUsdtBtn">Kwota USDT</button>
+              </div>
+            </div>
+
+            <div class="form-row cols-2">
+              <div class="field">
+                <label class="field-label" for="calcCapital">Kapitał konta</label>
+                <div class="input-box">
+                  <input id="calcCapital" type="text" inputmode="decimal" placeholder="10000" autocomplete="off">
+                  <span class="input-unit">USDT</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="calcRiskInput" id="calcRiskLabel">Ryzyko (%)</label>
+                  <span class="field-hint" id="calcRiskEquiv">= 100.00 USDT</span>
+                </div>
+                <div class="input-box">
+                  <input id="calcRiskInput" type="text" inputmode="decimal" placeholder="1.00" autocomplete="off">
+                  <span class="input-unit" id="calcRiskUnit">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dźwignia 1x-100x (suwak) + dowolna wartość ręczna >= 1 -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Dźwignia (Leverage)</span>
+              <span id="leverageManualBadge" class="tech-badge accent" style="display:none;">RĘCZNE &gt;100x</span>
+            </div>
+
+            <div class="leverage-block">
+              <div class="leverage-top">
+                <span class="field-hint">Suwak: 1x–100x · Powyżej 100x wpisz ręcznie</span>
+                <div class="leverage-input-wrap">
+                  <div class="input-box">
+                    <input id="calcLeverageInput" type="text" inputmode="decimal" placeholder="10" autocomplete="off" aria-label="Wartość dźwigni">
+                    <span class="input-unit">x</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="slider-track-wrap">
+                <input id="calcLeverageSlider" class="lab-slider" type="range" min="1" max="100" step="1" value="10" aria-label="Suwak dźwigni od 1x do 100x">
+                <div class="slider-ticks" aria-hidden="true">
+                  <span>1x</span>
+                  <span>20x</span>
+                  <span>40x</span>
+                  <span>60x</span>
+                  <span>80x</span>
+                  <span>100x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stop Loss (%) -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Stop Loss (wyłącznie dystans procentowy)</span>
+            </div>
+            <div class="field">
+              <div class="field-label-row">
+                <label class="field-label" for="calcSlPct">Dystans Stop Loss</label>
+                <span class="field-hint">Bez wpisywania poziomów cenowych</span>
+              </div>
+              <div class="input-box">
+                <input id="calcSlPct" type="text" inputmode="decimal" placeholder="0.50" autocomplete="off">
+                <span class="input-unit">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multi-TP -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Take Profit (Multi-TP)</span>
+              <div class="tp-alloc-status">
+                <span id="tpSumBadge" class="tech-badge ok">Suma udziałów: 100%</span>
+                <button type="button" id="tpNormalizeBtn" class="btn btn-sm" style="display:none;">Wyrównaj do 100%</button>
+              </div>
+            </div>
+
+            <div id="tpList" class="tp-list"></div>
+
+            <div class="tp-footer">
+              <button type="button" id="addTpBtn" class="btn btn-sm">+ Dodaj poziom TP</button>
+              <span class="field-hint">Każdy poziom zamyka wskazany % pozycji</span>
+            </div>
+          </div>
+
+          <!-- Prowizje Maker / Taker -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Prowizje giełdowe (Maker / Taker)</span>
+              <span class="field-hint">Wliczane w realne SL i TP</span>
+            </div>
+
+            <div class="form-row cols-2">
+              <div class="field">
+                <label class="field-label" for="calcMakerFee">Stawka Maker</label>
+                <div class="input-box">
+                  <input id="calcMakerFee" type="text" inputmode="decimal" placeholder="0.02" autocomplete="off">
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="calcTakerFee">Stawka Taker</label>
+                <div class="input-box">
+                  <input id="calcTakerFee" type="text" inputmode="decimal" placeholder="0.05" autocomplete="off">
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="fee-switch-list">
+              <!-- Wejście -->
+              <div class="fee-switch-row">
+                <div>
+                  <span class="fee-switch-name">Wejście (Entry)</span>
+                  <span class="fee-switch-rate" id="entryFeeAppliedText">Maker · 0.02%</span>
+                </div>
+                <div class="hw-mini-toggle">
+                  <span class="hw-mini-label active" id="entryMakerLbl" data-fee-set="entry:maker">Maker</span>
+                  <button type="button" id="entryFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="false" aria-label="Typ prowizji dla wejścia">
+                    <span class="knob"></span>
+                  </button>
+                  <span class="hw-mini-label" id="entryTakerLbl" data-fee-set="entry:taker">Taker</span>
+                </div>
+              </div>
+
+              <!-- Wyjście SL -->
+              <div class="fee-switch-row">
+                <div>
+                  <span class="fee-switch-name">Wyjście Stop Loss (SL)</span>
+                  <span class="fee-switch-rate" id="slFeeAppliedText">Taker · 0.05%</span>
+                </div>
+                <div class="hw-mini-toggle">
+                  <span class="hw-mini-label" id="slMakerLbl" data-fee-set="sl:maker">Maker</span>
+                  <button type="button" id="slFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="true" aria-label="Typ prowizji dla wyjścia SL">
+                    <span class="knob"></span>
+                  </button>
+                  <span class="hw-mini-label active" id="slTakerLbl" data-fee-set="sl:taker">Taker</span>
+                </div>
+              </div>
+
+              <!-- Wyjście TP -->
+              <div class="fee-switch-row">
+                <div>
+                  <span class="fee-switch-name">Wyjście Take Profit (TP)</span>
+                  <span class="fee-switch-rate" id="tpFeeAppliedText">Maker · 0.02%</span>
+                </div>
+                <div class="hw-mini-toggle">
+                  <span class="hw-mini-label active" id="tpMakerLbl" data-fee-set="tp:maker">Maker</span>
+                  <button type="button" id="tpFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="false" aria-label="Typ prowizji dla wyjścia TP">
+                    <span class="knob"></span>
+                  </button>
+                  <span class="hw-mini-label" id="tpTakerLbl" data-fee-set="tp:taker">Taker</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRAWA KOLUMNA: ODCZYTY TELEMETRYCZNE NA ŻYWO -->
+        <section class="lab-card" aria-label="Odczyty wynikowe kalkulatora">
+          <div class="lab-card-header">
+            <h2 class="lab-card-title">02 // Odczyt telemetrii</h2>
+            <span class="lab-card-sub" id="calcFormulaStatus">LIVE · NET RISK</span>
+          </div>
+
+          <!-- Główny wynik: Wielkość pozycji + Net R:R -->
+          <div class="readout-hero-grid">
+            <div class="readout-hero-cell">
+              <span class="readout-lbl">Wielkość pozycji (Notional)</span>
+              <div class="readout-big" id="outPositionSize">0.00 USDT</div>
+              <span class="readout-sub" id="outPositionSub">Skalowana z uwzględnieniem prowizji wejścia i SL</span>
+            </div>
+            <div class="readout-hero-cell">
+              <span class="readout-lbl">Realne R:R (Netto)</span>
+              <div class="readout-big val-accent" id="outNetRR">—</div>
+              <span class="readout-sub" id="outNetRRSub">Zysk netto TP / realna strata SL</span>
+            </div>
+          </div>
+
+          <!-- Wymagany Margin + Koszt prowizji (SL vs TP) -->
+          <div class="readout-2col">
+            <div class="readout-cell">
+              <div class="readout-lbl">
+                <span>Wymagany Margin</span>
+                <span id="outMarginWarn" class="tech-badge warn" style="display:none;">Margin &gt; Kapitał</span>
+              </div>
+              <div class="readout-mid" id="outMargin">0.00 USDT</div>
+              <span class="readout-sub" id="outMarginSub">Dźwignia: 10x · 0.00% kapitału</span>
+            </div>
+
+            <div class="readout-cell">
+              <span class="readout-lbl">Łączny koszt prowizji</span>
+              <div class="breakdown-list" style="margin-top:2px; padding-top:4px; border-top:none;">
+                <div class="breakdown-item">
+                  <span class="k">Scenariusz SL (Wejście + SL)</span>
+                  <span class="v val-loss" id="outFeesSl">-0.00 USDT</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="k">Scenariusz TP (Wejście + TP)</span>
+                  <span class="v" id="outFeesTp">-0.00 USDT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Realna strata SL + Realny zysk netto TP -->
+          <div class="readout-2col">
+            <div class="readout-cell">
+              <span class="readout-lbl">Realna kwota straty na SL</span>
+              <div class="readout-mid val-loss" id="outRealSlLoss">-0.00 USDT</div>
+              <div class="breakdown-list">
+                <div class="breakdown-item">
+                  <span class="k">Strata z ruchu ceny</span>
+                  <span class="v" id="outSlPriceLoss">-0.00 USDT</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="k">Prowizja wejścia</span>
+                  <span class="v" id="outSlEntryFee">-0.00 USDT</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="k">Prowizja wyjścia SL</span>
+                  <span class="v" id="outSlExitFee">-0.00 USDT</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="readout-cell">
+              <span class="readout-lbl">Realny zysk netto na TP</span>
+              <div class="readout-mid val-profit" id="outTotalTpNet">+0.00 USDT</div>
+              <div class="breakdown-list">
+                <div class="breakdown-item">
+                  <span class="k">Zysk brutto (ruch ceny)</span>
+                  <span class="v" id="outTotalTpGross">+0.00 USDT</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="k">Prowizje (Wejście + TP)</span>
+                  <span class="v" id="outTotalTpFees">-0.00 USDT</span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="k">Zwrot na kapitale (ROE konta)</span>
+                  <span class="v" id="outTotalTpRoe">+0.00%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Szczegółowe rozbicie Multi-TP -->
+          <div class="lab-section">
+            <div class="section-kicker">
+              <span>Rozbicie poziomów Take Profit (Netto)</span>
+              <span class="field-hint" id="outTpSummaryNote">1 poziom · 100% pozycji</span>
+            </div>
+
+            <div class="mini-table-wrap">
+              <table class="tech-table" aria-label="Tabela rozbicia poziomów Take Profit">
+                <thead>
+                  <tr>
+                    <th>Poziom</th>
+                    <th class="num">TP %</th>
+                    <th class="num">Udział</th>
+                    <th class="num">Zamykane</th>
+                    <th class="num">Brutto</th>
+                    <th class="num">Prowizje</th>
+                    <th class="num">Netto USDT</th>
+                    <th class="num">R:R</th>
+                  </tr>
+                </thead>
+                <tbody id="tpBreakdownBody"></tbody>
+                <tfoot id="tpBreakdownFoot"></tfoot>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         ZAKŁADKA 2: DZIENNIK TRANSAKCJI (TRADING JOURNAL)
+         ======================================================================= -->
+    <main id="tabJournal" class="tab-panel" aria-label="Dziennik transakcji">
+      <div class="journal-stack">
+        <!-- Górny pasek dziennika: kapitał początkowy, saldo bieżące, eksport/import, dodaj -->
+        <section class="journal-topbar" aria-label="Zarządzanie kapitałem i danymi dziennika">
+          <div class="start-balance-group">
+            <div class="field start-balance-field">
+              <label class="field-label" for="journalStartBalance">Kapitał początkowy (USDT)</label>
+              <div class="input-box">
+                <input id="journalStartBalance" type="text" inputmode="decimal" placeholder="10000" autocomplete="off">
+                <span class="input-unit">USDT</span>
+              </div>
+            </div>
+
+            <div class="current-balance-pill">
+              <span class="lbl">Bieżące saldo konta</span>
+              <span class="val" id="headerCurrentBalance">10 000.00 USDT</span>
+            </div>
+          </div>
+
+          <div class="journal-actions-bar">
+            <button type="button" id="exportJsonBtn" class="btn btn-sm">Eksport JSON</button>
+            <button type="button" id="importJsonBtn" class="btn btn-sm">Import JSON</button>
+            <input type="file" id="importJsonFile" accept=".json,application/json" class="sr-only">
+            <button type="button" id="exportCsvBtn" class="btn btn-sm">Eksport CSV</button>
+            <button type="button" id="toggleAddFormBtn" class="btn btn-primary btn-sm">+ Dodaj transakcję</button>
+          </div>
+        </section>
+
+        <!-- Rozwijany formularz dodawania / edycji transakcji -->
+        <section id="tradeFormWrap" class="lab-card trade-form-wrap" aria-label="Formularz wpisu transakcji">
+          <div class="lab-card-header">
+            <h2 class="lab-card-title" id="tradeFormTitle">Nowa transakcja</h2>
+            <button type="button" id="closeTradeFormBtn" class="btn btn-sm">Zamknij</button>
+          </div>
+
+          <form id="tradeForm" class="lab-section" novalidate>
+            <input type="hidden" id="tradeEditId" value="">
+
+            <div class="form-row cols-3">
+              <div class="field">
+                <label class="field-label" for="tradePair">Para / Instrument *</label>
+                <div class="input-box">
+                  <input id="tradePair" type="text" placeholder="np. BTC/USDT" autocomplete="off" required>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="field-label">Kierunek *</span>
+                <div class="seg-switch full-width tall" role="group" aria-label="Kierunek transakcji">
+                  <button type="button" id="dirLongBtn" class="active-profit">LONG</button>
+                  <button type="button" id="dirShortBtn">SHORT</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="tradeDate">Data i godzina *</label>
+                <div class="input-box">
+                  <input id="tradeDate" type="datetime-local" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row cols-3" style="margin-top:12px;">
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradePnlUsdt">P&amp;L (USDT) *</label>
+                  <span class="field-hint" id="tradePnlBaseHint">Baza konta: 10 000.00 USDT</span>
+                </div>
+                <div class="input-box">
+                  <button type="button" class="sign-toggle-btn" data-toggle-sign="tradePnlUsdt" title="Zmień znak +/−">±</button>
+                  <input id="tradePnlUsdt" type="text" inputmode="decimal" placeholder="np. 145.50 lub -50" autocomplete="off" required>
+                  <span class="input-unit">USDT</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradePnlPct">P&amp;L (%) *</label>
+                  <span class="field-hint" id="tradePnlPctHint">Auto względem konta</span>
+                </div>
+                <div class="input-box">
+                  <button type="button" class="sign-toggle-btn" data-toggle-sign="tradePnlPct" title="Zmień znak +/−">±</button>
+                  <input id="tradePnlPct" type="text" inputmode="decimal" placeholder="np. 1.45 lub -0.50" autocomplete="off" required>
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradeBalanceAfter">Konto po transakcji</label>
+                  <span id="tradeBalanceModeBadge" class="tech-badge dark">AUTO</span>
+                </div>
+                <div class="balance-inline-row">
+                  <div class="input-box" id="tradeBalanceBox">
+                    <input id="tradeBalanceAfter" type="text" inputmode="decimal" placeholder="10000.00" autocomplete="off">
+                    <span class="input-unit">USDT</span>
+                  </div>
+                  <button type="button" id="resetBalanceAutoBtn" class="btn btn-sm" title="Przywróć automatyczne wyliczanie salda" disabled>↺ AUTO</button>
+                </div>
+                <div class="balance-delta-note" id="tradeBalanceDeltaNote">Poprzednie saldo: 10 000.00 USDT</div>
+              </div>
+            </div>
+
+            <div class="form-row cols-3" style="margin-top:12px;">
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradeR">R-multiple (R)</label>
+                  <span class="field-hint">opcjonalne</span>
+                </div>
+                <div class="input-box">
+                  <button type="button" class="sign-toggle-btn" data-toggle-sign="tradeR" title="Zmień znak +/−">±</button>
+                  <input id="tradeR" type="text" inputmode="decimal" placeholder="np. 2.10 lub -1.00" autocomplete="off">
+                  <span class="input-unit">R</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradeMae">MAE (%)</label>
+                  <span class="field-hint">opcjonalne</span>
+                </div>
+                <div class="input-box">
+                  <input id="tradeMae" type="text" inputmode="decimal" placeholder="np. 0.35" autocomplete="off">
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="field-label-row">
+                  <label class="field-label" for="tradeMfe">MFE (%)</label>
+                  <span class="field-hint">opcjonalne</span>
+                </div>
+                <div class="input-box">
+                  <input id="tradeMfe" type="text" inputmode="decimal" placeholder="np. 1.80" autocomplete="off">
+                  <span class="input-unit">%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+              <div class="field-label-row">
+                <label class="field-label" for="tradeNote">Notatka</label>
+                <span class="field-hint">opcjonalne — setup, kontekst, wnioski</span>
+              </div>
+              <textarea id="tradeNote" class="lab-textarea" placeholder="Krótka obserwacja z wykonania transakcji..."></textarea>
+            </div>
+
+            <div class="form-footer-actions">
+              <button type="button" id="cancelTradeBtn" class="btn">Anuluj</button>
+              <button type="submit" id="saveTradeBtn" class="btn btn-primary">Zapisz transakcję</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Pasek metryk KPI (8 wskaźników na przefiltrowanych transakcjach) -->
+        <section class="kpi-grid" aria-label="Kluczowe metryki efektywności">
+          <div class="kpi-card">
+            <span class="kpi-label">Łączny P&amp;L (USDT)</span>
+            <span class="kpi-value" id="kpiTotalPnl">0.00 USDT</span>
+            <span class="kpi-meta" id="kpiCurrentBalanceMeta">Saldo: 10 000.00 USDT (0/0)</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Win Rate</span>
+            <span class="kpi-value" id="kpiWinRate">—</span>
+            <span class="kpi-meta" id="kpiWlb">W: 0 / L: 0 / BE: 0</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Profit Factor</span>
+            <span class="kpi-value" id="kpiProfitFactor">—</span>
+            <span class="kpi-meta" id="kpiGrossRatio">+0 / -0 USDT</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Expectancy / EV</span>
+            <span class="kpi-value" id="kpiExpectancy">—</span>
+            <span class="kpi-meta">Śr. wynik / transakcję</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Średnie R</span>
+            <span class="kpi-value" id="kpiAvgR">—</span>
+            <span class="kpi-meta" id="kpiAvgRMeta">Próba: n=0</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Max Drawdown</span>
+            <span class="kpi-value val-loss" id="kpiMaxDdUsdt">0.00 USDT</span>
+            <span class="kpi-meta" id="kpiMaxDdPct">Szczyt→Dołek: 0.00%</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Kryterium Kelly’ego</span>
+            <span class="kpi-value" id="kpiKelly">—</span>
+            <span class="kpi-meta" id="kpiKellyMeta">Wymaga W &gt; 0 i L &gt; 0</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Średnie MAE / MFE</span>
+            <span class="kpi-value" id="kpiMaeMfe">—</span>
+            <span class="kpi-meta" id="kpiMaeMfeMeta">MAE: n=0 · MFE: n=0</span>
+          </div>
+        </section>
+
+        <!-- Interaktywny wykres krzywej kapitału SVG -->
+        <section class="lab-card" aria-label="Wykres krzywej kapitału">
+          <div class="lab-card-header">
+            <div>
+              <h2 class="lab-card-title">Krzywa kapitału</h2>
+              <div class="chart-legend" style="margin-top:4px;">
+                <span><span class="legend-dot" style="background:#1B7A50;"></span>Wzrost</span>
+                <span><span class="legend-dot" style="background:#C93636;"></span>Spadek</span>
+                <span><span class="legend-dot" style="background:transparent; border:2px solid #E6482E;"></span>Korekta salda</span>
+              </div>
+            </div>
+
+            <div class="seg-switch" role="group" aria-label="Tryb wykresu krzywej kapitału">
+              <button type="button" id="chartModePnlBtn" class="active">Skumulowany P&amp;L (USDT)</button>
+              <button type="button" id="chartModeBalBtn">Saldo konta (USDT)</button>
+            </div>
+          </div>
+
+          <div class="chart-body">
+            <div id="equityChartWrap" class="chart-canvas-wrap"></div>
+            <div id="chartTelemetry" class="chart-telemetry">
+              Najedź lub kliknij punkt na wykresie, aby odczytać szczegóły transakcji.
+            </div>
+          </div>
+        </section>
+
+        <!-- Filtry i rejestr transakcji -->
+        <section class="lab-card" aria-label="Lista transakcji i filtry">
+          <div class="lab-card-header">
+            <h2 class="lab-card-title">Rejestr transakcji</h2>
+            <span class="lab-card-sub" id="journalCountLabel">Wyświetlane: 0 / 0</span>
+          </div>
+
+          <!-- Pasek filtrów -->
+          <div class="filters-bar">
+            <div class="field">
+              <label class="field-label" for="filterSearch">Szukaj (para / notatka)</label>
+              <div class="input-box">
+                <input id="filterSearch" type="text" placeholder="np. BTC, breakout..." autocomplete="off">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="filterDir">Kierunek</label>
+              <div class="input-box">
+                <select id="filterDir">
+                  <option value="ALL">Wszystkie</option>
+                  <option value="LONG">LONG</option>
+                  <option value="SHORT">SHORT</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="filterOutcome">Wynik</label>
+              <div class="input-box">
+                <select id="filterOutcome">
+                  <option value="ALL">Wszystkie</option>
+                  <option value="WIN">Zysk (&gt; 0)</option>
+                  <option value="LOSS">Strata (&lt; 0)</option>
+                  <option value="BE">BE (= 0)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="filterFrom">Data od</label>
+              <div class="input-box">
+                <input id="filterFrom" type="date">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="filterTo">Data do</label>
+              <div class="input-box">
+                <input id="filterTo" type="date">
+              </div>
+            </div>
+
+            <button type="button" id="resetFiltersBtn" class="btn">Reset</button>
+          </div>
+
+          <!-- Stan pusty -->
+          <div id="journalEmptyState" class="empty-state" style="display:none;">
+            Brak transakcji spełniających kryteria. Kliknij „+ Dodaj transakcję” powyżej, aby dodać pierwszy wpis.
+          </div>
+
+          <!-- Tabela Desktop -->
+          <div id="journalTableWrap" class="journal-table-desktop mini-table-wrap">
+            <table class="tech-table" aria-label="Tabela zarejestrowanych transakcji">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Para</th>
+                  <th>Kierunek</th>
+                  <th class="num">P&amp;L (USDT)</th>
+                  <th class="num">P&amp;L (%)</th>
+                  <th class="num">Konto po (USDT)</th>
+                  <th class="num">R</th>
+                  <th class="num">MAE / MFE</th>
+                  <th>Notatka</th>
+                  <th class="num">Akcje</th>
+                </tr>
+              </thead>
+              <tbody id="journalTableBody"></tbody>
+            </table>
+          </div>
+
+          <!-- Karty Mobile (<768px) -->
+          <div id="journalCardsMobile" class="journal-cards-mobile"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL POTWIERDZENIA / IMPORTU -->
+  <div id="appModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <div class="modal-head" id="modalTitle">Potwierdzenie</div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <!-- POWIADOMIENIE TOAST -->
+  <div id="appToast" class="toast-bar" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* =======================================================================
+         STAŁE STORAGE I DOMYŚLNA KONFIGURACJA
+         ======================================================================= */
+      const STORAGE_CALC_KEY = 'braun_lab70_calc_v1';
+      const STORAGE_JOURNAL_KEY = 'braun_lab70_journal_trades_v1';
+      const STORAGE_JOURNAL_META_KEY = 'braun_lab70_journal_meta_v1';
+
+      const DEFAULT_CALC_STATE = {
+        capital: '10000',
+        riskMode: 'pct', // 'pct' | 'usdt'
+        riskValue: '1.00',
+        leverage: '10',
+        slPct: '0.50',
+        tpLevels: [{ pct: '2.00', alloc: '100' }],
+        makerFee: '0.02',
+        takerFee: '0.05',
+        entryFeeType: 'maker', // 'maker' | 'taker'
+        slFeeType: 'taker',    // 'maker' | 'taker'
+        tpFeeType: 'maker'     // 'maker' | 'taker'
+      };
+
+      const DEFAULT_JOURNAL_META = {
+        startingBalance: '10000',
+        chartMode: 'pnl' // 'pnl' | 'balance'
+      };
+
+      /* =======================================================================
+         NARZĘDZIA POMOCNICZE (STORAGE, PARSOWANIE, FORMATOWANIE, BEZPIECZEŃSTWO)
+         ======================================================================= */
+      function cloneObj(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function loadStorage(key, fallback) {
+        try {
+          const raw = window.localStorage.getItem(key);
+          if (!raw) return cloneObj(fallback);
+          const parsed = JSON.parse(raw);
+          return parsed !== null && parsed !== undefined ? parsed : cloneObj(fallback);
+        } catch (err) {
+          return cloneObj(fallback);
+        }
+      }
+
+      function saveStorage(key, value) {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+          // Tryb prywatny lub ograniczenia iframe — działanie w pamięci nadal działa
+        }
+      }
+
+      function parseNum(raw) {
+        if (raw === null || raw === undefined) return NaN;
+        const cleaned = String(raw).trim().replace(/\s+/g, '').replace(',', '.');
+        if (cleaned === '' || cleaned === '-' || cleaned === '+' || cleaned === '.') return NaN;
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : NaN;
+      }
+
+      function fmtNum(val, decimals = 2) {
+        if (!Number.isFinite(val)) return '—';
+        const fixed = val.toFixed(decimals);
+        const parts = fixed.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return parts.join('.');
+      }
+
+      function fmtSigned(val, decimals = 2, suffix = '') {
+        if (!Number.isFinite(val)) return '—';
+        const sign = val > 0 ? '+' : '';
+        return `${sign}${fmtNum(val, decimals)}${suffix}`;
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function nowLocalDatetimeValue() {
+        const d = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
+      function formatDisplayDate(isoLike) {
+        if (!isoLike) return '—';
+        return String(isoLike).replace('T', ' ').slice(0, 16);
+      }
+
+      function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      /* Toast & Modal (zastępują całkowicie alert() oraz confirm()) */
+      let toastTimer = null;
+      const elToast = document.getElementById('appToast');
+
+      function showToast(msg, type = 'default') {
+        elToast.textContent = msg;
+        elToast.className = `toast-bar show${type === 'ok' ? ' ok' : ''}`;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          elToast.classList.remove('show');
+        }, 3200);
+      }
+
+      const elModal = document.getElementById('appModal');
+      const elModalTitle = document.getElementById('modalTitle');
+      const elModalBody = document.getElementById('modalBody');
+      const elModalActions = document.getElementById('modalActions');
+
+      function closeModal() {
+        elModal.classList.remove('open');
+      }
+
+      function openModal({ title, body, actions }) {
+        elModalTitle.textContent = title;
+        elModalBody.textContent = body;
+        elModalActions.innerHTML = '';
+        actions.forEach((act) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `btn btn-sm ${act.className || ''}`.trim();
+          btn.textContent = act.label;
+          btn.addEventListener('click', () => {
+            closeModal();
+            if (typeof act.onClick === 'function') act.onClick();
+          });
+          elModalActions.appendChild(btn);
+        });
+        elModal.classList.add('open');
+      }
+
+      elModal.addEventListener('click', (e) => {
+        if (e.target === elModal) closeModal();
+      });
+
+      /* =======================================================================
+         STAN APLIKACJI
+         ======================================================================= */
+      let calcState = Object.assign(cloneObj(DEFAULT_CALC_STATE), loadStorage(STORAGE_CALC_KEY, DEFAULT_CALC_STATE));
+      if (!Array.isArray(calcState.tpLevels) || calcState.tpLevels.length === 0) {
+        calcState.tpLevels = [{ pct: '2.00', alloc: '100' }];
+      }
+
+      let journalMeta = Object.assign(cloneObj(DEFAULT_JOURNAL_META), loadStorage(STORAGE_JOURNAL_META_KEY, DEFAULT_JOURNAL_META));
+
+      let trades = loadStorage(STORAGE_JOURNAL_KEY, []);
+      if (!Array.isArray(trades)) trades = [];
+      trades = trades.map((t, idx) => ({
+        id: String(t.id || `tr_${Date.now()}_${idx}`),
+        pair: String(t.pair || 'BTC/USDT').toUpperCase(),
+        direction: t.direction === 'SHORT' ? 'SHORT' : 'LONG',
+        date: String(t.date || nowLocalDatetimeValue()),
+        pnlUsdt: Number(t.pnlUsdt) || 0,
+        pnlPct: Number(t.pnlPct) || 0,
+        rMultiple:
+          t.rMultiple === null || t.rMultiple === undefined || t.rMultiple === ''
+            ? null
+            : (Number.isFinite(Number(t.rMultiple)) ? Number(t.rMultiple) : null),
+        manualBalanceAfter:
+          t.manualBalanceAfter === null || t.manualBalanceAfter === undefined || t.manualBalanceAfter === ''
+            ? null
+            : (Number.isFinite(Number(t.manualBalanceAfter)) ? Number(t.manualBalanceAfter) : null),
+        mae:
+          t.mae === null || t.mae === undefined || t.mae === ''
+            ? null
+            : (Number.isFinite(Number(t.mae)) ? Number(t.mae) : null),
+        mfe:
+          t.mfe === null || t.mfe === undefined || t.mfe === ''
+            ? null
+            : (Number.isFinite(Number(t.mfe)) ? Number(t.mfe) : null),
+        note: String(t.note || ''),
+        createdOrder: Number.isFinite(Number(t.createdOrder)) ? Number(t.createdOrder) : idx + 1
+      }));
+
+      let activeTab = 'calculator';
+      let formDirection = 'LONG';
+      let formManualBalanceActive = false;
+      let formLastPnlSource = null; // 'usdt' | 'pct' | null
+      let activeChartPoints = [];
+
+      /* =======================================================================
+         NAWIGACJA GŁÓWNA (FIZYCZNY PRZEŁĄCZNIK KALKULATOR / DZIENNIK)
+         ======================================================================= */
+      const tabCalculator = document.getElementById('tabCalculator');
+      const tabJournal = document.getElementById('tabJournal');
+      const mainTabSwitch = document.getElementById('mainTabSwitch');
+      const navCalcLabel = document.getElementById('navCalcLabel');
+      const navJournalLabel = document.getElementById('navJournalLabel');
+      const sysActiveModule = document.getElementById('sysActiveModule');
+
+      function setActiveTab(tab) {
+        activeTab = tab === 'journal' ? 'journal' : 'calculator';
+        const isJournal = activeTab === 'journal';
+
+        tabCalculator.classList.toggle('active', !isJournal);
+        tabJournal.classList.toggle('active', isJournal);
+        navCalcLabel.classList.toggle('active', !isJournal);
+        navJournalLabel.classList.toggle('active', isJournal);
+        mainTabSwitch.setAttribute('aria-checked', String(isJournal));
+        sysActiveModule.textContent = isJournal ? 'DZIENNIK' : 'KALKULATOR';
+
+        if (isJournal) {
+          renderJournal();
+        }
+      }
+
+      mainTabSwitch.addEventListener('click', () => {
+        setActiveTab(activeTab === 'calculator' ? 'journal' : 'calculator');
+      });
+
+      navCalcLabel.addEventListener('click', () => setActiveTab('calculator'));
+      navJournalLabel.addEventListener('click', () => setActiveTab('journal'));
+
+      /* =======================================================================
+         MODUŁ 1: KALKULATOR WIELKOŚCI POZYCJI (100% PROCENTOWY)
+         ======================================================================= */
+      const elCalcCapital = document.getElementById('calcCapital');
+      const elCalcRiskInput = document.getElementById('calcRiskInput');
+      const elCalcRiskLabel = document.getElementById('calcRiskLabel');
+      const elCalcRiskUnit = document.getElementById('calcRiskUnit');
+      const elCalcRiskEquiv = document.getElementById('calcRiskEquiv');
+      const elRiskModePctBtn = document.getElementById('riskModePctBtn');
+      const elRiskModeUsdtBtn = document.getElementById('riskModeUsdtBtn');
+
+      const elLeverageInput = document.getElementById('calcLeverageInput');
+      const elLeverageSlider = document.getElementById('calcLeverageSlider');
+      const elLeverageManualBadge = document.getElementById('leverageManualBadge');
+
+      const elCalcSlPct = document.getElementById('calcSlPct');
+      const elTpList = document.getElementById('tpList');
+      const elAddTpBtn = document.getElementById('addTpBtn');
+      const elTpSumBadge = document.getElementById('tpSumBadge');
+      const elTpNormalizeBtn = document.getElementById('tpNormalizeBtn');
+
+      const elMakerFee = document.getElementById('calcMakerFee');
+      const elTakerFee = document.getElementById('calcTakerFee');
+
+      const feeSwitches = {
+        entry: {
+          btn: document.getElementById('entryFeeSwitch'),
+          makerLbl: document.getElementById('entryMakerLbl'),
+          takerLbl: document.getElementById('entryTakerLbl'),
+          textEl: document.getElementById('entryFeeAppliedText'),
+          stateKey: 'entryFeeType'
+        },
+        sl: {
+          btn: document.getElementById('slFeeSwitch'),
+          makerLbl: document.getElementById('slMakerLbl'),
+          takerLbl: document.getElementById('slTakerLbl'),
+          textEl: document.getElementById('slFeeAppliedText'),
+          stateKey: 'slFeeType'
+        },
+        tp: {
+          btn: document.getElementById('tpFeeSwitch'),
+          makerLbl: document.getElementById('tpMakerLbl'),
+          takerLbl: document.getElementById('tpTakerLbl'),
+          textEl: document.getElementById('tpFeeAppliedText'),
+          stateKey: 'tpFeeType'
+        }
+      };
+
+      function syncCalcInputsFromState() {
+        elCalcCapital.value = calcState.capital;
+        elCalcRiskInput.value = calcState.riskValue;
+        elLeverageInput.value = calcState.leverage;
+        elCalcSlPct.value = calcState.slPct;
+        elMakerFee.value = calcState.makerFee;
+        elTakerFee.value = calcState.takerFee;
+
+        const isPct = calcState.riskMode === 'pct';
+        elRiskModePctBtn.classList.toggle('active-accent', isPct);
+        elRiskModeUsdtBtn.classList.toggle('active-accent', !isPct);
+        elCalcRiskLabel.textContent = isPct ? 'Ryzyko (%)' : 'Ryzyko (USDT)';
+        elCalcRiskUnit.textContent = isPct ? '%' : 'USDT';
+
+        syncLeverageSliderUI();
+        syncFeeSwitchesUI();
+        renderTpInputs();
+      }
+
+      function syncLeverageSliderUI() {
+        const lev = parseNum(calcState.leverage);
+        if (Number.isFinite(lev) && lev >= 1) {
+          elLeverageSlider.value = String(Math.min(100, Math.round(lev)));
+          elLeverageManualBadge.style.display = lev > 100 ? 'inline-flex' : 'none';
+        } else {
+          elLeverageSlider.value = '1';
+          elLeverageManualBadge.style.display = 'none';
+        }
+      }
+
+      function syncFeeSwitchesUI() {
+        const makerVal = parseNum(calcState.makerFee);
+        const takerVal = parseNum(calcState.takerFee);
+        const makerTxt = Number.isFinite(makerVal) ? `${fmtNum(makerVal, 3).replace(/0$/, '')}%` : '—';
+        const takerTxt = Number.isFinite(takerVal) ? `${fmtNum(takerVal, 3).replace(/0$/, '')}%` : '—';
+
+        Object.values(feeSwitches).forEach((sw) => {
+          const isTaker = calcState[sw.stateKey] === 'taker';
+          sw.btn.setAttribute('aria-checked', String(isTaker));
+          sw.makerLbl.classList.toggle('active', !isTaker);
+          sw.takerLbl.classList.toggle('active', isTaker);
+          sw.textEl.textContent = isTaker ? `Taker · ${takerTxt}` : `Maker · ${makerTxt}`;
+        });
+      }
+
+      function renderTpInputs() {
+        elTpList.innerHTML = '';
+        calcState.tpLevels.forEach((lvl, idx) => {
+          const row = document.createElement('div');
+          row.className = 'tp-row';
+
+          row.innerHTML = `
+            <span class="tp-index">TP${idx + 1}</span>
+            <div class="input-box">
+              <input type="text" inputmode="decimal" value="${escapeHtml(lvl.pct)}" placeholder="2.00" data-tp-field="pct" data-tp-idx="${idx}" aria-label="Dystans TP ${idx + 1} w procentach" autocomplete="off">
+              <span class="input-unit">% TP</span>
+            </div>
+            <div class="input-box">
+              <input type="text" inputmode="decimal" value="${escapeHtml(lvl.alloc)}" placeholder="100" data-tp-field="alloc" data-tp-idx="${idx}" aria-label="Udział TP ${idx + 1} w procentach pozycji" autocomplete="off">
+              <span class="input-unit">% poz.</span>
+            </div>
+            <button type="button" class="tp-remove-btn" data-tp-remove="${idx}" title="Usuń poziom TP" ${calcState.tpLevels.length <= 1 ? 'disabled' : ''}>×</button>
+          `;
+
+          elTpList.appendChild(row);
+        });
+      }
+
+      function persistAndRecalc() {
+        saveStorage(STORAGE_CALC_KEY, calcState);
+        recalculate();
+      }
+
+      /* Zdarzenia kontrolek kalkulatora */
+      elCalcCapital.addEventListener('input', () => {
+        calcState.capital = elCalcCapital.value;
+        persistAndRecalc();
+      });
+
+      elCalcRiskInput.addEventListener('input', () => {
+        calcState.riskValue = elCalcRiskInput.value;
+        persistAndRecalc();
+      });
+
+      function switchRiskMode(nextMode) {
+        if (calcState.riskMode === nextMode) return;
+        const cap = parseNum(calcState.capital);
+        const cur = parseNum(calcState.riskValue);
+
+        if (Number.isFinite(cap) && cap > 0 && Number.isFinite(cur) && cur >= 0) {
+          if (nextMode === 'usdt') {
+            calcState.riskValue = ((cap * cur) / 100).toFixed(2);
+          } else {
+            calcState.riskValue = ((cur / cap) * 100).toFixed(2);
+          }
+        }
+        calcState.riskMode = nextMode;
+        syncCalcInputsFromState();
+        persistAndRecalc();
+      }
+
+      elRiskModePctBtn.addEventListener('click', () => switchRiskMode('pct'));
+      elRiskModeUsdtBtn.addEventListener('click', () => switchRiskMode('usdt'));
+
+      elLeverageSlider.addEventListener('input', () => {
+        calcState.leverage = elLeverageSlider.value;
+        elLeverageInput.value = calcState.leverage;
+        syncLeverageSliderUI();
+        persistAndRecalc();
+      });
+
+      elLeverageInput.addEventListener('input', () => {
+        calcState.leverage = elLeverageInput.value;
+        syncLeverageSliderUI();
+        persistAndRecalc();
+      });
+
+      elCalcSlPct.addEventListener('input', () => {
+        calcState.slPct = elCalcSlPct.value;
+        persistAndRecalc();
+      });
+
+      elMakerFee.addEventListener('input', () => {
+        calcState.makerFee = elMakerFee.value;
+        syncFeeSwitchesUI();
+        persistAndRecalc();
+      });
+
+      elTakerFee.addEventListener('input', () => {
+        calcState.takerFee = elTakerFee.value;
+        syncFeeSwitchesUI();
+        persistAndRecalc();
+      });
+
+      Object.entries(feeSwitches).forEach(([key, sw]) => {
+        sw.btn.addEventListener('click', () => {
+          calcState[sw.stateKey] = calcState[sw.stateKey] === 'taker' ? 'maker' : 'taker';
+          syncFeeSwitchesUI();
+          persistAndRecalc();
+        });
+        sw.makerLbl.addEventListener('click', () => {
+          calcState[sw.stateKey] = 'maker';
+          syncFeeSwitchesUI();
+          persistAndRecalc();
+        });
+        sw.takerLbl.addEventListener('click', () => {
+          calcState[sw.stateKey] = 'taker';
+          syncFeeSwitchesUI();
+          persistAndRecalc();
+        });
+      });
+
+      /* Zdarzenia listy Multi-TP */
+      elTpList.addEventListener('input', (e) => {
+        const input = e.target.closest('input[data-tp-field]');
+        if (!input) return;
+        const idx = Number(input.dataset.tpIdx);
+        const field = input.dataset.tpField;
+        if (calcState.tpLevels[idx]) {
+          calcState.tpLevels[idx][field] = input.value;
+          persistAndRecalc();
+        }
+      });
+
+      elTpList.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-tp-remove]');
+        if (!btn || btn.disabled) return;
+        const idx = Number(btn.dataset.tpRemove);
+        if (calcState.tpLevels.length > 1) {
+          calcState.tpLevels.splice(idx, 1);
+          renderTpInputs();
+          persistAndRecalc();
+        }
+      });
+
+      elAddTpBtn.addEventListener('click', () => {
+        const last = calcState.tpLevels[calcState.tpLevels.length - 1];
+        const lastPct = parseNum(last?.pct);
+        const nextPct = Number.isFinite(lastPct) && lastPct > 0 ? (lastPct + 1).toFixed(2) : '3.00';
+
+        // Oblicz pozostały wolny udział lub podziel równo
+        let currentSum = 0;
+        calcState.tpLevels.forEach((l) => {
+          const a = parseNum(l.alloc);
+          if (Number.isFinite(a) && a > 0) currentSum += a;
+        });
+        const remaining = Math.max(0, Number((100 - currentSum).toFixed(2)));
+        calcState.tpLevels.push({ pct: nextPct, alloc: remaining > 0 ? String(remaining) : '0' });
+        renderTpInputs();
+        persistAndRecalc();
+      });
+
+      elTpNormalizeBtn.addEventListener('click', () => {
+        const count = calcState.tpLevels.length;
+        if (count === 0) return;
+
+        const allocs = calcState.tpLevels.map((l) => {
+          const a = parseNum(l.alloc);
+          return Number.isFinite(a) && a > 0 ? a : 0;
+        });
+        const sum = allocs.reduce((acc, v) => acc + v, 0);
+
+        if (sum <= 0) {
+          // Równy podział po równo na 100%
+          const base = Math.floor((100 / count) * 100) / 100;
+          let running = 0;
+          calcState.tpLevels.forEach((l, i) => {
+            if (i === count - 1) {
+              l.alloc = (100 - running).toFixed(2).replace(/\.00$/, '');
+            } else {
+              l.alloc = base.toFixed(2).replace(/\.00$/, '');
+              running += base;
+            }
+          });
+        } else {
+          // Proporcjonalne skalowanie do 100%
+          let running = 0;
+          calcState.tpLevels.forEach((l, i) => {
+            if (i === count - 1) {
+              l.alloc = Math.max(0, 100 - running).toFixed(2).replace(/\.00$/, '');
+            } else {
+              const scaled = Math.round(((allocs[i] / sum) * 100) * 100) / 100;
+              l.alloc = scaled.toFixed(2).replace(/\.00$/, '');
+              running += scaled;
+            }
+          });
+        }
+
+        renderTpInputs();
+        persistAndRecalc();
+        showToast('Wyrównano sumę udziałów TP do 100%.', 'ok');
+      });
+
+      /* Główny silnik obliczeń kalkulatora */
+      function recalculate() {
+        const capital = parseNum(calcState.capital);
+        const riskInputVal = parseNum(calcState.riskValue);
+        const leverage = parseNum(calcState.leverage);
+        const slPct = parseNum(calcState.slPct);
+        const makerFeePct = Math.max(0, Number.isFinite(parseNum(calcState.makerFee)) ? parseNum(calcState.makerFee) : 0);
+        const takerFeePct = Math.max(0, Number.isFinite(parseNum(calcState.takerFee)) ? parseNum(calcState.takerFee) : 0);
+
+        // Wyznacz kwotę ryzyka w USDT oraz ekwiwalent procentowy
+        let riskUsdt = NaN;
+        let riskPct = NaN;
+
+        if (calcState.riskMode === 'pct') {
+          riskPct = riskInputVal;
+          if (Number.isFinite(capital) && capital > 0 && Number.isFinite(riskPct) && riskPct >= 0) {
+            riskUsdt = (capital * riskPct) / 100;
+          }
+          elCalcRiskEquiv.textContent = Number.isFinite(riskUsdt) ? `= ${fmtNum(riskUsdt, 2)} USDT` : '= — USDT';
+        } else {
+          riskUsdt = riskInputVal;
+          if (Number.isFinite(capital) && capital > 0 && Number.isFinite(riskUsdt) && riskUsdt >= 0) {
+            riskPct = (riskUsdt / capital) * 100;
+          }
+          elCalcRiskEquiv.textContent = Number.isFinite(riskPct) ? `= ${fmtNum(riskPct, 2)}% kapitału` : '= — %';
+        }
+
+        // Walidacja sumy udziałów Multi-TP
+        let tpAllocSum = 0;
+        calcState.tpLevels.forEach((lvl) => {
+          const a = parseNum(lvl.alloc);
+          if (Number.isFinite(a) && a > 0) tpAllocSum += a;
+        });
+        const allocOk = Math.abs(tpAllocSum - 100) < 0.01;
+        elTpSumBadge.textContent = `Suma udziałów: ${fmtNum(tpAllocSum, 2).replace(/\.00$/, '')}%`;
+        elTpSumBadge.className = `tech-badge ${allocOk ? 'ok' : 'warn'}`;
+        elTpNormalizeBtn.style.display = allocOk ? 'none' : 'inline-flex';
+
+        const feeEntryRate = (calcState.entryFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+        const feeSlRate = (calcState.slFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+        const feeTpRate = (calcState.tpFeeType === 'maker' ? makerFeePct : takerFeePct) / 100;
+
+        const slRate = Number.isFinite(slPct) && slPct > 0 ? slPct / 100 : NaN;
+        const validBase =
+          Number.isFinite(riskUsdt) &&
+          riskUsdt > 0 &&
+          Number.isFinite(slRate) &&
+          slRate > 0 &&
+          Number.isFinite(leverage) &&
+          leverage >= 1;
+
+        const outPositionSize = document.getElementById('outPositionSize');
+        const outPositionSub = document.getElementById('outPositionSub');
+        const outNetRR = document.getElementById('outNetRR');
+        const outNetRRSub = document.getElementById('outNetRRSub');
+        const outMargin = document.getElementById('outMargin');
+        const outMarginSub = document.getElementById('outMarginSub');
+        const outMarginWarn = document.getElementById('outMarginWarn');
+        const outFeesSl = document.getElementById('outFeesSl');
+        const outFeesTp = document.getElementById('outFeesTp');
+        const outRealSlLoss = document.getElementById('outRealSlLoss');
+        const outSlPriceLoss = document.getElementById('outSlPriceLoss');
+        const outSlEntryFee = document.getElementById('outSlEntryFee');
+        const outSlExitFee = document.getElementById('outSlExitFee');
+        const outTotalTpNet = document.getElementById('outTotalTpNet');
+        const outTotalTpGross = document.getElementById('outTotalTpGross');
+        const outTotalTpFees = document.getElementById('outTotalTpFees');
+        const outTotalTpRoe = document.getElementById('outTotalTpRoe');
+        const outTpSummaryNote = document.getElementById('outTpSummaryNote');
+        const tpBreakdownBody = document.getElementById('tpBreakdownBody');
+        const tpBreakdownFoot = document.getElementById('tpBreakdownFoot');
+
+        if (!validBase) {
+          outPositionSize.textContent = '— USDT';
+          outPositionSub.textContent = 'Uzupełnij dodatni kapitał, ryzyko, dźwignię (≥1x) oraz SL (%)';
+          outNetRR.textContent = '—';
+          outNetRRSub.textContent = 'Zysk netto TP / realna strata SL';
+          outMargin.textContent = '— USDT';
+          outMarginSub.textContent = 'Dźwignia: —';
+          outMarginWarn.style.display = 'none';
+          outFeesSl.textContent = '—';
+          outFeesTp.textContent = '—';
+          outRealSlLoss.textContent = '—';
+          outSlPriceLoss.textContent = '—';
+          outSlEntryFee.textContent = '—';
+          outSlExitFee.textContent = '—';
+          outTotalTpNet.textContent = '—';
+          outTotalTpGross.textContent = '—';
+          outTotalTpFees.textContent = '—';
+          outTotalTpRoe.textContent = '—';
+          tpBreakdownBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-secondary);">Oczekiwanie na poprawne parametry pozycji...</td></tr>';
+          tpBreakdownFoot.innerHTML = '';
+          return;
+        }
+
+        // Model matematyczny: N = Risk_USDT / (SL% + fee_entry + fee_sl)
+        const totalSlCostRate = slRate + feeEntryRate + feeSlRate;
+        const notional = riskUsdt / totalSlCostRate;
+        const margin = notional / leverage;
+
+        // Rozbicie realnej straty na SL
+        const slPriceLoss = notional * slRate;
+        const slEntryFee = notional * feeEntryRate;
+        const slExitFee = notional * feeSlRate;
+        const slTotalFees = slEntryFee + slExitFee;
+        const realSlLoss = slPriceLoss + slTotalFees; // Równe dokładnie riskUsdt
+
+        // Rozbicie poziomów Take Profit (Multi-TP)
+        let totalTpNotional = 0;
+        let totalTpGross = 0;
+        let totalTpFees = 0;
+        let totalTpNet = 0;
+
+        const rowsHtml = calcState.tpLevels.map((lvl, idx) => {
+          const tpPct = parseNum(lvl.pct);
+          const allocPct = parseNum(lvl.alloc);
+          const safeTpPct = Number.isFinite(tpPct) && tpPct >= 0 ? tpPct : 0;
+          const safeAllocPct = Number.isFinite(allocPct) && allocPct >= 0 ? allocPct : 0;
+
+          const share = safeAllocPct / 100;
+          const partNotional = notional * share;
+          const gross = partNotional * (safeTpPct / 100);
+          const fees = partNotional * (feeEntryRate + feeTpRate);
+          const net = gross - fees;
+          const levelRR = realSlLoss > 0 ? net / realSlLoss : 0;
+
+          totalTpNotional += partNotional;
+          totalTpGross += gross;
+          totalTpFees += fees;
+          totalTpNet += net;
+
+          const netCls = net > 0 ? 'val-profit' : net < 0 ? 'val-loss' : '';
+
+          return `
+            <tr>
+              <td class="mono"><strong>TP${idx + 1}</strong></td>
+              <td class="num">${fmtNum(safeTpPct, 2)}%</td>
+              <td class="num">${fmtNum(safeAllocPct, 1).replace(/\.0$/, '')}%</td>
+              <td class="num">${fmtNum(partNotional, 2)}</td>
+              <td class="num">+${fmtNum(gross, 2)}</td>
+              <td class="num val-muted">-${fmtNum(fees, 2)}</td>
+              <td class="num ${netCls}"><strong>${fmtSigned(net, 2)}</strong></td>
+              <td class="num ${netCls}">${fmtNum(levelRR, 2)}R</td>
+            </tr>
+          `;
+        }).join('');
+
+        const netRR = realSlLoss > 0 ? totalTpNet / realSlLoss : NaN;
+        const marginPctOfCap = Number.isFinite(capital) && capital > 0 ? (margin / capital) * 100 : NaN;
+        const marginExceedsCapital = Number.isFinite(capital) && capital > 0 && margin > capital + 0.0001;
+        const tpRoePct = Number.isFinite(capital) && capital > 0 ? (totalTpNet / capital) * 100 : NaN;
+
+        // Aktualizacja DOM wyników
+        outPositionSize.textContent = `${fmtNum(notional, 2)} USDT`;
+        outPositionSub.textContent = `Efektywny koszt SL (ruch + prowizje): ${fmtNum(totalSlCostRate * 100, 3)}%`;
+
+        outNetRR.textContent = Number.isFinite(netRR) ? `1 : ${fmtNum(netRR, 2)}` : '—';
+        outNetRR.className = `readout-big ${netRR >= 1 ? 'val-accent' : 'val-loss'}`;
+        outNetRRSub.textContent = Number.isFinite(netRR)
+          ? `Oczekiwany zwrot netto: ${fmtSigned(netRR, 2, 'R')}`
+          : 'Zysk netto TP / realna strata SL';
+
+        outMargin.textContent = `${fmtNum(margin, 2)} USDT`;
+        outMargin.className = `readout-mid ${marginExceedsCapital ? 'val-loss' : ''}`;
+        outMarginWarn.style.display = marginExceedsCapital ? 'inline-flex' : 'none';
+        outMarginSub.textContent = `Dźwignia: ${fmtNum(leverage, leverage % 1 === 0 ? 0 : 2)}x${Number.isFinite(marginPctOfCap) ? ` · ${fmtNum(marginPctOfCap, 1)}% kapitału` : ''}`;
+
+        outFeesSl.textContent = `-${fmtNum(slTotalFees, 2)} USDT`;
+        outFeesTp.textContent = `-${fmtNum(totalTpFees, 2)} USDT`;
+
+        outRealSlLoss.textContent = `-${fmtNum(realSlLoss, 2)} USDT`;
+        outSlPriceLoss.textContent = `-${fmtNum(slPriceLoss, 2)} USDT`;
+        outSlEntryFee.textContent = `-${fmtNum(slEntryFee, 2)} USDT`;
+        outSlExitFee.textContent = `-${fmtNum(slExitFee, 2)} USDT`;
+
+        outTotalTpNet.textContent = `${fmtSigned(totalTpNet, 2, ' USDT')}`;
+        outTotalTpNet.className = `readout-mid ${totalTpNet > 0 ? 'val-profit' : totalTpNet < 0 ? 'val-loss' : ''}`;
+        outTotalTpGross.textContent = `+${fmtNum(totalTpGross, 2)} USDT`;
+        outTotalTpFees.textContent = `-${fmtNum(totalTpFees, 2)} USDT`;
+        outTotalTpRoe.textContent = Number.isFinite(tpRoePct) ? fmtSigned(tpRoePct, 2, '%') : '—';
+        outTotalTpRoe.className = `v ${tpRoePct > 0 ? 'val-profit' : tpRoePct < 0 ? 'val-loss' : ''}`;
+
+        outTpSummaryNote.textContent = `${calcState.tpLevels.length} ${calcState.tpLevels.length === 1 ? 'poziom' : 'poziomy'} · suma udziałów ${fmtNum(tpAllocSum, 1).replace(/\.0$/, '')}%`;
+
+        tpBreakdownBody.innerHTML = rowsHtml;
+        const footNetCls = totalTpNet > 0 ? 'val-profit' : totalTpNet < 0 ? 'val-loss' : '';
+        tpBreakdownFoot.innerHTML = `
+          <tr>
+            <td>SUMA</td>
+            <td class="num">—</td>
+            <td class="num">${fmtNum(tpAllocSum, 1).replace(/\.0$/, '')}%</td>
+            <td class="num">${fmtNum(totalTpNotional, 2)}</td>
+            <td class="num">+${fmtNum(totalTpGross, 2)}</td>
+            <td class="num">-${fmtNum(totalTpFees, 2)}</td>
+            <td class="num ${footNetCls}">${fmtSigned(totalTpNet, 2)}</td>
+            <td class="num ${footNetCls}">${Number.isFinite(netRR) ? `${fmtNum(netRR, 2)}R` : '—'}</td>
+          </tr>
+        `;
+      }
+
+      /* =======================================================================
+         MODUŁ 2: DZIENNIK TRANSAKCJI (TRADING JOURNAL)
+         ======================================================================= */
+      const elJournalStartBalance = document.getElementById('journalStartBalance');
+      const elHeaderCurrentBalance = document.getElementById('headerCurrentBalance');
+      const elToggleAddFormBtn = document.getElementById('toggleAddFormBtn');
+      const elTradeFormWrap = document.getElementById('tradeFormWrap');
+      const elTradeFormTitle = document.getElementById('tradeFormTitle');
+      const elCloseTradeFormBtn = document.getElementById('closeTradeFormBtn');
+      const elCancelTradeBtn = document.getElementById('cancelTradeBtn');
+      const elSaveTradeBtn = document.getElementById('saveTradeBtn');
+      const elTradeForm = document.getElementById('tradeForm');
+
+      const elTradeEditId = document.getElementById('tradeEditId');
+      const elTradePair = document.getElementById('tradePair');
+      const elDirLongBtn = document.getElementById('dirLongBtn');
+      const elDirShortBtn = document.getElementById('dirShortBtn');
+      const elTradeDate = document.getElementById('tradeDate');
+      const elTradePnlUsdt = document.getElementById('tradePnlUsdt');
+      const elTradePnlPct = document.getElementById('tradePnlPct');
+      const elTradePnlBaseHint = document.getElementById('tradePnlBaseHint');
+      const elTradePnlPctHint = document.getElementById('tradePnlPctHint');
+      const elTradeBalanceAfter = document.getElementById('tradeBalanceAfter');
+      const elTradeBalanceBox = document.getElementById('tradeBalanceBox');
+      const elTradeBalanceModeBadge = document.getElementById('tradeBalanceModeBadge');
+      const elResetBalanceAutoBtn = document.getElementById('resetBalanceAutoBtn');
+      const elTradeBalanceDeltaNote = document.getElementById('tradeBalanceDeltaNote');
+      const elTradeR = document.getElementById('tradeR');
+      const elTradeMae = document.getElementById('tradeMae');
+      const elTradeMfe = document.getElementById('tradeMfe');
+      const elTradeNote = document.getElementById('tradeNote');
+
+      const elChartModePnlBtn = document.getElementById('chartModePnlBtn');
+      const elChartModeBalBtn = document.getElementById('chartModeBalBtn');
+      const elEquityChartWrap = document.getElementById('equityChartWrap');
+      const elChartTelemetry = document.getElementById('chartTelemetry');
+
+      const elFilterSearch = document.getElementById('filterSearch');
+      const elFilterDir = document.getElementById('filterDir');
+      const elFilterOutcome = document.getElementById('filterOutcome');
+      const elFilterFrom = document.getElementById('filterFrom');
+      const elFilterTo = document.getElementById('filterTo');
+      const elResetFiltersBtn = document.getElementById('resetFiltersBtn');
+
+      function getStartingBalanceNum() {
+        const val = parseNum(journalMeta.startingBalance);
+        return Number.isFinite(val) ? val : 0;
+      }
+
+      /* Sortowanie chronologiczne rosnąco z tie-breakerem po kolejności utworzenia */
+      function compareTradesChrono(a, b) {
+        const da = String(a.date || '');
+        const db = String(b.date || '');
+        if (da !== db) return da < db ? -1 : 1;
+        return (a.createdOrder || 0) - (b.createdOrder || 0);
+      }
+
+      /* Chronologiczny łańcuch salda konta (AUTO + ręczne korekty wpłat/wypłat) */
+      function buildBalanceChain(allTrades, startBal) {
+        const sorted = [...allTrades].sort(compareTradesChrono);
+        const byId = new Map();
+        let runningBalance = startBal;
+
+        sorted.forEach((t) => {
+          const prevBalance = runningBalance;
+          const expectedBalanceAfter = prevBalance + t.pnlUsdt;
+          const isManualBalance =
+            t.manualBalanceAfter !== null &&
+            t.manualBalanceAfter !== undefined &&
+            Number.isFinite(t.manualBalanceAfter);
+
+          const effectiveBalanceAfter = isManualBalance ? t.manualBalanceAfter : expectedBalanceAfter;
+          const adjustmentDelta = isManualBalance ? effectiveBalanceAfter - expectedBalanceAfter : 0;
+
+          byId.set(t.id, {
+            prevBalance,
+            expectedBalanceAfter,
+            effectiveBalanceAfter,
+            isManualBalance,
+            adjustmentDelta
+          });
+
+          runningBalance = effectiveBalanceAfter;
+        });
+
+        return {
+          byId,
+          sortedChrono: sorted,
+          finalBalance: runningBalance
+        };
+      }
+
+      /* Wyznacza kontekst salda tuż przed aktualnie tworzoną/edytowaną transakcją */
+      function computeFormExpectedContext() {
+        const startBal = getStartingBalanceNum();
+        const editId = elTradeEditId.value.trim();
+        const dateVal = elTradeDate.value.trim() || nowLocalDatetimeValue();
+        const editingTrade = editId ? trades.find((t) => t.id === editId) : null;
+        const targetOrder = editingTrade ? editingTrade.createdOrder : Number.MAX_SAFE_INTEGER;
+
+        const precedingTrades = trades.filter((t) => {
+          if (editId && t.id === editId) return false;
+          const td = String(t.date || '');
+          if (td < dateVal) return true;
+          if (td > dateVal) return false;
+          return (t.createdOrder || 0) < targetOrder;
+        });
+
+        const chain = buildBalanceChain(precedingTrades, startBal);
+        const prevBalance = chain.finalBalance;
+        const pnlNum = parseNum(elTradePnlUsdt.value);
+        const expectedBalanceAfter = Number.isFinite(pnlNum) ? prevBalance + pnlNum : prevBalance;
+
+        return { prevBalance, expectedBalanceAfter };
+      }
+
+      /* Dwukierunkowe wyliczanie P&L (USDT) <-> P&L (%) względem salda konta przed transakcją */
+      function syncLinkedPnlField(source) {
+        const ctx = computeFormExpectedContext();
+        const baseBalance = ctx.prevBalance;
+
+        if (source === 'usdt') {
+          const raw = elTradePnlUsdt.value.trim();
+          if (raw === '') {
+            elTradePnlPct.value = '';
+            return;
+          }
+          const pnlUsdtVal = parseNum(raw);
+          if (Number.isFinite(pnlUsdtVal) && baseBalance > 0) {
+            elTradePnlPct.value = ((pnlUsdtVal / baseBalance) * 100).toFixed(2);
+          }
+        } else if (source === 'pct') {
+          const raw = elTradePnlPct.value.trim();
+          if (raw === '') {
+            elTradePnlUsdt.value = '';
+            return;
+          }
+          const pnlPctVal = parseNum(raw);
+          if (Number.isFinite(pnlPctVal) && baseBalance > 0) {
+            elTradePnlUsdt.value = ((pnlPctVal / 100) * baseBalance).toFixed(2);
+          }
+        }
+      }
+
+      /* Odświeża podgląd bazy konta oraz pola „Konto po transakcji” w formularzu */
+      function refreshFormBalancePreview() {
+        if (!elTradeFormWrap.classList.contains('open')) return;
+
+        const ctx = computeFormExpectedContext();
+        const baseBal = ctx.prevBalance;
+
+        elTradePnlBaseHint.textContent = `Baza konta: ${fmtNum(baseBal, 2)} USDT`;
+        elTradePnlPctHint.textContent = baseBal > 0 ? 'Auto względem konta' : 'Saldo ≤ 0 (wpisz ręcznie)';
+
+        if (!formManualBalanceActive) {
+          elTradeBalanceAfter.value = ctx.expectedBalanceAfter.toFixed(2);
+          elTradeBalanceBox.classList.remove('is-manual');
+          elTradeBalanceModeBadge.textContent = 'AUTO';
+          elTradeBalanceModeBadge.className = 'tech-badge dark';
+          elResetBalanceAutoBtn.disabled = true;
+
+          const pnlNum = parseNum(elTradePnlUsdt.value);
+          const pnlTxt = Number.isFinite(pnlNum) ? fmtSigned(pnlNum, 2, ' USDT') : '0.00 USDT';
+          elTradeBalanceDeltaNote.innerHTML =
+            `Poprzednie saldo: <strong>${fmtNum(baseBal, 2)} USDT</strong> (${pnlTxt})`;
+        } else {
+          elTradeBalanceBox.classList.add('is-manual');
+          elTradeBalanceModeBadge.textContent = 'RĘCZNE (KOREKTA)';
+          elTradeBalanceModeBadge.className = 'tech-badge accent';
+          elResetBalanceAutoBtn.disabled = false;
+
+          const manualVal = parseNum(elTradeBalanceAfter.value);
+          if (!Number.isFinite(manualVal)) {
+            elTradeBalanceDeltaNote.innerHTML =
+              `<span class="val-accent">Wpisz poprawne saldo w USDT lub kliknij ↺ AUTO</span>`;
+          } else {
+            const delta = manualVal - ctx.expectedBalanceAfter;
+            if (delta > 0.004) {
+              elTradeBalanceDeltaNote.innerHTML =
+                `AUTO: ${fmtNum(ctx.expectedBalanceAfter, 2)} USDT · <strong class="val-profit">+${fmtNum(delta, 2)} USDT wpłata</strong>`;
+            } else if (delta < -0.004) {
+              elTradeBalanceDeltaNote.innerHTML =
+                `AUTO: ${fmtNum(ctx.expectedBalanceAfter, 2)} USDT · <strong class="val-loss">${fmtNum(delta, 2)} USDT wypłata</strong>`;
+            } else {
+              elTradeBalanceDeltaNote.innerHTML =
+                `AUTO: ${fmtNum(ctx.expectedBalanceAfter, 2)} USDT · <strong>Korekta: 0.00 USDT</strong>`;
+            }
+          }
+        }
+      }
+
+      function setFormDirection(dir) {
+        formDirection = dir === 'SHORT' ? 'SHORT' : 'LONG';
+        elDirLongBtn.className = formDirection === 'LONG' ? 'active-profit' : '';
+        elDirShortBtn.className = formDirection === 'SHORT' ? 'active-loss' : '';
+      }
+
+      elDirLongBtn.addEventListener('click', () => setFormDirection('LONG'));
+      elDirShortBtn.addEventListener('click', () => setFormDirection('SHORT'));
+
+      function openTradeForm(tradeToEdit = null) {
+        elTradeFormWrap.classList.add('open');
+
+        if (tradeToEdit) {
+          elTradeFormTitle.textContent = `Edycja transakcji — ${tradeToEdit.pair}`;
+          elSaveTradeBtn.textContent = 'Zaktualizuj wpis';
+          elTradeEditId.value = tradeToEdit.id;
+          elTradePair.value = tradeToEdit.pair;
+          setFormDirection(tradeToEdit.direction);
+          elTradeDate.value = tradeToEdit.date;
+          elTradePnlUsdt.value = String(tradeToEdit.pnlUsdt);
+          elTradePnlPct.value = String(tradeToEdit.pnlPct);
+          elTradeR.value =
+            tradeToEdit.rMultiple !== null && tradeToEdit.rMultiple !== undefined && Number.isFinite(tradeToEdit.rMultiple)
+              ? String(tradeToEdit.rMultiple)
+              : '';
+          elTradeMae.value = tradeToEdit.mae !== null && tradeToEdit.mae !== undefined ? String(tradeToEdit.mae) : '';
+          elTradeMfe.value = tradeToEdit.mfe !== null && tradeToEdit.mfe !== undefined ? String(tradeToEdit.mfe) : '';
+          elTradeNote.value = tradeToEdit.note || '';
+          formLastPnlSource = 'usdt';
+
+          const hasManual =
+            tradeToEdit.manualBalanceAfter !== null &&
+            tradeToEdit.manualBalanceAfter !== undefined &&
+            Number.isFinite(tradeToEdit.manualBalanceAfter);
+          formManualBalanceActive = hasManual;
+          if (hasManual) {
+            elTradeBalanceAfter.value = tradeToEdit.manualBalanceAfter.toFixed(2);
+          }
+        } else {
+          elTradeFormTitle.textContent = 'Nowa transakcja';
+          elSaveTradeBtn.textContent = 'Zapisz transakcję';
+          elTradeEditId.value = '';
+          elTradeForm.reset();
+          setFormDirection('LONG');
+          elTradeDate.value = nowLocalDatetimeValue();
+          formManualBalanceActive = false;
+          formLastPnlSource = null;
+        }
+
+        refreshFormBalancePreview();
+        elTradeFormWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        elTradePair.focus();
+      }
+
+      function closeTradeForm() {
+        elTradeFormWrap.classList.remove('open');
+        elTradeEditId.value = '';
+        formManualBalanceActive = false;
+        formLastPnlSource = null;
+        elTradeForm.reset();
+      }
+
+      elToggleAddFormBtn.addEventListener('click', () => {
+        if (elTradeFormWrap.classList.contains('open') && !elTradeEditId.value) {
+          closeTradeForm();
+        } else {
+          openTradeForm(null);
+        }
+      });
+
+      elCloseTradeFormBtn.addEventListener('click', closeTradeForm);
+      elCancelTradeBtn.addEventListener('click', closeTradeForm);
+
+      /* Obsługa przycisków zmiany znaku +/- dla pól P&L USDT, P&L % i R-multiple */
+      document.querySelectorAll('button[data-toggle-sign]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.toggleSign;
+          const input = document.getElementById(targetId);
+          if (!input) return;
+
+          const trimmed = input.value.trim();
+          if (trimmed === '') {
+            input.value = '-';
+          } else if (trimmed.startsWith('-')) {
+            input.value = trimmed.slice(1);
+          } else if (trimmed.startsWith('+')) {
+            input.value = '-' + trimmed.slice(1);
+          } else {
+            input.value = '-' + trimmed;
+          }
+
+          if (targetId === 'tradePnlUsdt') {
+            formLastPnlSource = 'usdt';
+            syncLinkedPnlField('usdt');
+            refreshFormBalancePreview();
+          } else if (targetId === 'tradePnlPct') {
+            formLastPnlSource = 'pct';
+            syncLinkedPnlField('pct');
+            refreshFormBalancePreview();
+          }
+          input.focus();
+        });
+      });
+
+      /* Zdarzenia formularza dziennika */
+      elJournalStartBalance.value = journalMeta.startingBalance;
+      elJournalStartBalance.addEventListener('input', () => {
+        journalMeta.startingBalance = elJournalStartBalance.value;
+        saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
+        if (elTradeFormWrap.classList.contains('open') && formLastPnlSource) {
+          syncLinkedPnlField(formLastPnlSource);
+        }
+        refreshFormBalancePreview();
+        renderJournal();
+      });
+
+      elTradePnlUsdt.addEventListener('input', () => {
+        formLastPnlSource = 'usdt';
+        syncLinkedPnlField('usdt');
+        refreshFormBalancePreview();
+      });
+
+      elTradePnlPct.addEventListener('input', () => {
+        formLastPnlSource = 'pct';
+        syncLinkedPnlField('pct');
+        refreshFormBalancePreview();
+      });
+
+      const onTradeDateChanged = () => {
+        if (formLastPnlSource) {
+          syncLinkedPnlField(formLastPnlSource);
+        }
+        refreshFormBalancePreview();
+      };
+      elTradeDate.addEventListener('input', onTradeDateChanged);
+      elTradeDate.addEventListener('change', onTradeDateChanged);
+
+      elTradeBalanceAfter.addEventListener('input', () => {
+        formManualBalanceActive = true;
+        refreshFormBalancePreview();
+      });
+
+      elResetBalanceAutoBtn.addEventListener('click', () => {
+        formManualBalanceActive = false;
+        refreshFormBalancePreview();
+      });
+
+      /* Zapis / aktualizacja transakcji */
+      elTradeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const pair = elTradePair.value.trim().toUpperCase();
+        const date = elTradeDate.value.trim();
+
+        // Upewnij się, że powiązane pole P&L jest wyliczone
+        const ctx = computeFormExpectedContext();
+        let pnlUsdt = parseNum(elTradePnlUsdt.value);
+        let pnlPct = parseNum(elTradePnlPct.value);
+
+        if (Number.isFinite(pnlUsdt) && !Number.isFinite(pnlPct) && ctx.prevBalance > 0) {
+          pnlPct = Number(((pnlUsdt / ctx.prevBalance) * 100).toFixed(2));
+          elTradePnlPct.value = pnlPct.toFixed(2);
+        } else if (!Number.isFinite(pnlUsdt) && Number.isFinite(pnlPct) && ctx.prevBalance > 0) {
+          pnlUsdt = Number(((pnlPct / 100) * ctx.prevBalance).toFixed(2));
+          elTradePnlUsdt.value = pnlUsdt.toFixed(2);
+        }
+
+        const rRaw = elTradeR.value.trim();
+        const rMultiple = rRaw === '' ? null : parseNum(rRaw);
+        const maeRaw = elTradeMae.value.trim();
+        const mfeRaw = elTradeMfe.value.trim();
+        const mae = maeRaw === '' ? null : parseNum(maeRaw);
+        const mfe = mfeRaw === '' ? null : parseNum(mfeRaw);
+        const note = elTradeNote.value.trim();
+
+        let manualBalanceAfter = null;
+        if (formManualBalanceActive) {
+          const parsedBal = parseNum(elTradeBalanceAfter.value);
+          if (!Number.isFinite(parsedBal)) {
+            showToast('Podaj poprawne saldo po transakcji lub kliknij ↺ AUTO.');
+            elTradeBalanceAfter.focus();
+            return;
+          }
+          manualBalanceAfter = parsedBal;
+        }
+
+        if (!pair) {
+          showToast('Podaj parę lub instrument (np. BTC/USDT).');
+          elTradePair.focus();
+          return;
+        }
+        if (!date) {
+          showToast('Wybierz datę i godzinę transakcji.');
+          elTradeDate.focus();
+          return;
+        }
+        if (!Number.isFinite(pnlUsdt)) {
+          showToast('Podaj poprawną wartość P&L (USDT).');
+          elTradePnlUsdt.focus();
+          return;
+        }
+        if (!Number.isFinite(pnlPct)) {
+          showToast('Podaj poprawną wartość P&L (%).');
+          elTradePnlPct.focus();
+          return;
+        }
+        if (rRaw !== '' && !Number.isFinite(rMultiple)) {
+          showToast('Wartość R-multiple jest niepoprawna.');
+          elTradeR.focus();
+          return;
+        }
+        if (maeRaw !== '' && !Number.isFinite(mae)) {
+          showToast('Wartość MAE (%) jest niepoprawna.');
+          elTradeMae.focus();
+          return;
+        }
+        if (mfeRaw !== '' && !Number.isFinite(mfe)) {
+          showToast('Wartość MFE (%) jest niepoprawna.');
+          elTradeMfe.focus();
+          return;
+        }
+
+        const editId = elTradeEditId.value.trim();
+        if (editId) {
+          const idx = trades.findIndex((t) => t.id === editId);
+          if (idx !== -1) {
+            trades[idx] = {
+              ...trades[idx],
+              pair,
+              direction: formDirection,
+              date,
+              pnlUsdt,
+              pnlPct,
+              rMultiple,
+              manualBalanceAfter,
+              mae,
+              mfe,
+              note
+            };
+          }
+          showToast(`Zaktualizowano transakcję ${pair}.`, 'ok');
+        } else {
+          const maxOrder = trades.reduce((m, t) => Math.max(m, t.createdOrder || 0), 0);
+          trades.push({
+            id: `tr_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+            pair,
+            direction: formDirection,
+            date,
+            pnlUsdt,
+            pnlPct,
+            rMultiple,
+            manualBalanceAfter,
+            mae,
+            mfe,
+            note,
+            createdOrder: maxOrder + 1
+          });
+          showToast(`Dodano transakcję ${pair}.`, 'ok');
+        }
+
+        saveStorage(STORAGE_JOURNAL_KEY, trades);
+        closeTradeForm();
+        renderJournal();
+      });
+
+      /* Tryb wykresu (Skumulowany P&L vs Saldo konta) */
+      function setChartMode(mode) {
+        journalMeta.chartMode = mode === 'balance' ? 'balance' : 'pnl';
+        saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
+        elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
+        elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
+        renderJournal();
+      }
+
+      elChartModePnlBtn.addEventListener('click', () => setChartMode('pnl'));
+      elChartModeBalBtn.addEventListener('click', () => setChartMode('balance'));
+
+      /* Filtry */
+      function getFilteredTrades() {
+        const q = elFilterSearch.value.trim().toLowerCase();
+        const dir = elFilterDir.value;
+        const outcome = elFilterOutcome.value;
+        const fromDate = elFilterFrom.value;
+        const toDate = elFilterTo.value;
+
+        return trades.filter((t) => {
+          if (q) {
+            const hay = `${t.pair} ${t.note || ''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          if (dir !== 'ALL' && t.direction !== dir) return false;
+          if (outcome === 'WIN' && !(t.pnlUsdt > 0)) return false;
+          if (outcome === 'LOSS' && !(t.pnlUsdt < 0)) return false;
+          if (outcome === 'BE' && t.pnlUsdt !== 0) return false;
+
+          const dayStr = String(t.date || '').slice(0, 10);
+          if (fromDate && dayStr < fromDate) return false;
+          if (toDate && dayStr > toDate) return false;
+
+          return true;
+        });
+      }
+
+      [elFilterSearch, elFilterDir, elFilterOutcome, elFilterFrom, elFilterTo].forEach((el) => {
+        el.addEventListener('input', renderJournal);
+        el.addEventListener('change', renderJournal);
+      });
+
+      elResetFiltersBtn.addEventListener('click', () => {
+        elFilterSearch.value = '';
+        elFilterDir.value = 'ALL';
+        elFilterOutcome.value = 'ALL';
+        elFilterFrom.value = '';
+        elFilterTo.value = '';
+        renderJournal();
+      });
+
+      /* Obliczanie 8 metryk KPI na przefiltrowanej liście */
+      function computeMetrics(filteredList, chainById, startBal) {
+        const count = filteredList.length;
+        if (count === 0) {
+          return {
+            count: 0,
+            currentBalance: startBal,
+            totalPnl: 0,
+            wins: 0,
+            losses: 0,
+            bes: 0,
+            winRate: NaN,
+            profitFactor: NaN,
+            grossWin: 0,
+            grossLoss: 0,
+            expectancy: NaN,
+            avgR: NaN,
+            rCount: 0,
+            maxDdUsdt: 0,
+            maxDdPct: 0,
+            kellyPct: NaN,
+            avgMae: NaN,
+            avgMfe: NaN,
+            maeCount: 0,
+            mfeCount: 0,
+            chrono: []
+          };
+        }
+
+        const chrono = [...filteredList].sort(compareTradesChrono);
+
+        let totalPnl = 0;
+        let wins = 0;
+        let losses = 0;
+        let bes = 0;
+        let grossWin = 0;
+        let grossLoss = 0;
+        let sumR = 0;
+        let rCount = 0;
+        let sumMae = 0;
+        let maeCount = 0;
+        let sumMfe = 0;
+        let mfeCount = 0;
+
+        let cumUsdt = 0;
+        let peakUsdt = 0;
+        let maxDdUsdt = 0;
+
+        let eqIdx = 100;
+        let peakEqIdx = 100;
+        let maxDdPct = 0;
+
+        chrono.forEach((t) => {
+          totalPnl += t.pnlUsdt;
+
+          if (t.pnlUsdt > 0) {
+            wins += 1;
+            grossWin += t.pnlUsdt;
+          } else if (t.pnlUsdt < 0) {
+            losses += 1;
+            grossLoss += Math.abs(t.pnlUsdt);
+          } else {
+            bes += 1;
+          }
+
+          if (t.rMultiple !== null && t.rMultiple !== undefined && Number.isFinite(t.rMultiple)) {
+            sumR += t.rMultiple;
+            rCount += 1;
+          }
+          if (t.mae !== null && t.mae !== undefined && Number.isFinite(t.mae)) {
+            sumMae += t.mae;
+            maeCount += 1;
+          }
+          if (t.mfe !== null && t.mfe !== undefined && Number.isFinite(t.mfe)) {
+            sumMfe += t.mfe;
+            mfeCount += 1;
+          }
+
+          // Max Drawdown (USDT)
+          cumUsdt += t.pnlUsdt;
+          if (cumUsdt > peakUsdt) peakUsdt = cumUsdt;
+          const ddUsdt = peakUsdt - cumUsdt;
+          if (ddUsdt > maxDdUsdt) maxDdUsdt = ddUsdt;
+
+          // Max Drawdown (%) od szczytu kapitału
+          if (Number.isFinite(t.pnlPct)) {
+            eqIdx = Math.max(0.0001, eqIdx * (1 + t.pnlPct / 100));
+            if (eqIdx > peakEqIdx) peakEqIdx = eqIdx;
+            const ddPct = peakEqIdx > 0 ? ((peakEqIdx - eqIdx) / peakEqIdx) * 100 : 0;
+            if (ddPct > maxDdPct) maxDdPct = ddPct;
+          }
+        });
+
+        const lastTrade = chrono[chrono.length - 1];
+        const lastInfo = chainById.get(lastTrade.id);
+        const currentBalance = lastInfo ? lastInfo.effectiveBalanceAfter : startBal + totalPnl;
+
+        const winRate = (wins / count) * 100;
+        const profitFactor = grossLoss > 0 ? grossWin / grossLoss : (grossWin > 0 ? Infinity : NaN);
+        const expectancy = totalPnl / count;
+        const avgR = rCount > 0 ? sumR / rCount : NaN;
+
+        // Kryterium Kelly'ego: Kelly % = (W - (1 - W) / (AvgWin / AvgLoss)) * 100
+        let kellyPct = NaN;
+        if (wins > 0 && losses > 0) {
+          const W = wins / (wins + losses);
+          const avgWin = grossWin / wins;
+          const avgLoss = grossLoss / losses;
+          if (avgWin > 0 && avgLoss > 0) {
+            const payoff = avgWin / avgLoss;
+            kellyPct = (W - (1 - W) / payoff) * 100;
+          }
+        }
+
+        return {
+          count,
+          currentBalance,
+          totalPnl,
+          wins,
+          losses,
+          bes,
+          winRate,
+          profitFactor,
+          grossWin,
+          grossLoss,
+          expectancy,
+          avgR,
+          rCount,
+          maxDdUsdt,
+          maxDdPct,
+          kellyPct,
+          avgMae: maeCount > 0 ? sumMae / maeCount : NaN,
+          avgMfe: mfeCount > 0 ? sumMfe / mfeCount : NaN,
+          maeCount,
+          mfeCount,
+          chrono
+        };
+      }
+
+      function renderKpis(m, totalAll) {
+        const elPnl = document.getElementById('kpiTotalPnl');
+        elPnl.textContent = fmtSigned(m.totalPnl, 2, ' USDT');
+        elPnl.className = `kpi-value ${m.totalPnl > 0 ? 'val-profit' : m.totalPnl < 0 ? 'val-loss' : ''}`;
+
+        document.getElementById('kpiCurrentBalanceMeta').innerHTML =
+          `Saldo: <strong>${fmtNum(m.currentBalance, 2)} USDT</strong> (${m.count}/${totalAll})`;
+
+        document.getElementById('kpiWinRate').textContent = Number.isFinite(m.winRate) ? `${fmtNum(m.winRate, 1)}%` : '—';
+        document.getElementById('kpiWlb').textContent = `W: ${m.wins} / L: ${m.losses} / BE: ${m.bes}`;
+
+        const pfEl = document.getElementById('kpiProfitFactor');
+        if (m.profitFactor === Infinity) {
+          pfEl.textContent = '∞';
+          pfEl.className = 'kpi-value val-profit';
+        } else if (Number.isFinite(m.profitFactor)) {
+          pfEl.textContent = fmtNum(m.profitFactor, 2);
+          pfEl.className = `kpi-value ${m.profitFactor >= 1 ? 'val-profit' : 'val-loss'}`;
+        } else {
+          pfEl.textContent = '—';
+          pfEl.className = 'kpi-value';
+        }
+        document.getElementById('kpiGrossRatio').textContent = `+${fmtNum(m.grossWin, 0)} / -${fmtNum(m.grossLoss, 0)} USDT`;
+
+        const evEl = document.getElementById('kpiExpectancy');
+        evEl.textContent = Number.isFinite(m.expectancy) ? fmtSigned(m.expectancy, 2, ' USDT') : '—';
+        evEl.className = `kpi-value ${Number.isFinite(m.expectancy) ? (m.expectancy > 0 ? 'val-profit' : m.expectancy < 0 ? 'val-loss' : '') : ''}`;
+
+        const avgREl = document.getElementById('kpiAvgR');
+        const avgRMeta = document.getElementById('kpiAvgRMeta');
+        avgREl.textContent = Number.isFinite(m.avgR) ? fmtSigned(m.avgR, 2, ' R') : '—';
+        avgREl.className = `kpi-value ${Number.isFinite(m.avgR) ? (m.avgR > 0 ? 'val-profit' : m.avgR < 0 ? 'val-loss' : '') : ''}`;
+        avgRMeta.textContent = `Próba: n=${m.rCount}${m.count > 0 ? ` / ${m.count}` : ''}`;
+
+        document.getElementById('kpiMaxDdUsdt').textContent = `-${fmtNum(m.maxDdUsdt, 2)} USDT`;
+        document.getElementById('kpiMaxDdPct').textContent = `Szczyt→Dołek: -${fmtNum(m.maxDdPct, 2)}%`;
+
+        const kellyEl = document.getElementById('kpiKelly');
+        const kellyMeta = document.getElementById('kpiKellyMeta');
+        if (Number.isFinite(m.kellyPct)) {
+          kellyEl.textContent = `${fmtNum(m.kellyPct, 1)}%`;
+          kellyEl.className = `kpi-value ${m.kellyPct > 0 ? 'val-profit' : 'val-loss'}`;
+          kellyMeta.textContent = m.kellyPct > 0 ? `Half-Kelly: ${fmtNum(m.kellyPct / 2, 1)}%` : 'Ujemna przewaga stat.';
+        } else {
+          kellyEl.textContent = '—';
+          kellyEl.className = 'kpi-value';
+          kellyMeta.textContent = 'Wymaga W > 0 i L > 0';
+        }
+
+        const maeMfeEl = document.getElementById('kpiMaeMfe');
+        const maeMfeMeta = document.getElementById('kpiMaeMfeMeta');
+        const maeTxt = Number.isFinite(m.avgMae) ? `${fmtNum(m.avgMae, 2)}%` : '—';
+        const mfeTxt = Number.isFinite(m.avgMfe) ? `${fmtNum(m.avgMfe, 2)}%` : '—';
+        maeMfeEl.textContent = (Number.isFinite(m.avgMae) || Number.isFinite(m.avgMfe)) ? `${maeTxt} / ${mfeTxt}` : '—';
+        maeMfeMeta.textContent = `MAE: n=${m.maeCount} · MFE: n=${m.mfeCount}`;
+      }
+
+      /* Wykres SVG krzywej kapitału z segmentowym kolorowaniem (spadek = czerwony, wzrost = zielony) */
+      function renderEquityChart(chronoTrades, chainById, startBal) {
+        const isBalanceMode = journalMeta.chartMode === 'balance';
+
+        if (chronoTrades.length === 0) {
+          activeChartPoints = [];
+          elEquityChartWrap.innerHTML = `<div class="chart-empty">Brak danych do wykreślenia krzywej kapitału. Dodaj transakcje lub zresetuj filtry.</div>`;
+          elChartTelemetry.textContent = 'Najedź lub kliknij punkt na wykresie, aby odczytać szczegóły transakcji.';
+          return;
+        }
+
+        const points = [];
+        let cumPnl = 0;
+
+        // Punkt startowy #0 (przed pierwszą transakcją)
+        const firstChain = chainById.get(chronoTrades[0].id);
+        const initialBal = firstChain ? firstChain.prevBalance : startBal;
+        points.push({
+          idx: 0,
+          val: isBalanceMode ? initialBal : 0,
+          cumPnl: 0,
+          balanceAfter: initialBal,
+          isStart: true,
+          isManualBalance: false,
+          adjustmentDelta: 0,
+          trade: null
+        });
+
+        chronoTrades.forEach((t, i) => {
+          cumPnl += t.pnlUsdt;
+          const info = chainById.get(t.id);
+          const balAfter = info ? info.effectiveBalanceAfter : startBal + cumPnl;
+          points.push({
+            idx: i + 1,
+            val: isBalanceMode ? balAfter : cumPnl,
+            cumPnl,
+            balanceAfter: balAfter,
+            isStart: false,
+            isManualBalance: info ? info.isManualBalance : false,
+            adjustmentDelta: info ? info.adjustmentDelta : 0,
+            trade: t
+          });
+        });
+
+        activeChartPoints = points;
+
+        const W = 860;
+        const H = 235;
+        const padL = 74;
+        const padR = 22;
+        const padT = 18;
+        const padB = 28;
+        const plotW = W - padL - padR;
+        const plotH = H - padT - padB;
+
+        const vals = points.map((p) => p.val);
+        let minVal = Math.min(...vals);
+        let maxVal = Math.max(...vals);
+        const refVal = isBalanceMode ? initialBal : 0;
+        minVal = Math.min(minVal, refVal);
+        maxVal = Math.max(maxVal, refVal);
+
+        if (Math.abs(maxVal - minVal) < 0.0001) {
+          const pad = Math.max(10, Math.abs(maxVal) * 0.05);
+          minVal -= pad;
+          maxVal += pad;
+        } else {
+          const span = maxVal - minVal;
+          minVal -= span * 0.09;
+          maxVal += span * 0.09;
+        }
+
+        const xOf = (i) => padL + (points.length === 1 ? plotW / 2 : (i / (points.length - 1)) * plotW);
+        const yOf = (v) => padT + ((maxVal - v) / (maxVal - minVal)) * plotH;
+
+        // Siatka pozioma (4 podziały)
+        let gridSvg = '';
+        const steps = 4;
+        for (let s = 0; s <= steps; s += 1) {
+          const v = minVal + ((maxVal - minVal) * s) / steps;
+          const y = yOf(v).toFixed(1);
+          gridSvg += `
+            <line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#E5E3DC" stroke-width="1" />
+            <text x="${padL - 8}" y="${(Number(y) + 4).toFixed(1)}" text-anchor="end" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">${fmtNum(v, 0)}</text>
+          `;
+        }
+
+        // Linia odniesienia (0 USDT dla P&L albo saldo startowe)
+        const yRef = yOf(refVal).toFixed(1);
+        const refLineSvg = `
+          <line x1="${padL}" y1="${yRef}" x2="${W - padR}" y2="${yRef}" stroke="#141413" stroke-width="1" stroke-dasharray="4 4" opacity="0.6" />
+        `;
+
+        // SEGMENTOWE KOLOROWANIE: spadek = #C93636, wzrost = #1B7A50, płasko = #6B6A65
+        let segmentsSvg = '';
+        for (let i = 1; i < points.length; i += 1) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const x1 = xOf(i - 1).toFixed(1);
+          const y1 = yOf(prev.val).toFixed(1);
+          const x2 = xOf(i).toFixed(1);
+          const y2 = yOf(curr.val).toFixed(1);
+
+          let segColor = '#6B6A65';
+          if (curr.val < prev.val) {
+            segColor = '#C93636';
+          } else if (curr.val > prev.val) {
+            segColor = '#1B7A50';
+          }
+
+          segmentsSvg += `
+            <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${segColor}" stroke-width="2.5" stroke-linecap="round" />
+          `;
+        }
+
+        // Punkty pomiarowe + oznaczenia ręcznych korekt salda
+        let dotsSvg = '';
+        points.forEach((p, i) => {
+          const cx = xOf(i).toFixed(1);
+          const cy = yOf(p.val).toFixed(1);
+          let dotColor = '#6B6A65';
+          if (i > 0) {
+            const prevVal = points[i - 1].val;
+            if (p.val < prevVal) dotColor = '#C93636';
+            else if (p.val > prevVal) dotColor = '#1B7A50';
+          }
+          const r = points.length > 45 ? 3 : 4.2;
+
+          const manualRing = p.isManualBalance
+            ? `<circle cx="${cx}" cy="${cy}" r="${(r + 3.2).toFixed(1)}" fill="none" stroke="#E6482E" stroke-width="1.6" />`
+            : '';
+
+          dotsSvg += `
+            ${manualRing}
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotColor}" stroke="#FFFFFF" stroke-width="1.5" data-pt-idx="${i}" />
+            <circle cx="${cx}" cy="${cy}" r="14" fill="transparent" style="cursor:pointer;" data-pt-hit="${i}" />
+          `;
+        });
+
+        const firstDate = formatDisplayDate(chronoTrades[0].date).slice(0, 10);
+        const lastDate = formatDisplayDate(chronoTrades[chronoTrades.length - 1].date).slice(0, 10);
+
+        elEquityChartWrap.innerHTML = `
+          <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Wykres krzywej kapitału">
+            ${gridSvg}
+            ${refLineSvg}
+            <line id="eqCrosshair" x1="0" y1="${padT}" x2="0" y2="${H - padB}" stroke="#E6482E" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
+            ${segmentsSvg}
+            ${dotsSvg}
+            <text x="${padL}" y="${H - 7}" text-anchor="start" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">START (${firstDate})</text>
+            <text x="${W - padR}" y="${H - 7}" text-anchor="end" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">#${chronoTrades.length} (${lastDate})</text>
+          </svg>
+        `;
+
+        // Podpięcie interaktywnego podglądu punktów (hover + kliknięcie)
+        const svgEl = elEquityChartWrap.querySelector('svg');
+        const crosshair = svgEl.querySelector('#eqCrosshair');
+
+        const activatePoint = (ptIdx) => {
+          const p = activeChartPoints[ptIdx];
+          if (!p) return;
+
+          const cx = xOf(ptIdx).toFixed(1);
+          crosshair.setAttribute('x1', cx);
+          crosshair.setAttribute('x2', cx);
+          crosshair.setAttribute('opacity', '0.85');
+
+          if (p.isStart) {
+            elChartTelemetry.innerHTML = `
+              <span><strong>PUNKT STARTOWY</strong></span>
+              <span>Saldo bazowe: <strong>${fmtNum(p.balanceAfter, 2)} USDT</strong></span>
+              <span>Skum. P&amp;L: <strong>0.00 USDT</strong></span>
+            `;
+            return;
+          }
+
+          const t = p.trade;
+          const pnlCls = t.pnlUsdt > 0 ? 'val-profit' : t.pnlUsdt < 0 ? 'val-loss' : '';
+          const pctCls = t.pnlPct > 0 ? 'val-profit' : t.pnlPct < 0 ? 'val-loss' : '';
+          const cumCls = p.cumPnl > 0 ? 'val-profit' : p.cumPnl < 0 ? 'val-loss' : '';
+          const adjTag = p.isManualBalance
+            ? `<span class="manual-delta-pill">KOREKTA ${fmtSigned(p.adjustmentDelta, 2, ' USDT')}</span>`
+            : '';
+
+          elChartTelemetry.innerHTML = `
+            <span>#${ptIdx} · <strong>${escapeHtml(formatDisplayDate(t.date))}</strong></span>
+            <span>Para: <strong>${escapeHtml(t.pair)}</strong> (${escapeHtml(t.direction)})</span>
+            <span>P&amp;L: <strong class="${pnlCls}">${fmtSigned(t.pnlUsdt, 2, ' USDT')}</strong> (<strong class="${pctCls}">${fmtSigned(t.pnlPct, 2, '%')}</strong>)</span>
+            <span>Skum. P&amp;L: <strong class="${cumCls}">${fmtSigned(p.cumPnl, 2, ' USDT')}</strong></span>
+            <span>Saldo konta: <strong>${fmtNum(p.balanceAfter, 2)} USDT</strong></span>
+            ${adjTag}
+          `;
+        };
+
+        svgEl.querySelectorAll('[data-pt-hit]').forEach((hit) => {
+          const idx = Number(hit.dataset.ptHit);
+          hit.addEventListener('mouseenter', () => activatePoint(idx));
+          hit.addEventListener('click', () => activatePoint(idx));
+        });
+
+        // Domyślnie pokaż telemetrię ostatniego punktu
+        activatePoint(points.length - 1);
+      }
+
+      function buildManualTagHtml(info) {
+        if (!info || !info.isManualBalance) return '';
+        const d = info.adjustmentDelta;
+        const label = Math.abs(d) > 0.004 ? `KOREKTA ${fmtSigned(d, 2)}` : 'RĘCZNE';
+        return `<span class="manual-delta-pill">${label}</span>`;
+      }
+
+      /* Główny render zakładki Dziennik */
+      function renderJournal() {
+        const startBal = getStartingBalanceNum();
+        const chain = buildBalanceChain(trades, startBal);
+        elHeaderCurrentBalance.textContent = `${fmtNum(chain.finalBalance, 2)} USDT`;
+
+        const filtered = getFilteredTrades();
+        const metrics = computeMetrics(filtered, chain.byId, startBal);
+
+        renderKpis(metrics, trades.length);
+        renderEquityChart(metrics.chrono, chain.byId, startBal);
+
+        document.getElementById('journalCountLabel').textContent = `Wyświetlane: ${filtered.length} / ${trades.length}`;
+
+        const emptyEl = document.getElementById('journalEmptyState');
+        const tableWrap = document.getElementById('journalTableWrap');
+        const tbody = document.getElementById('journalTableBody');
+        const cardsWrap = document.getElementById('journalCardsMobile');
+
+        if (filtered.length === 0) {
+          emptyEl.style.display = 'block';
+          tableWrap.style.display = 'none';
+          cardsWrap.innerHTML = '';
+          return;
+        }
+
+        emptyEl.style.display = 'none';
+        tableWrap.style.display = '';
+
+        // Tabela i karty sortowane od najnowszych do najstarszych
+        const sortedDesc = [...filtered].sort((a, b) => compareTradesChrono(b, a));
+
+        tbody.innerHTML = sortedDesc.map((t) => {
+          const info = chain.byId.get(t.id);
+          const balAfter = info ? info.effectiveBalanceAfter : startBal;
+          const pnlCls = t.pnlUsdt > 0 ? 'val-profit' : t.pnlUsdt < 0 ? 'val-loss' : '';
+          const pctCls = t.pnlPct > 0 ? 'val-profit' : t.pnlPct < 0 ? 'val-loss' : '';
+          const hasR = t.rMultiple !== null && t.rMultiple !== undefined && Number.isFinite(t.rMultiple);
+          const rCls = hasR ? (t.rMultiple > 0 ? 'val-profit' : t.rMultiple < 0 ? 'val-loss' : '') : '';
+          const rTxt = hasR ? fmtSigned(t.rMultiple, 2, ' R') : '—';
+          const dirCls = t.direction === 'LONG' ? 'long' : 'short';
+          const maeTxt = t.mae !== null && t.mae !== undefined ? `${fmtNum(t.mae, 2)}%` : '—';
+          const mfeTxt = t.mfe !== null && t.mfe !== undefined ? `${fmtNum(t.mfe, 2)}%` : '—';
+
+          return `
+            <tr>
+              <td class="mono" style="white-space:nowrap; font-size:0.78rem; color:var(--text-secondary);">${escapeHtml(formatDisplayDate(t.date))}</td>
+              <td class="mono"><strong>${escapeHtml(t.pair)}</strong></td>
+              <td><span class="dir-pill ${dirCls}">${escapeHtml(t.direction)}</span></td>
+              <td class="num ${pnlCls}"><strong>${fmtSigned(t.pnlUsdt, 2)}</strong></td>
+              <td class="num ${pctCls}">${fmtSigned(t.pnlPct, 2, '%')}</td>
+              <td class="num">
+                <div class="balance-cell-stack">
+                  <strong>${fmtNum(balAfter, 2)}</strong>
+                  ${buildManualTagHtml(info)}
+                </div>
+              </td>
+              <td class="num ${rCls}" style="${hasR ? '' : 'color:var(--text-secondary);'}">${rTxt}</td>
+              <td class="num" style="white-space:nowrap; color:var(--text-secondary);">${maeTxt} / ${mfeTxt}</td>
+              <td>
+                <div class="note-cell" title="Kliknij, aby rozwinąć notatkę" data-expand-note>${t.note ? escapeHtml(t.note) : '<span style="opacity:0.45;">—</span>'}</div>
+              </td>
+              <td class="num" style="white-space:nowrap;">
+                <div class="row-actions">
+                  <button type="button" class="btn btn-sm" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
+                  <button type="button" class="btn btn-sm btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        cardsWrap.innerHTML = sortedDesc.map((t) => {
+          const info = chain.byId.get(t.id);
+          const balAfter = info ? info.effectiveBalanceAfter : startBal;
+          const pnlCls = t.pnlUsdt > 0 ? 'val-profit' : t.pnlUsdt < 0 ? 'val-loss' : '';
+          const pctCls = t.pnlPct > 0 ? 'val-profit' : t.pnlPct < 0 ? 'val-loss' : '';
+          const hasR = t.rMultiple !== null && t.rMultiple !== undefined && Number.isFinite(t.rMultiple);
+          const rCls = hasR ? (t.rMultiple > 0 ? 'val-profit' : t.rMultiple < 0 ? 'val-loss' : '') : '';
+          const rTxt = hasR ? fmtSigned(t.rMultiple, 2, ' R') : '—';
+          const dirCls = t.direction === 'LONG' ? 'long' : 'short';
+          const maeTxt = t.mae !== null && t.mae !== undefined ? `${fmtNum(t.mae, 2)}%` : '—';
+          const mfeTxt = t.mfe !== null && t.mfe !== undefined ? `${fmtNum(t.mfe, 2)}%` : '—';
+
+          return `
+            <article class="trade-card">
+              <div class="trade-card-head">
+                <div class="trade-card-pair">
+                  <span>${escapeHtml(t.pair)}</span>
+                  <span class="dir-pill ${dirCls}">${escapeHtml(t.direction)}</span>
+                </div>
+                <span class="trade-card-date">${escapeHtml(formatDisplayDate(t.date))}</span>
+              </div>
+              <div class="trade-card-metrics">
+                <div class="trade-card-metric">
+                  <div class="m-lbl">P&amp;L (USDT)</div>
+                  <div class="m-val ${pnlCls}">${fmtSigned(t.pnlUsdt, 2)}</div>
+                </div>
+                <div class="trade-card-metric">
+                  <div class="m-lbl">P&amp;L (%)</div>
+                  <div class="m-val ${pctCls}">${fmtSigned(t.pnlPct, 2, '%')}</div>
+                </div>
+                <div class="trade-card-metric">
+                  <div class="m-lbl">Konto po (USDT)</div>
+                  <div class="m-val">${fmtNum(balAfter, 2)}</div>
+                  <div style="margin-top:3px;">${buildManualTagHtml(info)}</div>
+                </div>
+                <div class="trade-card-metric">
+                  <div class="m-lbl">R-Multiple</div>
+                  <div class="m-val ${rCls}" style="${hasR ? '' : 'color:var(--text-secondary);'}">${rTxt}</div>
+                </div>
+              </div>
+              <div class="trade-card-extra">
+                <div class="mono" style="font-size:0.74rem;">MAE: <strong>${maeTxt}</strong> &nbsp;·&nbsp; MFE: <strong>${mfeTxt}</strong></div>
+                ${t.note ? `<div>${escapeHtml(t.note)}</div>` : ''}
+              </div>
+              <div class="trade-card-actions">
+                <button type="button" class="btn btn-sm" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
+                <button type="button" class="btn btn-sm btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      /* Delegacja zdarzeń w tabeli i kartach (Edycja, Usuwanie, Rozwijanie notatek) */
+      const handleLogClick = (e) => {
+        const noteEl = e.target.closest('[data-expand-note]');
+        if (noteEl) {
+          noteEl.classList.toggle('expanded');
+          return;
+        }
+
+        const editBtn = e.target.closest('button[data-edit-id]');
+        if (editBtn) {
+          const t = trades.find((item) => item.id === editBtn.dataset.editId);
+          if (t) openTradeForm(t);
+          return;
+        }
+
+        const delBtn = e.target.closest('button[data-del-id]');
+        if (delBtn) {
+          const targetId = delBtn.dataset.delId;
+          const t = trades.find((item) => item.id === targetId);
+          if (!t) return;
+
+          openModal({
+            title: 'Usunąć transakcję?',
+            body: `Czy na pewno chcesz trwale usunąć wpis ${t.pair} (${formatDisplayDate(t.date)}, P&L: ${fmtSigned(t.pnlUsdt, 2, ' USDT')})? Łańcuch salda konta zostanie automatycznie przeliczony.`,
+            actions: [
+              { label: 'Anuluj' },
+              {
+                label: 'Usuń wpis',
+                className: 'btn-primary',
+                onClick: () => {
+                  trades = trades.filter((item) => item.id !== targetId);
+                  saveStorage(STORAGE_JOURNAL_KEY, trades);
+                  if (elTradeEditId.value === targetId) closeTradeForm();
+                  renderJournal();
+                  showToast('Usunięto transakcję z dziennika.');
+                }
+              }
+            ]
+          });
+        }
+      };
+
+      document.getElementById('journalTableBody').addEventListener('click', handleLogClick);
+      document.getElementById('journalCardsMobile').addEventListener('click', handleLogClick);
+
+      /* =======================================================================
+         EKSPORT / IMPORT JSON ORAZ EKSPORT CSV (UTF-8 BOM)
+         ======================================================================= */
+      document.getElementById('exportJsonBtn').addEventListener('click', () => {
+        const payload = {
+          app: 'POS-SIZE // JOURNAL — USDT',
+          version: '1.3',
+          exportedAt: new Date().toISOString(),
+          startingBalance: getStartingBalanceNum(),
+          calcSettings: calcState,
+          trades
+        };
+        const stamp = new Date().toISOString().slice(0, 10);
+        downloadFile(JSON.stringify(payload, null, 2), `trading-journal-usdt-${stamp}.json`, 'application/json;charset=utf-8');
+        showToast(`Wyeksportowano ${trades.length} wpisów (JSON).`, 'ok');
+      });
+
+      const elImportJsonFile = document.getElementById('importJsonFile');
+      document.getElementById('importJsonBtn').addEventListener('click', () => {
+        elImportJsonFile.value = '';
+        elImportJsonFile.click();
+      });
+
+      elImportJsonFile.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const raw = JSON.parse(String(reader.result));
+            const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.trades) ? raw.trades : null);
+            const importedStartBal =
+              !Array.isArray(raw) && raw?.startingBalance !== undefined && Number.isFinite(Number(raw.startingBalance))
+                ? Number(raw.startingBalance)
+                : null;
+            const importedCalcSettings =
+              !Array.isArray(raw) && raw?.calcSettings && typeof raw.calcSettings === 'object'
+                ? raw.calcSettings
+                : null;
+
+            if (!list) {
+              showToast('Nieprawidłowy format pliku JSON.');
+              return;
+            }
+
+            const sanitized = list
+              .filter((item) => item && typeof item === 'object')
+              .map((item, idx) => ({
+                id: String(item.id || `imp_${Date.now()}_${idx}`),
+                pair: String(item.pair || 'UNKNOWN').toUpperCase(),
+                direction: item.direction === 'SHORT' ? 'SHORT' : 'LONG',
+                date: String(item.date || nowLocalDatetimeValue()),
+                pnlUsdt: Number(item.pnlUsdt),
+                pnlPct: Number(item.pnlPct),
+                rMultiple:
+                  item.rMultiple === null || item.rMultiple === undefined || item.rMultiple === ''
+                    ? null
+                    : (Number.isFinite(Number(item.rMultiple)) ? Number(item.rMultiple) : null),
+                manualBalanceAfter:
+                  item.manualBalanceAfter === null || item.manualBalanceAfter === undefined || item.manualBalanceAfter === ''
+                    ? null
+                    : (Number.isFinite(Number(item.manualBalanceAfter)) ? Number(item.manualBalanceAfter) : null),
+                mae:
+                  item.mae === null || item.mae === undefined || item.mae === ''
+                    ? null
+                    : (Number.isFinite(Number(item.mae)) ? Number(item.mae) : null),
+                mfe:
+                  item.mfe === null || item.mfe === undefined || item.mfe === ''
+                    ? null
+                    : (Number.isFinite(Number(item.mfe)) ? Number(item.mfe) : null),
+                note: String(item.note || ''),
+                createdOrder: Number.isFinite(Number(item.createdOrder)) ? Number(item.createdOrder) : idx + 1
+              }))
+              .filter((t) => Number.isFinite(t.pnlUsdt) && Number.isFinite(t.pnlPct));
+
+            if (sanitized.length === 0) {
+              showToast('Plik nie zawiera poprawnych transakcji.');
+              return;
+            }
+
+            const applyImportedMeta = () => {
+              if (importedStartBal !== null) {
+                journalMeta.startingBalance = String(importedStartBal);
+                elJournalStartBalance.value = journalMeta.startingBalance;
+                saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
+              }
+              if (importedCalcSettings) {
+                calcState = Object.assign(cloneObj(DEFAULT_CALC_STATE), importedCalcSettings);
+                if (!Array.isArray(calcState.tpLevels) || calcState.tpLevels.length === 0) {
+                  calcState.tpLevels = [{ pct: '2.00', alloc: '100' }];
+                }
+                saveStorage(STORAGE_CALC_KEY, calcState);
+                syncCalcInputsFromState();
+                recalculate();
+              }
+            };
+
+            if (trades.length === 0) {
+              applyImportedMeta();
+              trades = sanitized;
+              saveStorage(STORAGE_JOURNAL_KEY, trades);
+              renderJournal();
+              showToast(`Zaimportowano ${sanitized.length} transakcji.`, 'ok');
+              return;
+            }
+
+            openModal({
+              title: 'Import pliku JSON',
+              body: `Wykryto ${sanitized.length} poprawnych transakcji${importedStartBal !== null ? ` (kapitał początkowy: ${fmtNum(importedStartBal, 2)} USDT)` : ''}. Obecny dziennik zawiera ${trades.length} wpisów. Wybierz sposób importu:`,
+              actions: [
+                { label: 'Anuluj' },
+                {
+                  label: 'Dołącz nowe',
+                  onClick: () => {
+                    const existingIds = new Set(trades.map((t) => t.id));
+                    const added = sanitized.filter((t) => !existingIds.has(t.id));
+                    trades = [...trades, ...added];
+                    saveStorage(STORAGE_JOURNAL_KEY, trades);
+                    renderJournal();
+                    showToast(`Dołączono ${added.length} nowych wpisów.`, 'ok');
+                  }
+                },
+                {
+                  label: 'Zastąp obecne',
+                  className: 'btn-primary',
+                  onClick: () => {
+                    applyImportedMeta();
+                    trades = sanitized;
+                    saveStorage(STORAGE_JOURNAL_KEY, trades);
+                    renderJournal();
+                    showToast(`Zastąpiono dziennik (${sanitized.length} wpisów).`, 'ok');
+                  }
+                }
+              ]
+            });
+          } catch (err) {
+            showToast('Błąd odczytu pliku JSON.');
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('exportCsvBtn').addEventListener('click', () => {
+        const startBal = getStartingBalanceNum();
+        const chain = buildBalanceChain(trades, startBal);
+        const csvEscape = (v) => {
+          const s = String(v ?? '');
+          return /[";,\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        };
+
+        const headers = [
+          'Data',
+          'Para',
+          'Kierunek',
+          'P&L (USDT)',
+          'P&L (%)',
+          'Konto po (USDT)',
+          'Korekta salda (USDT)',
+          'R-multiple',
+          'MAE (%)',
+          'MFE (%)',
+          'Notatka'
+        ];
+
+        const rows = chain.sortedChrono.map((t) => {
+          const info = chain.byId.get(t.id);
+          return [
+            formatDisplayDate(t.date),
+            t.pair,
+            t.direction,
+            t.pnlUsdt.toFixed(2),
+            t.pnlPct.toFixed(2),
+            (info ? info.effectiveBalanceAfter : startBal).toFixed(2),
+            info && info.isManualBalance ? info.adjustmentDelta.toFixed(2) : '0.00',
+            t.rMultiple !== null && t.rMultiple !== undefined ? t.rMultiple : '',
+            t.mae !== null && t.mae !== undefined ? t.mae : '',
+            t.mfe !== null && t.mfe !== undefined ? t.mfe : '',
+            t.note || ''
+          ].map(csvEscape).join(',');
+        });
+
+        // BOM UTF-8 dla poprawnego wyświetlania polskich znaków w Excelu i Google Sheets
+        const csvContent = '\uFEFF' + [headers.map(csvEscape).join(','), ...rows].join('\r\n');
+        const stamp = new Date().toISOString().slice(0, 10);
+        downloadFile(csvContent, `trading-journal-usdt-${stamp}.csv`, 'text/csv;charset=utf-8');
+        showToast(`Wyeksportowano ${trades.length} wpisów (CSV).`, 'ok');
+      });
+
+      /* =======================================================================
+         INICJALIZACJA APLIKACJI
+         ======================================================================= */
+      elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
+      elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
+
+      syncCalcInputsFromState();
+      recalculate();
+      renderJournal();
+    })();
+  </script>
+</body>
+</html>
