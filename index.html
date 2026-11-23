@@ -1,59 +1,135 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" data-theme="light">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>POS-SIZE // JOURNAL — USDT</title>
+
+  <!-- Konfiguracja iOS Standalone PWA oraz ikony ekranu głównego -->
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" href="./apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="POS-SIZE">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#ECEBE6">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts: IBM Plex Sans (UI) & IBM Plex Mono (dane liczbowe) -->
+  <meta name="apple-mobile-web-app-status-bar-style" id="iosStatusBarMeta" content="default">
+  <meta name="theme-color" id="themeColorMeta" content="#ECEBE6">
+
+  <!-- Natychmiastowa aplikacja zapisanego motywu przed renderem (eliminacja migotania FOUC) -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('braun_lab70_theme_v1');
+        var theme = saved === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        var tc = document.getElementById('themeColorMeta');
+        var sb = document.getElementById('iosStatusBarMeta');
+        if (tc) tc.setAttribute('content', theme === 'dark' ? '#131312' : '#ECEBE6');
+        if (sb) sb.setAttribute('content', theme === 'dark' ? 'black-translucent' : 'default');
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Google Fonts: IBM Plex Sans (UI) & IBM Plex Mono (dane liczbowe tabular-nums) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     /* =========================================================================
-       BRAUN LAB 70 — INDUSTRIAL HARDWARE DESIGN TOKENS
+       DESIGN TOKENS: BRAUN LAB 70 (LIGHT) & BRAUN ET66 DARK (DARK)
        Matowe powierzchnie, obramowania 1px, zero cieni, zero gradientów
        ========================================================================= */
-    :root {
-      --bg-main: #ECEBE6;
-      --bg-card: #F7F6F2;
-      --bg-inset: #EFECE5;
+    :root,
+    [data-theme="light"] {
+      --bg: #ECEBE6;
+      --surface: #F7F6F2;
+      --surface-inset: #EFECE6;
+      --input-bg: #FFFFFF;
+      --input-manual-bg: #FFF9F7;
       --border: #D5D3CA;
-      --border-strong: #B8B5AA;
-      --text-primary: #141413;
-      --text-secondary: #6B6A65;
+      --border-strong: #B8B5A9;
+      --text: #141413;
+      --text-muted: #6B6A65;
       --accent: #E6482E;
       --accent-hover: #CC3B23;
       --profit: #1B7A50;
       --loss: #C93636;
+      --profit-soft: rgba(27, 122, 80, 0.11);
+      --loss-soft: rgba(201, 54, 54, 0.11);
+      --accent-soft: rgba(230, 72, 46, 0.11);
+      --switch-track: #141413;
+      --switch-knob-idle: #F7F6F2;
+      --chart-bg: #FFFFFF;
+      --chart-grid: #E3E1D8;
+      --chart-dot-stroke: #FFFFFF;
+      --modal-backdrop: rgba(20, 20, 19, 0.56);
+      --toast-bg: #141413;
+      --toast-text: #F7F6F2;
       --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --radius: 2px;
       --touch-min: 44px;
+      color-scheme: light;
+    }
+
+    [data-theme="dark"] {
+      --bg: #131312;
+      --surface: #1C1C1A;
+      --surface-inset: #161614;
+      --input-bg: #121210;
+      --input-manual-bg: #231917;
+      --border: #2E2E2A;
+      --border-strong: #45443E;
+      --text: #ECEBE6;
+      --text-muted: #94928A;
+      --accent: #E6482E;
+      --accent-hover: #F25A41;
+      --profit: #34B37E;
+      --loss: #E05252;
+      --profit-soft: rgba(52, 179, 126, 0.14);
+      --loss-soft: rgba(224, 82, 82, 0.15);
+      --accent-soft: rgba(230, 72, 46, 0.16);
+      --switch-track: #2E2E2A;
+      --switch-knob-idle: #ECEBE6;
+      --chart-bg: #161614;
+      --chart-grid: #292925;
+      --chart-dot-stroke: #161614;
+      --modal-backdrop: rgba(0, 0, 0, 0.72);
+      --toast-bg: #ECEBE6;
+      --toast-text: #131312;
+      color-scheme: dark;
     }
 
     *, *::before, *::after {
       box-sizing: border-box;
     }
 
-    html, body {
+    html {
       margin: 0;
       padding: 0;
-      background-color: var(--bg-main);
-      color: var(--text-primary);
+      background-color: var(--bg);
+      min-height: 100%;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      min-height: 100dvh;
+      background-color: var(--bg);
+      color: var(--text);
       font-family: var(--font-sans);
       font-size: 15px;
       line-height: 1.45;
+      overflow-x: hidden;
+      touch-action: pan-y;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
     }
 
-    /* Wymuszone wyrównanie cyfr dla wszystkich wartości liczbowych */
+    /* Wymuszone wyrównanie cyfr tabular-nums dla wszystkich danych liczbowych */
     .mono,
     input[inputmode="decimal"],
     input[type="number"],
@@ -61,94 +137,141 @@
     input[type="date"],
     .kpi-value,
     .readout-big,
+    .readout-mid,
     .num {
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
     }
 
-    /* Główny kontener aplikacji */
+    /* Główny kontener aplikacji z bezpiecznymi marginesami iOS safe-area */
     .app-shell {
       max-width: 1220px;
       margin: 0 auto;
-      padding: 16px;
+      padding-top: calc(14px + env(safe-area-inset-top, 0px));
+      padding-right: calc(14px + env(safe-area-inset-right, 0px));
+      padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+      padding-left: calc(14px + env(safe-area-inset-left, 0px));
       display: flex;
       flex-direction: column;
       gap: 16px;
+      touch-action: pan-y;
     }
 
     @media (min-width: 768px) {
       .app-shell {
-        padding: 24px 28px 36px;
+        padding-top: calc(22px + env(safe-area-inset-top, 0px));
+        padding-right: calc(28px + env(safe-area-inset-right, 0px));
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        padding-left: calc(28px + env(safe-area-inset-left, 0px));
         gap: 20px;
       }
     }
 
     /* =========================================================================
-       GÓRNY PANEL STERUJĄCY (HEADER + FIZYCZNY PRZEŁĄCZNIK ZAKŁADEK)
+       GÓRNA BELKA STERUJĄCA (TYTUŁ + PRZEŁĄCZNIK ZAKŁADEK + PRZEŁĄCZNIK MOTYWU)
        ========================================================================= */
     .top-bar {
-      background-color: var(--bg-card);
+      background-color: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 12px 14px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .top-bar {
+        padding: 14px 16px;
+      }
     }
 
     .brand-block {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
+      min-width: 0;
     }
 
-    .brand-title {
-      font-family: var(--font-mono);
-      font-size: 1.02rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--text-primary);
-      margin: 0;
+    .brand-title-row {
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .brand-dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background-color: var(--accent);
       display: inline-block;
       flex-shrink: 0;
     }
 
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 0.98rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .usdt-pill {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background-color: var(--surface-inset);
+      color: var(--text-muted);
+    }
+
     .brand-sub {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.68rem;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
 
-    /* Fizyczny przełącznik sprzętowy zakładek */
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    @media (min-width: 768px) {
+      .header-controls {
+        width: auto;
+        justify-content: flex-end;
+      }
+    }
+
+    /* Fizyczny przełącznik zakładek (Kalkulator / Dziennik) */
     .hw-nav-group {
       display: flex;
       align-items: center;
-      gap: 12px;
-      background-color: var(--bg-main);
+      justify-content: space-between;
+      gap: 10px;
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 6px 10px;
-      width: 100%;
-      justify-content: space-between;
+      padding: 4px 10px;
+      min-height: var(--touch-min);
+      flex: 1 1 220px;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 768px) {
       .hw-nav-group {
-        width: auto;
+        flex: 0 0 auto;
         justify-content: center;
       }
     }
@@ -157,40 +280,38 @@
       appearance: none;
       background: transparent;
       border: none;
-      padding: 8px 6px;
+      padding: 8px 4px;
       min-height: 36px;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       cursor: pointer;
-      transition: color 0.15s ease;
     }
 
     .nav-label-btn.active {
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .hw-toggle-switch {
       appearance: none;
       position: relative;
-      width: 58px;
-      height: 30px;
-      background-color: var(--text-primary);
-      border: 1px solid var(--text-primary);
+      width: 54px;
+      height: 28px;
+      background-color: var(--switch-track);
+      border: 1px solid var(--border-strong);
       border-radius: 999px;
       cursor: pointer;
       padding: 0;
       flex-shrink: 0;
-      transition: background-color 0.15s ease;
     }
 
     .hw-toggle-switch .hw-knob {
       position: absolute;
-      top: 3px;
-      left: 3px;
+      top: 2px;
+      left: 2px;
       width: 22px;
       height: 22px;
       border-radius: 50%;
@@ -200,30 +321,67 @@
     }
 
     .hw-toggle-switch[aria-checked="true"] .hw-knob {
-      transform: translateX(28px);
+      transform: translateX(26px);
     }
 
-    .sys-status {
-      display: none;
+    /* Mechaniczny przełącznik motywu (JASNY / CIEMNY) z diodą LED */
+    .theme-switch-btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: var(--touch-min);
+      padding: 0 12px;
+      background-color: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      color: var(--text);
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      color: var(--text-secondary);
-      text-transform: uppercase;
+      font-weight: 700;
       letter-spacing: 0.06em;
-      text-align: right;
+      text-transform: uppercase;
+      cursor: pointer;
+      flex: 0 0 auto;
     }
 
-    @media (min-width: 960px) {
-      .sys-status {
-        display: block;
-      }
+    .theme-switch-btn:hover {
+      border-color: var(--text);
+    }
+
+    .theme-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--border-strong);
+      border: 1px solid var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .theme-led {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .theme-opt {
+      color: var(--text-muted);
+    }
+
+    .theme-opt.active {
+      color: var(--text);
+    }
+
+    .theme-sep {
+      color: var(--border-strong);
     }
 
     /* =========================================================================
-       PANELE I SEKCJE TECHNICZNE
+       UKŁAD ZAKŁADEK I KART TECHNICZNYCH
        ========================================================================= */
     .tab-panel {
       display: none;
+      touch-action: pan-y;
     }
 
     .tab-panel.active {
@@ -235,6 +393,7 @@
       grid-template-columns: 1fr;
       gap: 16px;
       align-items: start;
+      touch-action: pan-y;
     }
 
     @media (min-width: 960px) {
@@ -245,10 +404,11 @@
     }
 
     .lab-card {
-      background-color: var(--bg-card);
+      background-color: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
+      touch-action: pan-y;
     }
 
     .lab-card-header {
@@ -259,7 +419,7 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      background-color: var(--bg-card);
+      background-color: var(--surface);
     }
 
     .lab-card-title {
@@ -268,14 +428,14 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      color: var(--text-primary);
+      color: var(--text);
       margin: 0;
     }
 
     .lab-card-sub {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.7rem;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -283,6 +443,7 @@
     .lab-section {
       padding: 16px;
       border-bottom: 1px solid var(--border);
+      touch-action: pan-y;
     }
 
     .lab-section:last-child {
@@ -294,8 +455,8 @@
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
       margin: 0 0 12px 0;
       display: flex;
       align-items: center;
@@ -305,7 +466,7 @@
     }
 
     /* =========================================================================
-       POLA FORMULARZY, KONTROLKI I PRZYCISKI
+       POLA FORMULARZY, PRZEŁĄCZNIKI I PRZYCISKI
        ========================================================================= */
     .form-row {
       display: grid;
@@ -313,18 +474,10 @@
       gap: 12px;
     }
 
-    .form-row.cols-2 {
-      grid-template-columns: 1fr;
-    }
-
     @media (min-width: 560px) {
       .form-row.cols-2 {
         grid-template-columns: 1fr 1fr;
       }
-    }
-
-    .form-row.cols-3 {
-      grid-template-columns: 1fr;
     }
 
     @media (min-width: 680px) {
@@ -349,17 +502,17 @@
     }
 
     .field-label {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .field-hint {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.71rem;
+      color: var(--text-muted);
       font-weight: 400;
       text-transform: none;
     }
@@ -367,21 +520,20 @@
     .input-box {
       display: flex;
       align-items: stretch;
-      background-color: #FFFFFF;
+      background-color: var(--input-bg);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       min-height: var(--touch-min);
-      transition: border-color 0.15s ease;
     }
 
     .input-box:focus-within {
-      border-color: var(--text-primary);
-      outline: 1px solid var(--text-primary);
+      border-color: var(--text);
+      outline: 1px solid var(--text);
     }
 
     .input-box.is-manual {
       border-color: var(--accent);
-      background-color: #FFFDFB;
+      background-color: var(--input-manual-bg);
     }
 
     .input-box input,
@@ -392,14 +544,27 @@
       border: none;
       background: transparent;
       padding: 10px 12px;
-      font-size: 0.96rem;
+      font-size: 1rem; /* 16px zapobiega automatycznemu zoomowaniu na iOS */
       font-weight: 500;
-      color: var(--text-primary);
+      color: var(--text);
       outline: none;
     }
 
+    @media (min-width: 768px) {
+      .input-box input,
+      .input-box select {
+        font-size: 0.94rem;
+      }
+    }
+
+    .input-box select option {
+      background-color: var(--surface);
+      color: var(--text);
+    }
+
     .input-box input::placeholder {
-      color: #A2A097;
+      color: var(--text-muted);
+      opacity: 0.65;
       font-weight: 400;
     }
 
@@ -407,53 +572,58 @@
       display: flex;
       align-items: center;
       padding: 0 11px;
-      background-color: var(--bg-inset);
+      background-color: var(--surface-inset);
       border-left: 1px solid var(--border);
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       white-space: nowrap;
       user-select: none;
     }
 
     textarea.lab-textarea {
       width: 100%;
-      min-height: 78px;
+      min-height: 80px;
       padding: 10px 12px;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background-color: #FFFFFF;
-      color: var(--text-primary);
+      background-color: var(--input-bg);
+      color: var(--text);
       font-family: var(--font-sans);
-      font-size: 0.9rem;
+      font-size: 1rem;
       resize: vertical;
       outline: none;
     }
 
-    textarea.lab-textarea:focus {
-      border-color: var(--text-primary);
-      outline: 1px solid var(--text-primary);
+    @media (min-width: 768px) {
+      textarea.lab-textarea {
+        font-size: 0.92rem;
+      }
     }
 
-    /* Przycisk zmiany znaku +/- dla wygody na iOS / mobile */
+    textarea.lab-textarea:focus {
+      border-color: var(--text);
+      outline: 1px solid var(--text);
+    }
+
+    /* Przycisk zmiany znaku +/- (ergonomia klawiatury numerycznej iOS) */
     .sign-toggle-btn {
       appearance: none;
       border: none;
       border-right: 1px solid var(--border);
-      background-color: var(--bg-inset);
-      color: var(--text-primary);
+      background-color: var(--surface-inset);
+      color: var(--text);
       font-family: var(--font-mono);
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
-      min-width: 40px;
+      min-width: 44px;
       padding: 0 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       user-select: none;
-      transition: background-color 0.12s ease, color 0.12s ease;
     }
 
     .sign-toggle-btn:hover {
@@ -461,16 +631,16 @@
     }
 
     .sign-toggle-btn:active {
-      background-color: var(--text-primary);
-      color: var(--bg-card);
+      background-color: var(--text);
+      color: var(--surface);
     }
 
-    /* Przełączniki segmentowe (% / USDT, LONG / SHORT, Tryb wykresu) */
+    /* Przełączniki segmentowe */
     .seg-switch {
       display: inline-flex;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background-color: var(--bg-main);
+      background-color: var(--bg);
       overflow: hidden;
     }
 
@@ -483,21 +653,21 @@
       appearance: none;
       border: none;
       background: transparent;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       padding: 0 12px;
-      min-height: 36px;
+      min-height: var(--touch-min);
       cursor: pointer;
       flex: 1 1 auto;
-      transition: background-color 0.12s ease, color 0.12s ease;
     }
 
-    .seg-switch.tall button {
-      min-height: var(--touch-min);
+    .seg-switch.compact button {
+      min-height: 36px;
+      padding: 0 10px;
     }
 
     .seg-switch button + button {
@@ -505,8 +675,8 @@
     }
 
     .seg-switch button.active {
-      background-color: var(--text-primary);
-      color: var(--bg-card);
+      background-color: var(--text);
+      color: var(--bg);
     }
 
     .seg-switch button.active-accent {
@@ -524,7 +694,7 @@
       color: #FFFFFF;
     }
 
-    /* Standardowe przyciski techniczne */
+    /* Przyciski akcji */
     .btn {
       appearance: none;
       display: inline-flex;
@@ -535,22 +705,20 @@
       padding: 8px 14px;
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background-color: var(--bg-card);
-      color: var(--text-primary);
+      background-color: var(--surface);
+      color: var(--text);
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       cursor: pointer;
-      text-decoration: none;
       white-space: nowrap;
-      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
     }
 
     .btn:hover:not(:disabled) {
-      background-color: var(--bg-inset);
-      border-color: var(--text-primary);
+      background-color: var(--surface-inset);
+      border-color: var(--text);
     }
 
     .btn:disabled {
@@ -570,24 +738,6 @@
       color: #FFFFFF;
     }
 
-    .btn-dark {
-      background-color: var(--text-primary);
-      border-color: var(--text-primary);
-      color: var(--bg-card);
-    }
-
-    .btn-dark:hover:not(:disabled) {
-      background-color: #2B2B28;
-      border-color: #2B2B28;
-      color: var(--bg-card);
-    }
-
-    .btn-sm {
-      min-height: 36px;
-      padding: 6px 10px;
-      font-size: 0.73rem;
-    }
-
     .btn-danger-ghost {
       color: var(--loss);
       border-color: var(--border-strong);
@@ -599,7 +749,13 @@
       color: #FFFFFF;
     }
 
-    /* Znaczniki statusu (Tech Badges) */
+    .btn-table {
+      min-height: 36px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+    }
+
+    /* Znaczniki statusu */
     .tech-badge {
       display: inline-flex;
       align-items: center;
@@ -607,20 +763,20 @@
       padding: 2px 7px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       border: 1px solid var(--border-strong);
-      background-color: var(--bg-inset);
-      color: var(--text-secondary);
+      background-color: var(--surface-inset);
+      color: var(--text-muted);
       white-space: nowrap;
     }
 
     .tech-badge.dark {
-      background-color: var(--text-primary);
-      border-color: var(--text-primary);
-      color: var(--bg-card);
+      background-color: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
     }
 
     .tech-badge.accent {
@@ -630,25 +786,24 @@
     }
 
     .tech-badge.ok {
-      background-color: rgba(27, 122, 80, 0.12);
+      background-color: var(--profit-soft);
       border-color: var(--profit);
       color: var(--profit);
     }
 
     .tech-badge.warn {
-      background-color: rgba(201, 54, 54, 0.12);
+      background-color: var(--loss-soft);
       border-color: var(--loss);
       color: var(--loss);
     }
 
-    /* Kolory wartości */
     .val-profit { color: var(--profit) !important; }
     .val-loss { color: var(--loss) !important; }
     .val-accent { color: var(--accent) !important; }
-    .val-muted { color: var(--text-secondary) !important; }
+    .val-muted { color: var(--text-muted) !important; }
 
     /* =========================================================================
-       SUWAK DŹWIGNI (1x - 100x) Z PODZIAŁKĄ TECHNICZNĄ
+       SUWAK DŹWIGNI (1x - 100x) Z PODZIAŁKĄ KRESKOWĄ
        ========================================================================= */
     .leverage-block {
       display: flex;
@@ -670,7 +825,7 @@
     }
 
     .slider-track-wrap {
-      padding: 4px 0 2px;
+      padding: 6px 0 2px;
     }
 
     input[type="range"].lab-slider {
@@ -682,23 +837,24 @@
       border-radius: 1px;
       outline: none;
       cursor: pointer;
+      touch-action: pan-x;
     }
 
     input[type="range"].lab-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 26px;
-      background: var(--text-primary);
+      width: 22px;
+      height: 28px;
+      background: var(--text);
       border: 2px solid var(--accent);
       border-radius: 2px;
       cursor: pointer;
     }
 
     input[type="range"].lab-slider::-moz-range-thumb {
-      width: 20px;
-      height: 26px;
-      background: var(--text-primary);
+      width: 22px;
+      height: 28px;
+      background: var(--text);
       border: 2px solid var(--accent);
       border-radius: 2px;
       cursor: pointer;
@@ -712,7 +868,7 @@
       border-top: 1px dashed var(--border-strong);
       font-family: var(--font-mono);
       font-size: 0.7rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       user-select: none;
     }
 
@@ -727,10 +883,10 @@
 
     .tp-row {
       display: grid;
-      grid-template-columns: 42px 1fr 1fr auto;
+      grid-template-columns: 38px 1fr 1fr auto;
       gap: 8px;
       align-items: center;
-      background-color: var(--bg-main);
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 8px;
@@ -738,7 +894,7 @@
 
     @media (max-width: 480px) {
       .tp-row {
-        grid-template-columns: 36px 1fr 1fr auto;
+        grid-template-columns: 32px 1fr 1fr auto;
         gap: 6px;
         padding: 6px;
       }
@@ -746,22 +902,22 @@
 
     .tp-index {
       font-family: var(--font-mono);
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       text-align: center;
     }
 
     .tp-remove-btn {
       appearance: none;
-      min-width: 38px;
+      min-width: 44px;
       min-height: var(--touch-min);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      background-color: var(--bg-card);
+      background-color: var(--surface);
       color: var(--loss);
       font-family: var(--font-mono);
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -797,7 +953,7 @@
     }
 
     /* =========================================================================
-       FIZYCZNE PRZEŁĄCZNIKI MAKER / TAKER
+       TRZY NIEZALEŻNE PRZEŁĄCZNIKI MAKER / TAKER
        ========================================================================= */
     .fee-switch-list {
       display: flex;
@@ -812,7 +968,8 @@
       justify-content: space-between;
       gap: 10px;
       padding: 9px 12px;
-      background-color: var(--bg-main);
+      min-height: var(--touch-min);
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       flex-wrap: wrap;
@@ -821,13 +978,13 @@
     .fee-switch-name {
       font-size: 0.82rem;
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .fee-switch-rate {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.71rem;
+      color: var(--text-muted);
       display: block;
     }
 
@@ -842,22 +999,23 @@
       font-size: 0.72rem;
       font-weight: 600;
       text-transform: uppercase;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       cursor: pointer;
+      padding: 6px 2px;
       user-select: none;
     }
 
     .hw-mini-label.active {
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .hw-mini-btn {
       appearance: none;
       position: relative;
-      width: 46px;
-      height: 26px;
-      background-color: var(--text-primary);
-      border: 1px solid var(--text-primary);
+      width: 48px;
+      height: 28px;
+      background-color: var(--switch-track);
+      border: 1px solid var(--border-strong);
       border-radius: 999px;
       cursor: pointer;
       padding: 0;
@@ -868,10 +1026,10 @@
       position: absolute;
       top: 3px;
       left: 3px;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      background-color: var(--bg-card);
+      background-color: var(--switch-knob-idle);
       transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.16s ease;
     }
 
@@ -919,11 +1077,12 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .readout-big {
@@ -931,22 +1090,21 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1.15;
-      color: var(--text-primary);
+      color: var(--text);
       word-break: break-word;
     }
 
     .readout-mid {
-      font-family: var(--font-mono);
       font-size: 1.2rem;
       font-weight: 700;
       line-height: 1.2;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .readout-sub {
       font-family: var(--font-mono);
-      font-size: 0.74rem;
-      color: var(--text-secondary);
+      font-size: 0.72rem;
+      color: var(--text-muted);
     }
 
     .readout-2col {
@@ -997,17 +1155,17 @@
     }
 
     .breakdown-item .k {
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     .breakdown-item .v {
       font-family: var(--font-mono);
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--text);
       white-space: nowrap;
     }
 
-    /* Tabele techniczne (Multi-TP breakdown oraz Dziennik Desktop) */
+    /* Tabele techniczne */
     .mini-table-wrap {
       width: 100%;
       overflow-x: auto;
@@ -1028,8 +1186,8 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-secondary);
-      background-color: var(--bg-main);
+      color: var(--text-muted);
+      background-color: var(--bg);
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
@@ -1038,7 +1196,7 @@
       padding: 9px 10px;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     table.tech-table tbody tr:last-child td {
@@ -1054,7 +1212,7 @@
       padding: 9px 10px;
       font-family: var(--font-mono);
       font-weight: 700;
-      background-color: var(--bg-inset);
+      background-color: var(--surface-inset);
       border-top: 1px solid var(--border-strong);
     }
 
@@ -1065,10 +1223,11 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      touch-action: pan-y;
     }
 
     .journal-topbar {
-      background-color: var(--bg-card);
+      background-color: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 14px 16px;
@@ -1088,7 +1247,7 @@
     }
 
     .start-balance-field {
-      width: 210px;
+      width: 220px;
       max-width: 100%;
     }
 
@@ -1098,25 +1257,25 @@
       justify-content: center;
       padding: 6px 12px;
       min-height: var(--touch-min);
-      background-color: var(--bg-main);
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
     }
 
     .current-balance-pill .lbl {
       font-family: var(--font-mono);
-      font-size: 0.66rem;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     .current-balance-pill .val {
       font-family: var(--font-mono);
       font-size: 0.96rem;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .journal-actions-bar {
@@ -1126,7 +1285,7 @@
       align-items: center;
     }
 
-    /* Siatka KPI (8 wskaźników) */
+    /* Siatka 8 metryk KPI */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1141,7 +1300,7 @@
     }
 
     .kpi-card {
-      background-color: var(--bg-card);
+      background-color: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 12px 14px;
@@ -1153,25 +1312,25 @@
 
     .kpi-label {
       font-family: var(--font-mono);
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     .kpi-value {
-      font-size: 1.22rem;
+      font-size: 1.2rem;
       font-weight: 700;
       line-height: 1.2;
-      color: var(--text-primary);
+      color: var(--text);
       word-break: break-word;
     }
 
     .kpi-meta {
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-secondary);
+      font-size: 0.69rem;
+      color: var(--text-muted);
     }
 
     /* Wykres krzywej kapitału SVG */
@@ -1181,11 +1340,12 @@
 
     .chart-canvas-wrap {
       width: 100%;
-      background-color: #FFFFFF;
+      background-color: var(--chart-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 8px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .chart-svg {
@@ -1203,28 +1363,28 @@
       text-align: center;
       font-family: var(--font-mono);
       font-size: 0.8rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       padding: 20px;
     }
 
     .chart-telemetry {
       margin-top: 10px;
       padding: 9px 12px;
-      background-color: var(--bg-main);
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.74rem;
-      color: var(--text-secondary);
+      font-size: 0.73rem;
+      color: var(--text-muted);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px 16px;
-      min-height: 38px;
+      gap: 8px 16px;
+      min-height: 40px;
     }
 
     .chart-telemetry strong {
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .chart-legend {
@@ -1233,8 +1393,8 @@
       align-items: center;
       gap: 12px;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-secondary);
+      font-size: 0.69rem;
+      color: var(--text-muted);
     }
 
     .legend-dot {
@@ -1246,7 +1406,7 @@
       vertical-align: middle;
     }
 
-    /* Rozwijany formularz dodawania/edycji transakcji */
+    /* Rozwijany formularz dodawania / edycji transakcji */
     .trade-form-wrap {
       display: none;
     }
@@ -1267,8 +1427,8 @@
 
     .balance-delta-note {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.71rem;
+      color: var(--text-muted);
       margin-top: 2px;
     }
 
@@ -1282,11 +1442,11 @@
       border-top: 1px solid var(--border);
     }
 
-    /* Pasek filtrów dziennika */
+    /* Pasek filtrów */
     .filters-bar {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border);
-      background-color: var(--bg-inset);
+      background-color: var(--surface-inset);
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
@@ -1305,19 +1465,19 @@
       padding: 2px 7px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       font-weight: 700;
       letter-spacing: 0.05em;
     }
 
     .dir-pill.long {
-      background-color: rgba(27, 122, 80, 0.12);
+      background-color: var(--profit-soft);
       color: var(--profit);
       border: 1px solid var(--profit);
     }
 
     .dir-pill.short {
-      background-color: rgba(201, 54, 54, 0.12);
+      background-color: var(--loss-soft);
       color: var(--loss);
       border: 1px solid var(--loss);
     }
@@ -1327,9 +1487,9 @@
       padding: 1px 5px;
       border-radius: var(--radius);
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.64rem;
       font-weight: 600;
-      background-color: rgba(230, 72, 46, 0.12);
+      background-color: var(--accent-soft);
       color: var(--accent);
       border: 1px solid var(--accent);
       white-space: nowrap;
@@ -1348,14 +1508,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
       cursor: pointer;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       font-size: 0.8rem;
     }
 
     .note-cell.expanded {
       white-space: normal;
       overflow: visible;
-      color: var(--text-primary);
+      color: var(--text);
     }
 
     .row-actions {
@@ -1387,7 +1547,7 @@
     }
 
     .trade-card {
-      background-color: #FFFFFF;
+      background-color: var(--input-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 12px;
@@ -1416,8 +1576,8 @@
 
     .trade-card-date {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+      font-size: 0.71rem;
+      color: var(--text-muted);
     }
 
     .trade-card-metrics {
@@ -1427,7 +1587,7 @@
     }
 
     .trade-card-metric {
-      background-color: var(--bg-main);
+      background-color: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 7px 9px;
@@ -1435,9 +1595,9 @@
 
     .trade-card-metric .m-lbl {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.64rem;
       text-transform: uppercase;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     .trade-card-metric .m-val {
@@ -1452,7 +1612,7 @@
       flex-direction: column;
       gap: 4px;
       font-size: 0.82rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     .trade-card-actions {
@@ -1468,16 +1628,16 @@
       text-align: center;
       font-family: var(--font-mono);
       font-size: 0.82rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
 
     /* =========================================================================
-       MODAL DIALOG ORAZ POWIADOMIENIE TOAST (BEZ alert() / confirm())
+       MODAL DIALOG ORAZ POWIADOMIENIE TOAST (ZERO alert() / confirm())
        ========================================================================= */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background-color: rgba(20, 20, 19, 0.55);
+      background-color: var(--modal-backdrop);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1492,16 +1652,16 @@
     .modal-box {
       width: 100%;
       max-width: 440px;
-      background-color: var(--bg-card);
-      border: 1px solid var(--text-primary);
+      background-color: var(--surface);
+      border: 1px solid var(--border-strong);
       border-radius: var(--radius);
       overflow: hidden;
     }
 
     .modal-head {
       padding: 12px 16px;
-      background-color: var(--text-primary);
-      color: var(--bg-card);
+      background-color: var(--text);
+      color: var(--bg);
       font-family: var(--font-mono);
       font-size: 0.8rem;
       font-weight: 700;
@@ -1512,7 +1672,7 @@
     .modal-body {
       padding: 16px;
       font-size: 0.9rem;
-      color: var(--text-primary);
+      color: var(--text);
       line-height: 1.5;
     }
 
@@ -1527,12 +1687,12 @@
 
     .toast-bar {
       position: fixed;
-      bottom: 18px;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       left: 50%;
       transform: translateX(-50%) translateY(16px);
-      background-color: var(--text-primary);
-      color: var(--bg-card);
-      border: 1px solid var(--text-primary);
+      background-color: var(--toast-bg);
+      color: var(--toast-text);
+      border: 1px solid var(--border-strong);
       border-left: 4px solid var(--accent);
       border-radius: var(--radius);
       padding: 10px 16px;
@@ -1566,53 +1726,36 @@
       white-space: nowrap;
       border: 0;
     }
-html {
-  height: 100%;
-  height: 100dvh;
-  overflow: hidden;
-}
-
-body {
-  height: 100%;
-  height: 100dvh;
-  margin: 0;
-  padding-bottom: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  box-sizing: border-box;
-}
-
-body::after {
-  content: "";
-  display: block;
-  width: 100%;
-  height: calc(180px + env(safe-area-inset-bottom, 0px));
-  flex-shrink: 0;
-}
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <!-- GÓRNA BELKA NAWIGACJI (BRAUN LAB 70) -->
+    <!-- GÓRNA BELKA STERUJĄCA -->
     <header class="top-bar">
       <div class="brand-block">
-        <h1 class="brand-title"><span class="brand-dot" aria-hidden="true"></span>POS-SIZE // JOURNAL</h1>
-        <span class="brand-sub">Rozliczenie: wyłącznie USDT · Braun Lab 70</span>
+        <div class="brand-title-row">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <h1 class="brand-title">POS-SIZE // JOURNAL</h1>
+          <span class="usdt-pill">USDT</span>
+        </div>
+        <span class="brand-sub" id="brandSubText">BRAUN LAB 70 · STANDALONE</span>
       </div>
 
-      <nav class="hw-nav-group" aria-label="Główna nawigacja zakładek">
-        <button type="button" id="navCalcLabel" class="nav-label-btn active" data-tab-target="calculator">Kalkulator</button>
-        <button type="button" id="mainTabSwitch" class="hw-toggle-switch" role="switch" aria-checked="false" aria-label="Przełącz między Kalkulatorem a Dziennikiem">
-          <span class="hw-knob"></span>
-        </button>
-        <button type="button" id="navJournalLabel" class="nav-label-btn" data-tab-target="journal">Dziennik</button>
-      </nav>
+      <div class="header-controls">
+        <nav class="hw-nav-group" aria-label="Główna nawigacja zakładek">
+          <button type="button" id="navCalcLabel" class="nav-label-btn active">Kalkulator</button>
+          <button type="button" id="mainTabSwitch" class="hw-toggle-switch" role="switch" aria-checked="false" aria-label="Przełącz między Kalkulatorem a Dziennikiem">
+            <span class="hw-knob"></span>
+          </button>
+          <button type="button" id="navJournalLabel" class="nav-label-btn">Dziennik</button>
+        </nav>
 
-      <div class="sys-status">
-        <div>MODUŁ: <strong id="sysActiveModule">KALKULATOR</strong></div>
-        <div>STATUS: OK · LOCAL STORAGE</div>
+        <button type="button" id="themeToggleBtn" class="theme-switch-btn" aria-label="Przełącz motyw jasny lub ciemny" aria-pressed="false">
+          <span class="theme-led" aria-hidden="true"></span>
+          <span id="themeLightLbl" class="theme-opt active">JASNY</span>
+          <span class="theme-sep">/</span>
+          <span id="themeDarkLbl" class="theme-opt">CIEMNY</span>
+        </button>
       </div>
     </header>
 
@@ -1625,14 +1768,14 @@ body::after {
         <section class="lab-card" aria-label="Parametry pozycji">
           <div class="lab-card-header">
             <h2 class="lab-card-title">01 // Parametry wejściowe</h2>
-            <span class="lab-card-sub">Tryb procentowy · USDT</span>
+            <span class="lab-card-sub">100% procentowy · USDT</span>
           </div>
 
           <!-- Kapitał i Ryzyko -->
           <div class="lab-section">
             <div class="section-kicker">
               <span>Kapitał i zarządzanie ryzykiem</span>
-              <div class="seg-switch" role="group" aria-label="Tryb ryzyka">
+              <div class="seg-switch compact" role="group" aria-label="Tryb ryzyka">
                 <button type="button" id="riskModePctBtn" class="active-accent">% Kapitału</button>
                 <button type="button" id="riskModeUsdtBtn">Kwota USDT</button>
               </div>
@@ -1660,7 +1803,7 @@ body::after {
             </div>
           </div>
 
-          <!-- Dźwignia 1x-100x (suwak) + dowolna wartość ręczna >= 1 -->
+          <!-- Dźwignia: suwak 1x-100x + ręczny wpis dowolnej wartości >= 1 -->
           <div class="lab-section">
             <div class="section-kicker">
               <span>Dźwignia (Leverage)</span>
@@ -1699,8 +1842,8 @@ body::after {
             </div>
             <div class="field">
               <div class="field-label-row">
-                <label class="field-label" for="calcSlPct">Dystans Stop Loss</label>
-                <span class="field-hint">Bez wpisywania poziomów cenowych</span>
+                <label class="field-label" for="calcSlPct">Stop Loss (%)</label>
+                <span class="field-hint">Bez poziomów cenowych</span>
               </div>
               <div class="input-box">
                 <input id="calcSlPct" type="text" inputmode="decimal" placeholder="0.50" autocomplete="off">
@@ -1715,14 +1858,14 @@ body::after {
               <span>Take Profit (Multi-TP)</span>
               <div class="tp-alloc-status">
                 <span id="tpSumBadge" class="tech-badge ok">Suma udziałów: 100%</span>
-                <button type="button" id="tpNormalizeBtn" class="btn btn-sm" style="display:none;">Wyrównaj do 100%</button>
+                <button type="button" id="tpNormalizeBtn" class="btn btn-table" style="display:none;">Wyrównaj do 100%</button>
               </div>
             </div>
 
             <div id="tpList" class="tp-list"></div>
 
             <div class="tp-footer">
-              <button type="button" id="addTpBtn" class="btn btn-sm">+ Dodaj poziom TP</button>
+              <button type="button" id="addTpBtn" class="btn">+ Dodaj poziom TP</button>
               <span class="field-hint">Każdy poziom zamyka wskazany % pozycji</span>
             </div>
           </div>
@@ -1736,14 +1879,14 @@ body::after {
 
             <div class="form-row cols-2">
               <div class="field">
-                <label class="field-label" for="calcMakerFee">Stawka Maker</label>
+                <label class="field-label" for="calcMakerFee">Maker (%)</label>
                 <div class="input-box">
                   <input id="calcMakerFee" type="text" inputmode="decimal" placeholder="0.02" autocomplete="off">
                   <span class="input-unit">%</span>
                 </div>
               </div>
               <div class="field">
-                <label class="field-label" for="calcTakerFee">Stawka Taker</label>
+                <label class="field-label" for="calcTakerFee">Taker (%)</label>
                 <div class="input-box">
                   <input id="calcTakerFee" type="text" inputmode="decimal" placeholder="0.05" autocomplete="off">
                   <span class="input-unit">%</span>
@@ -1759,60 +1902,60 @@ body::after {
                   <span class="fee-switch-rate" id="entryFeeAppliedText">Maker · 0.02%</span>
                 </div>
                 <div class="hw-mini-toggle">
-                  <span class="hw-mini-label active" id="entryMakerLbl" data-fee-set="entry:maker">Maker</span>
+                  <span class="hw-mini-label active" id="entryMakerLbl">Maker</span>
                   <button type="button" id="entryFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="false" aria-label="Typ prowizji dla wejścia">
                     <span class="knob"></span>
                   </button>
-                  <span class="hw-mini-label" id="entryTakerLbl" data-fee-set="entry:taker">Taker</span>
+                  <span class="hw-mini-label" id="entryTakerLbl">Taker</span>
                 </div>
               </div>
 
               <!-- Wyjście SL -->
               <div class="fee-switch-row">
                 <div>
-                  <span class="fee-switch-name">Wyjście Stop Loss (SL)</span>
+                  <span class="fee-switch-name">Wyjście SL</span>
                   <span class="fee-switch-rate" id="slFeeAppliedText">Taker · 0.05%</span>
                 </div>
                 <div class="hw-mini-toggle">
-                  <span class="hw-mini-label" id="slMakerLbl" data-fee-set="sl:maker">Maker</span>
+                  <span class="hw-mini-label" id="slMakerLbl">Maker</span>
                   <button type="button" id="slFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="true" aria-label="Typ prowizji dla wyjścia SL">
                     <span class="knob"></span>
                   </button>
-                  <span class="hw-mini-label active" id="slTakerLbl" data-fee-set="sl:taker">Taker</span>
+                  <span class="hw-mini-label active" id="slTakerLbl">Taker</span>
                 </div>
               </div>
 
               <!-- Wyjście TP -->
               <div class="fee-switch-row">
                 <div>
-                  <span class="fee-switch-name">Wyjście Take Profit (TP)</span>
+                  <span class="fee-switch-name">Wyjście TP</span>
                   <span class="fee-switch-rate" id="tpFeeAppliedText">Maker · 0.02%</span>
                 </div>
                 <div class="hw-mini-toggle">
-                  <span class="hw-mini-label active" id="tpMakerLbl" data-fee-set="tp:maker">Maker</span>
+                  <span class="hw-mini-label active" id="tpMakerLbl">Maker</span>
                   <button type="button" id="tpFeeSwitch" class="hw-mini-btn" role="switch" aria-checked="false" aria-label="Typ prowizji dla wyjścia TP">
                     <span class="knob"></span>
                   </button>
-                  <span class="hw-mini-label" id="tpTakerLbl" data-fee-set="tp:taker">Taker</span>
+                  <span class="hw-mini-label" id="tpTakerLbl">Taker</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- PRAWA KOLUMNA: ODCZYTY TELEMETRYCZNE NA ŻYWO -->
+        <!-- PRAWA KOLUMNA: ODCZYTY TELEMETRYCZNE -->
         <section class="lab-card" aria-label="Odczyty wynikowe kalkulatora">
           <div class="lab-card-header">
             <h2 class="lab-card-title">02 // Odczyt telemetrii</h2>
-            <span class="lab-card-sub" id="calcFormulaStatus">LIVE · NET RISK</span>
+            <span class="lab-card-sub">LIVE · NET RISK</span>
           </div>
 
-          <!-- Główny wynik: Wielkość pozycji + Net R:R -->
+          <!-- Wielkość pozycji + Net R:R -->
           <div class="readout-hero-grid">
             <div class="readout-hero-cell">
-              <span class="readout-lbl">Wielkość pozycji (Notional)</span>
+              <span class="readout-lbl">Wielkość pozycji (USDT)</span>
               <div class="readout-big" id="outPositionSize">0.00 USDT</div>
-              <span class="readout-sub" id="outPositionSub">Skalowana z uwzględnieniem prowizji wejścia i SL</span>
+              <span class="readout-sub" id="outPositionSub">Uwzględnia prowizję wejścia i wyjścia SL</span>
             </div>
             <div class="readout-hero-cell">
               <span class="readout-lbl">Realne R:R (Netto)</span>
@@ -1821,7 +1964,7 @@ body::after {
             </div>
           </div>
 
-          <!-- Wymagany Margin + Koszt prowizji (SL vs TP) -->
+          <!-- Wymagany Margin + Koszt prowizji -->
           <div class="readout-2col">
             <div class="readout-cell">
               <div class="readout-lbl">
@@ -1829,7 +1972,7 @@ body::after {
                 <span id="outMarginWarn" class="tech-badge warn" style="display:none;">Margin &gt; Kapitał</span>
               </div>
               <div class="readout-mid" id="outMargin">0.00 USDT</div>
-              <span class="readout-sub" id="outMarginSub">Dźwignia: 10x · 0.00% kapitału</span>
+              <span class="readout-sub" id="outMarginSub">Dźwignia: 10x · 0.0% kapitału</span>
             </div>
 
             <div class="readout-cell">
@@ -1850,7 +1993,7 @@ body::after {
           <!-- Realna strata SL + Realny zysk netto TP -->
           <div class="readout-2col">
             <div class="readout-cell">
-              <span class="readout-lbl">Realna kwota straty na SL</span>
+              <span class="readout-lbl">Realna strata na SL</span>
               <div class="readout-mid val-loss" id="outRealSlLoss">-0.00 USDT</div>
               <div class="breakdown-list">
                 <div class="breakdown-item">
@@ -1881,14 +2024,14 @@ body::after {
                   <span class="v" id="outTotalTpFees">-0.00 USDT</span>
                 </div>
                 <div class="breakdown-item">
-                  <span class="k">Zwrot na kapitale (ROE konta)</span>
+                  <span class="k">Zwrot na kapitale (ROE)</span>
                   <span class="v" id="outTotalTpRoe">+0.00%</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Szczegółowe rozbicie Multi-TP -->
+          <!-- Rozbicie Multi-TP -->
           <div class="lab-section">
             <div class="section-kicker">
               <span>Rozbicie poziomów Take Profit (Netto)</span>
@@ -1923,11 +2066,11 @@ body::after {
          ======================================================================= -->
     <main id="tabJournal" class="tab-panel" aria-label="Dziennik transakcji">
       <div class="journal-stack">
-        <!-- Górny pasek dziennika: kapitał początkowy, saldo bieżące, eksport/import, dodaj -->
-        <section class="journal-topbar" aria-label="Zarządzanie kapitałem i danymi dziennika">
+        <!-- Pasek kapitału początkowego, aktualnego salda i eksportu/importu -->
+        <section class="journal-topbar" aria-label="Zarządzanie kapitałem i kopiami zapasowymi">
           <div class="start-balance-group">
             <div class="field start-balance-field">
-              <label class="field-label" for="journalStartBalance">Kapitał początkowy (USDT)</label>
+              <label class="field-label" for="journalStartBalance">Kapitał początkowy dziennika</label>
               <div class="input-box">
                 <input id="journalStartBalance" type="text" inputmode="decimal" placeholder="10000" autocomplete="off">
                 <span class="input-unit">USDT</span>
@@ -1935,25 +2078,25 @@ body::after {
             </div>
 
             <div class="current-balance-pill">
-              <span class="lbl">Bieżące saldo konta</span>
+              <span class="lbl">Aktualne saldo konta</span>
               <span class="val" id="headerCurrentBalance">10 000.00 USDT</span>
             </div>
           </div>
 
           <div class="journal-actions-bar">
-            <button type="button" id="exportJsonBtn" class="btn btn-sm">Eksport JSON</button>
-            <button type="button" id="importJsonBtn" class="btn btn-sm">Import JSON</button>
+            <button type="button" id="exportJsonBtn" class="btn">Eksport JSON</button>
+            <button type="button" id="importJsonBtn" class="btn">Import JSON</button>
             <input type="file" id="importJsonFile" accept=".json,application/json" class="sr-only">
-            <button type="button" id="exportCsvBtn" class="btn btn-sm">Eksport CSV</button>
-            <button type="button" id="toggleAddFormBtn" class="btn btn-primary btn-sm">+ Dodaj transakcję</button>
+            <button type="button" id="exportCsvBtn" class="btn">Eksport CSV</button>
+            <button type="button" id="toggleAddFormBtn" class="btn btn-primary">+ Dodaj transakcję</button>
           </div>
         </section>
 
-        <!-- Rozwijany formularz dodawania / edycji transakcji -->
-        <section id="tradeFormWrap" class="lab-card trade-form-wrap" aria-label="Formularz wpisu transakcji">
+        <!-- Formularz dodawania / edycji wpisu (rozwijany) -->
+        <section id="tradeFormWrap" class="lab-card trade-form-wrap" aria-label="Formularz transakcji">
           <div class="lab-card-header">
             <h2 class="lab-card-title" id="tradeFormTitle">Nowa transakcja</h2>
-            <button type="button" id="closeTradeFormBtn" class="btn btn-sm">Zamknij</button>
+            <button type="button" id="closeTradeFormBtn" class="btn btn-table">Zamknij</button>
           </div>
 
           <form id="tradeForm" class="lab-section" novalidate>
@@ -1969,7 +2112,7 @@ body::after {
 
               <div class="field">
                 <span class="field-label">Kierunek *</span>
-                <div class="seg-switch full-width tall" role="group" aria-label="Kierunek transakcji">
+                <div class="seg-switch full-width" role="group" aria-label="Kierunek transakcji">
                   <button type="button" id="dirLongBtn" class="active-profit">LONG</button>
                   <button type="button" id="dirShortBtn">SHORT</button>
                 </div>
@@ -2010,7 +2153,7 @@ body::after {
 
               <div class="field">
                 <div class="field-label-row">
-                  <label class="field-label" for="tradeBalanceAfter">Konto po transakcji</label>
+                  <label class="field-label" for="tradeBalanceAfter">Wielkość konta po transakcji</label>
                   <span id="tradeBalanceModeBadge" class="tech-badge dark">AUTO</span>
                 </div>
                 <div class="balance-inline-row">
@@ -2018,7 +2161,7 @@ body::after {
                     <input id="tradeBalanceAfter" type="text" inputmode="decimal" placeholder="10000.00" autocomplete="off">
                     <span class="input-unit">USDT</span>
                   </div>
-                  <button type="button" id="resetBalanceAutoBtn" class="btn btn-sm" title="Przywróć automatyczne wyliczanie salda" disabled>↺ AUTO</button>
+                  <button type="button" id="resetBalanceAutoBtn" class="btn" title="Przywróć automatyczne saldo" disabled>↺ AUTO</button>
                 </div>
                 <div class="balance-delta-note" id="tradeBalanceDeltaNote">Poprzednie saldo: 10 000.00 USDT</div>
               </div>
@@ -2075,7 +2218,7 @@ body::after {
           </form>
         </section>
 
-        <!-- Pasek metryk KPI (8 wskaźników na przefiltrowanych transakcjach) -->
+        <!-- Pasek 8 metryk KPI -->
         <section class="kpi-grid" aria-label="Kluczowe metryki efektywności">
           <div class="kpi-card">
             <span class="kpi-label">Łączny P&amp;L (USDT)</span>
@@ -2119,19 +2262,19 @@ body::after {
           </div>
         </section>
 
-        <!-- Interaktywny wykres krzywej kapitału SVG -->
+        <!-- Interaktywna krzywa kapitału SVG (kolorowanie segmentowe) -->
         <section class="lab-card" aria-label="Wykres krzywej kapitału">
           <div class="lab-card-header">
             <div>
               <h2 class="lab-card-title">Krzywa kapitału</h2>
               <div class="chart-legend" style="margin-top:4px;">
-                <span><span class="legend-dot" style="background:#1B7A50;"></span>Wzrost</span>
-                <span><span class="legend-dot" style="background:#C93636;"></span>Spadek</span>
-                <span><span class="legend-dot" style="background:transparent; border:2px solid #E6482E;"></span>Korekta salda</span>
+                <span><span class="legend-dot" style="background:var(--profit);"></span>Wzrost</span>
+                <span><span class="legend-dot" style="background:var(--loss);"></span>Spadek</span>
+                <span><span class="legend-dot" style="background:transparent; border:2px solid var(--accent);"></span>Korekta salda</span>
               </div>
             </div>
 
-            <div class="seg-switch" role="group" aria-label="Tryb wykresu krzywej kapitału">
+            <div class="seg-switch compact" role="group" aria-label="Tryb krzywej kapitału">
               <button type="button" id="chartModePnlBtn" class="active">Skumulowany P&amp;L (USDT)</button>
               <button type="button" id="chartModeBalBtn">Saldo konta (USDT)</button>
             </div>
@@ -2140,19 +2283,18 @@ body::after {
           <div class="chart-body">
             <div id="equityChartWrap" class="chart-canvas-wrap"></div>
             <div id="chartTelemetry" class="chart-telemetry">
-              Najedź lub kliknij punkt na wykresie, aby odczytać szczegóły transakcji.
+              Najedź lub dotknij punkt na wykresie, aby odczytać telemetrię transakcji.
             </div>
           </div>
         </section>
 
         <!-- Filtry i rejestr transakcji -->
-        <section class="lab-card" aria-label="Lista transakcji i filtry">
+        <section class="lab-card" aria-label="Rejestr transakcji i filtry">
           <div class="lab-card-header">
             <h2 class="lab-card-title">Rejestr transakcji</h2>
             <span class="lab-card-sub" id="journalCountLabel">Wyświetlane: 0 / 0</span>
           </div>
 
-          <!-- Pasek filtrów -->
           <div class="filters-bar">
             <div class="field">
               <label class="field-label" for="filterSearch">Szukaj (para / notatka)</label>
@@ -2201,9 +2343,8 @@ body::after {
             <button type="button" id="resetFiltersBtn" class="btn">Reset</button>
           </div>
 
-          <!-- Stan pusty -->
           <div id="journalEmptyState" class="empty-state" style="display:none;">
-            Brak transakcji spełniających kryteria. Kliknij „+ Dodaj transakcję” powyżej, aby dodać pierwszy wpis.
+            Brak transakcji spełniających kryteria. Kliknij „+ Dodaj transakcję”, aby zapisać pierwszy wpis.
           </div>
 
           <!-- Tabela Desktop -->
@@ -2251,8 +2392,9 @@ body::after {
       'use strict';
 
       /* =======================================================================
-         STAŁE STORAGE I DOMYŚLNA KONFIGURACJA
+         KLUCZE LOCALSTORAGE ORAZ KONFIGURACJA DOMYŚLNA
          ======================================================================= */
+      const STORAGE_THEME_KEY = 'braun_lab70_theme_v1';
       const STORAGE_CALC_KEY = 'braun_lab70_calc_v1';
       const STORAGE_JOURNAL_KEY = 'braun_lab70_journal_trades_v1';
       const STORAGE_JOURNAL_META_KEY = 'braun_lab70_journal_meta_v1';
@@ -2277,7 +2419,7 @@ body::after {
       };
 
       /* =======================================================================
-         NARZĘDZIA POMOCNICZE (STORAGE, PARSOWANIE, FORMATOWANIE, BEZPIECZEŃSTWO)
+         FUNKCJE POMOCNICZE (STORAGE, PARSOWANIE, FORMATOWANIE, BEZPIECZEŃSTWO)
          ======================================================================= */
       function cloneObj(obj) {
         return JSON.parse(JSON.stringify(obj));
@@ -2298,7 +2440,7 @@ body::after {
         try {
           window.localStorage.setItem(key, JSON.stringify(value));
         } catch (err) {
-          // Tryb prywatny lub ograniczenia iframe — działanie w pamięci nadal działa
+          // Bezpieczne wyciszenie w trybach z ograniczonym dostępem do storage
         }
       }
 
@@ -2356,7 +2498,16 @@ body::after {
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
-      /* Toast & Modal (zastępują całkowicie alert() oraz confirm()) */
+      function getCssVar(name, fallback) {
+        try {
+          const val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+          return val || fallback;
+        } catch (err) {
+          return fallback;
+        }
+      }
+
+      /* Powiadomienie Toast & Modal (zastępują alert() / confirm()) */
       let toastTimer = null;
       const elToast = document.getElementById('appToast');
 
@@ -2385,7 +2536,7 @@ body::after {
         actions.forEach((act) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = `btn btn-sm ${act.className || ''}`.trim();
+          btn.className = `btn ${act.className || ''}`.trim();
           btn.textContent = act.label;
           btn.addEventListener('click', () => {
             closeModal();
@@ -2398,6 +2549,49 @@ body::after {
 
       elModal.addEventListener('click', (e) => {
         if (e.target === elModal) closeModal();
+      });
+
+      /* =======================================================================
+         ZARZĄDZANIE MOTYWEM (BRAUN LAB 70 LIGHT <-> BRAUN ET66 DARK)
+         ======================================================================= */
+      const elThemeToggleBtn = document.getElementById('themeToggleBtn');
+      const elThemeLightLbl = document.getElementById('themeLightLbl');
+      const elThemeDarkLbl = document.getElementById('themeDarkLbl');
+      const elBrandSubText = document.getElementById('brandSubText');
+      const elThemeColorMeta = document.getElementById('themeColorMeta');
+      const elIosStatusBarMeta = document.getElementById('iosStatusBarMeta');
+
+      let currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+
+      function applyTheme(theme, shouldRerenderChart = true) {
+        currentTheme = theme === 'dark' ? 'dark' : 'light';
+        const isDark = currentTheme === 'dark';
+
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        elThemeToggleBtn.setAttribute('aria-pressed', String(isDark));
+        elThemeLightLbl.classList.toggle('active', !isDark);
+        elThemeDarkLbl.classList.toggle('active', isDark);
+        elBrandSubText.textContent = isDark ? 'BRAUN ET66 DARK · STANDALONE' : 'BRAUN LAB 70 · STANDALONE';
+
+        if (elThemeColorMeta) {
+          elThemeColorMeta.setAttribute('content', isDark ? '#131312' : '#ECEBE6');
+        }
+        if (elIosStatusBarMeta) {
+          elIosStatusBarMeta.setAttribute('content', isDark ? 'black-translucent' : 'default');
+        }
+
+        try {
+          window.localStorage.setItem(STORAGE_THEME_KEY, currentTheme);
+        } catch (err) {}
+
+        // Przerysuj wykres SVG z aktualnymi zmiennymi CSS motywu
+        if (shouldRerenderChart) {
+          renderJournal();
+        }
+      }
+
+      elThemeToggleBtn.addEventListener('click', () => {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
       });
 
       /* =======================================================================
@@ -2446,14 +2640,13 @@ body::after {
       let activeChartPoints = [];
 
       /* =======================================================================
-         NAWIGACJA GŁÓWNA (FIZYCZNY PRZEŁĄCZNIK KALKULATOR / DZIENNIK)
+         NAWIGACJA GŁÓWNA (KALKULATOR <-> DZIENNIK)
          ======================================================================= */
       const tabCalculator = document.getElementById('tabCalculator');
       const tabJournal = document.getElementById('tabJournal');
       const mainTabSwitch = document.getElementById('mainTabSwitch');
       const navCalcLabel = document.getElementById('navCalcLabel');
       const navJournalLabel = document.getElementById('navJournalLabel');
-      const sysActiveModule = document.getElementById('sysActiveModule');
 
       function setActiveTab(tab) {
         activeTab = tab === 'journal' ? 'journal' : 'calculator';
@@ -2464,7 +2657,6 @@ body::after {
         navCalcLabel.classList.toggle('active', !isJournal);
         navJournalLabel.classList.toggle('active', isJournal);
         mainTabSwitch.setAttribute('aria-checked', String(isJournal));
-        sysActiveModule.textContent = isJournal ? 'DZIENNIK' : 'KALKULATOR';
 
         if (isJournal) {
           renderJournal();
@@ -2474,12 +2666,11 @@ body::after {
       mainTabSwitch.addEventListener('click', () => {
         setActiveTab(activeTab === 'calculator' ? 'journal' : 'calculator');
       });
-
       navCalcLabel.addEventListener('click', () => setActiveTab('calculator'));
       navJournalLabel.addEventListener('click', () => setActiveTab('journal'));
 
       /* =======================================================================
-         MODUŁ 1: KALKULATOR WIELKOŚCI POZYCJI (100% PROCENTOWY)
+         MODUŁ 1: KALKULATOR WIELKOŚCI POZYCJI (100% PROCENTOWY, USDT)
          ======================================================================= */
       const elCalcCapital = document.getElementById('calcCapital');
       const elCalcRiskInput = document.getElementById('calcRiskInput');
@@ -2599,7 +2790,7 @@ body::after {
         recalculate();
       }
 
-      /* Zdarzenia kontrolek kalkulatora */
+      /* Zdarzenia kalkulatora */
       elCalcCapital.addEventListener('input', () => {
         calcState.capital = elCalcCapital.value;
         persistAndRecalc();
@@ -2660,7 +2851,7 @@ body::after {
         persistAndRecalc();
       });
 
-      Object.entries(feeSwitches).forEach(([key, sw]) => {
+      Object.values(feeSwitches).forEach((sw) => {
         sw.btn.addEventListener('click', () => {
           calcState[sw.stateKey] = calcState[sw.stateKey] === 'taker' ? 'maker' : 'taker';
           syncFeeSwitchesUI();
@@ -2678,7 +2869,7 @@ body::after {
         });
       });
 
-      /* Zdarzenia listy Multi-TP */
+      /* Zdarzenia Multi-TP */
       elTpList.addEventListener('input', (e) => {
         const input = e.target.closest('input[data-tp-field]');
         if (!input) return;
@@ -2706,7 +2897,6 @@ body::after {
         const lastPct = parseNum(last?.pct);
         const nextPct = Number.isFinite(lastPct) && lastPct > 0 ? (lastPct + 1).toFixed(2) : '3.00';
 
-        // Oblicz pozostały wolny udział lub podziel równo
         let currentSum = 0;
         calcState.tpLevels.forEach((l) => {
           const a = parseNum(l.alloc);
@@ -2729,7 +2919,6 @@ body::after {
         const sum = allocs.reduce((acc, v) => acc + v, 0);
 
         if (sum <= 0) {
-          // Równy podział po równo na 100%
           const base = Math.floor((100 / count) * 100) / 100;
           let running = 0;
           calcState.tpLevels.forEach((l, i) => {
@@ -2741,7 +2930,6 @@ body::after {
             }
           });
         } else {
-          // Proporcjonalne skalowanie do 100%
           let running = 0;
           calcState.tpLevels.forEach((l, i) => {
             if (i === count - 1) {
@@ -2759,7 +2947,7 @@ body::after {
         showToast('Wyrównano sumę udziałów TP do 100%.', 'ok');
       });
 
-      /* Główny silnik obliczeń kalkulatora */
+      /* Główny silnik matematyczny kalkulatora */
       function recalculate() {
         const capital = parseNum(calcState.capital);
         const riskInputVal = parseNum(calcState.riskValue);
@@ -2768,7 +2956,6 @@ body::after {
         const makerFeePct = Math.max(0, Number.isFinite(parseNum(calcState.makerFee)) ? parseNum(calcState.makerFee) : 0);
         const takerFeePct = Math.max(0, Number.isFinite(parseNum(calcState.takerFee)) ? parseNum(calcState.takerFee) : 0);
 
-        // Wyznacz kwotę ryzyka w USDT oraz ekwiwalent procentowy
         let riskUsdt = NaN;
         let riskPct = NaN;
 
@@ -2849,12 +3036,12 @@ body::after {
           outTotalTpGross.textContent = '—';
           outTotalTpFees.textContent = '—';
           outTotalTpRoe.textContent = '—';
-          tpBreakdownBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-secondary);">Oczekiwanie na poprawne parametry pozycji...</td></tr>';
+          tpBreakdownBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Oczekiwanie na poprawne parametry pozycji...</td></tr>';
           tpBreakdownFoot.innerHTML = '';
           return;
         }
 
-        // Model matematyczny: N = Risk_USDT / (SL% + fee_entry + fee_sl)
+        // N = Risk_USDT / (SL%/100 + fee_entry + fee_SL)
         const totalSlCostRate = slRate + feeEntryRate + feeSlRate;
         const notional = riskUsdt / totalSlCostRate;
         const margin = notional / leverage;
@@ -2864,9 +3051,9 @@ body::after {
         const slEntryFee = notional * feeEntryRate;
         const slExitFee = notional * feeSlRate;
         const slTotalFees = slEntryFee + slExitFee;
-        const realSlLoss = slPriceLoss + slTotalFees; // Równe dokładnie riskUsdt
+        const realSlLoss = slPriceLoss + slTotalFees;
 
-        // Rozbicie poziomów Take Profit (Multi-TP)
+        // Rozbicie poziomów Multi-TP
         let totalTpNotional = 0;
         let totalTpGross = 0;
         let totalTpFees = 0;
@@ -2911,7 +3098,6 @@ body::after {
         const marginExceedsCapital = Number.isFinite(capital) && capital > 0 && margin > capital + 0.0001;
         const tpRoePct = Number.isFinite(capital) && capital > 0 ? (totalTpNet / capital) * 100 : NaN;
 
-        // Aktualizacja DOM wyników
         outPositionSize.textContent = `${fmtNum(notional, 2)} USDT`;
         outPositionSub.textContent = `Efektywny koszt SL (ruch + prowizje): ${fmtNum(totalSlCostRate * 100, 3)}%`;
 
@@ -2941,7 +3127,8 @@ body::after {
         outTotalTpRoe.textContent = Number.isFinite(tpRoePct) ? fmtSigned(tpRoePct, 2, '%') : '—';
         outTotalTpRoe.className = `v ${tpRoePct > 0 ? 'val-profit' : tpRoePct < 0 ? 'val-loss' : ''}`;
 
-        outTpSummaryNote.textContent = `${calcState.tpLevels.length} ${calcState.tpLevels.length === 1 ? 'poziom' : 'poziomy'} · suma udziałów ${fmtNum(tpAllocSum, 1).replace(/\.0$/, '')}%`;
+        const lvlWord = calcState.tpLevels.length === 1 ? 'poziom' : (calcState.tpLevels.length < 5 ? 'poziomy' : 'poziomów');
+        outTpSummaryNote.textContent = `${calcState.tpLevels.length} ${lvlWord} · suma udziałów ${fmtNum(tpAllocSum, 1).replace(/\.0$/, '')}%`;
 
         tpBreakdownBody.innerHTML = rowsHtml;
         const footNetCls = totalTpNet > 0 ? 'val-profit' : totalTpNet < 0 ? 'val-loss' : '';
@@ -3008,7 +3195,6 @@ body::after {
         return Number.isFinite(val) ? val : 0;
       }
 
-      /* Sortowanie chronologiczne rosnąco z tie-breakerem po kolejności utworzenia */
       function compareTradesChrono(a, b) {
         const da = String(a.date || '');
         const db = String(b.date || '');
@@ -3051,7 +3237,7 @@ body::after {
         };
       }
 
-      /* Wyznacza kontekst salda tuż przed aktualnie tworzoną/edytowaną transakcją */
+      /* Kontekst salda tuż przed aktualnie wpisywaną/edytowaną transakcją */
       function computeFormExpectedContext() {
         const startBal = getStartingBalanceNum();
         const editId = elTradeEditId.value.trim();
@@ -3075,7 +3261,7 @@ body::after {
         return { prevBalance, expectedBalanceAfter };
       }
 
-      /* Dwukierunkowe wyliczanie P&L (USDT) <-> P&L (%) względem salda konta przed transakcją */
+      /* Dwukierunkowe powiązanie P&L (USDT) <-> P&L (%) względem Bazy konta */
       function syncLinkedPnlField(source) {
         const ctx = computeFormExpectedContext();
         const baseBalance = ctx.prevBalance;
@@ -3103,7 +3289,6 @@ body::after {
         }
       }
 
-      /* Odświeża podgląd bazy konta oraz pola „Konto po transakcji” w formularzu */
       function refreshFormBalancePreview() {
         if (!elTradeFormWrap.classList.contains('open')) return;
 
@@ -3219,11 +3404,10 @@ body::after {
           openTradeForm(null);
         }
       });
-
       elCloseTradeFormBtn.addEventListener('click', closeTradeForm);
       elCancelTradeBtn.addEventListener('click', closeTradeForm);
 
-      /* Obsługa przycisków zmiany znaku +/- dla pól P&L USDT, P&L % i R-multiple */
+      /* Przyciski zmiany znaku ± dla iOS */
       document.querySelectorAll('button[data-toggle-sign]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const targetId = btn.dataset.toggleSign;
@@ -3254,7 +3438,7 @@ body::after {
         });
       });
 
-      /* Zdarzenia formularza dziennika */
+      /* Zdarzenia formularza i kapitału początkowego */
       elJournalStartBalance.value = journalMeta.startingBalance;
       elJournalStartBalance.addEventListener('input', () => {
         journalMeta.startingBalance = elJournalStartBalance.value;
@@ -3297,14 +3481,13 @@ body::after {
         refreshFormBalancePreview();
       });
 
-      /* Zapis / aktualizacja transakcji */
+      /* Zapis / aktualizacja wpisu */
       elTradeForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const pair = elTradePair.value.trim().toUpperCase();
         const date = elTradeDate.value.trim();
 
-        // Upewnij się, że powiązane pole P&L jest wyliczone
         const ctx = computeFormExpectedContext();
         let pnlUsdt = parseNum(elTradePnlUsdt.value);
         let pnlPct = parseNum(elTradePnlPct.value);
@@ -3415,7 +3598,7 @@ body::after {
         renderJournal();
       });
 
-      /* Tryb wykresu (Skumulowany P&L vs Saldo konta) */
+      /* Tryb wykresu */
       function setChartMode(mode) {
         journalMeta.chartMode = mode === 'balance' ? 'balance' : 'pnl';
         saveStorage(STORAGE_JOURNAL_META_KEY, journalMeta);
@@ -3467,7 +3650,7 @@ body::after {
         renderJournal();
       });
 
-      /* Obliczanie 8 metryk KPI na przefiltrowanej liście */
+      /* Obliczanie 8 metryk KPI */
       function computeMetrics(filteredList, chainById, startBal) {
         const count = filteredList.length;
         if (count === 0) {
@@ -3545,13 +3728,11 @@ body::after {
             mfeCount += 1;
           }
 
-          // Max Drawdown (USDT)
           cumUsdt += t.pnlUsdt;
           if (cumUsdt > peakUsdt) peakUsdt = cumUsdt;
           const ddUsdt = peakUsdt - cumUsdt;
           if (ddUsdt > maxDdUsdt) maxDdUsdt = ddUsdt;
 
-          // Max Drawdown (%) od szczytu kapitału
           if (Number.isFinite(t.pnlPct)) {
             eqIdx = Math.max(0.0001, eqIdx * (1 + t.pnlPct / 100));
             if (eqIdx > peakEqIdx) peakEqIdx = eqIdx;
@@ -3569,7 +3750,7 @@ body::after {
         const expectancy = totalPnl / count;
         const avgR = rCount > 0 ? sumR / rCount : NaN;
 
-        // Kryterium Kelly'ego: Kelly % = (W - (1 - W) / (AvgWin / AvgLoss)) * 100
+        // Kryterium Kelly'ego: W - (1 - W) / (AvgWin / AvgLoss)
         let kellyPct = NaN;
         if (wins > 0 && losses > 0) {
           const W = wins / (wins + losses);
@@ -3663,21 +3844,29 @@ body::after {
         maeMfeMeta.textContent = `MAE: n=${m.maeCount} · MFE: n=${m.mfeCount}`;
       }
 
-      /* Wykres SVG krzywej kapitału z segmentowym kolorowaniem (spadek = czerwony, wzrost = zielony) */
+      /* Wykres SVG krzywej kapitału z dynamicznymi kolorami motywu i segmentami wzrost/spadek */
       function renderEquityChart(chronoTrades, chainById, startBal) {
         const isBalanceMode = journalMeta.chartMode === 'balance';
 
         if (chronoTrades.length === 0) {
           activeChartPoints = [];
           elEquityChartWrap.innerHTML = `<div class="chart-empty">Brak danych do wykreślenia krzywej kapitału. Dodaj transakcje lub zresetuj filtry.</div>`;
-          elChartTelemetry.textContent = 'Najedź lub kliknij punkt na wykresie, aby odczytać szczegóły transakcji.';
+          elChartTelemetry.textContent = 'Najedź lub dotknij punkt na wykresie, aby odczytać telemetrię transakcji.';
           return;
         }
+
+        // Pobranie aktywnych kolorów z bieżącego motywu CSS
+        const cProfit = getCssVar('--profit', '#1B7A50');
+        const cLoss = getCssVar('--loss', '#C93636');
+        const cMuted = getCssVar('--text-muted', '#6B6A65');
+        const cText = getCssVar('--text', '#141413');
+        const cAccent = getCssVar('--accent', '#E6482E');
+        const cGrid = getCssVar('--chart-grid', '#E3E1D8');
+        const cDotStroke = getCssVar('--chart-dot-stroke', '#FFFFFF');
 
         const points = [];
         let cumPnl = 0;
 
-        // Punkt startowy #0 (przed pierwszą transakcją)
         const firstChain = chainById.get(chronoTrades[0].id);
         const initialBal = firstChain ? firstChain.prevBalance : startBal;
         points.push({
@@ -3738,25 +3927,23 @@ body::after {
         const xOf = (i) => padL + (points.length === 1 ? plotW / 2 : (i / (points.length - 1)) * plotW);
         const yOf = (v) => padT + ((maxVal - v) / (maxVal - minVal)) * plotH;
 
-        // Siatka pozioma (4 podziały)
         let gridSvg = '';
         const steps = 4;
         for (let s = 0; s <= steps; s += 1) {
           const v = minVal + ((maxVal - minVal) * s) / steps;
           const y = yOf(v).toFixed(1);
           gridSvg += `
-            <line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#E5E3DC" stroke-width="1" />
-            <text x="${padL - 8}" y="${(Number(y) + 4).toFixed(1)}" text-anchor="end" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">${fmtNum(v, 0)}</text>
+            <line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${cGrid}" stroke-width="1" />
+            <text x="${padL - 8}" y="${(Number(y) + 4).toFixed(1)}" text-anchor="end" fill="${cMuted}" font-family="IBM Plex Mono, monospace" font-size="10.5">${fmtNum(v, 0)}</text>
           `;
         }
 
-        // Linia odniesienia (0 USDT dla P&L albo saldo startowe)
         const yRef = yOf(refVal).toFixed(1);
         const refLineSvg = `
-          <line x1="${padL}" y1="${yRef}" x2="${W - padR}" y2="${yRef}" stroke="#141413" stroke-width="1" stroke-dasharray="4 4" opacity="0.6" />
+          <line x1="${padL}" y1="${yRef}" x2="${W - padR}" y2="${yRef}" stroke="${cText}" stroke-width="1" stroke-dasharray="4 4" opacity="0.45" />
         `;
 
-        // SEGMENTOWE KOLOROWANIE: spadek = #C93636, wzrost = #1B7A50, płasko = #6B6A65
+        // Kolorowanie segmentowe: spadek = var(--loss), wzrost = var(--profit), płasko = var(--text-muted)
         let segmentsSvg = '';
         for (let i = 1; i < points.length; i += 1) {
           const prev = points[i - 1];
@@ -3766,11 +3953,11 @@ body::after {
           const x2 = xOf(i).toFixed(1);
           const y2 = yOf(curr.val).toFixed(1);
 
-          let segColor = '#6B6A65';
+          let segColor = cMuted;
           if (curr.val < prev.val) {
-            segColor = '#C93636';
+            segColor = cLoss;
           } else if (curr.val > prev.val) {
-            segColor = '#1B7A50';
+            segColor = cProfit;
           }
 
           segmentsSvg += `
@@ -3778,27 +3965,26 @@ body::after {
           `;
         }
 
-        // Punkty pomiarowe + oznaczenia ręcznych korekt salda
         let dotsSvg = '';
         points.forEach((p, i) => {
           const cx = xOf(i).toFixed(1);
           const cy = yOf(p.val).toFixed(1);
-          let dotColor = '#6B6A65';
+          let dotColor = cMuted;
           if (i > 0) {
             const prevVal = points[i - 1].val;
-            if (p.val < prevVal) dotColor = '#C93636';
-            else if (p.val > prevVal) dotColor = '#1B7A50';
+            if (p.val < prevVal) dotColor = cLoss;
+            else if (p.val > prevVal) dotColor = cProfit;
           }
           const r = points.length > 45 ? 3 : 4.2;
 
           const manualRing = p.isManualBalance
-            ? `<circle cx="${cx}" cy="${cy}" r="${(r + 3.2).toFixed(1)}" fill="none" stroke="#E6482E" stroke-width="1.6" />`
+            ? `<circle cx="${cx}" cy="${cy}" r="${(r + 3.2).toFixed(1)}" fill="none" stroke="${cAccent}" stroke-width="1.6" />`
             : '';
 
           dotsSvg += `
             ${manualRing}
-            <circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotColor}" stroke="#FFFFFF" stroke-width="1.5" data-pt-idx="${i}" />
-            <circle cx="${cx}" cy="${cy}" r="14" fill="transparent" style="cursor:pointer;" data-pt-hit="${i}" />
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="${dotColor}" stroke="${cDotStroke}" stroke-width="1.5" />
+            <circle cx="${cx}" cy="${cy}" r="16" fill="transparent" style="cursor:pointer;" data-pt-hit="${i}" />
           `;
         });
 
@@ -3809,15 +3995,14 @@ body::after {
           <svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Wykres krzywej kapitału">
             ${gridSvg}
             ${refLineSvg}
-            <line id="eqCrosshair" x1="0" y1="${padT}" x2="0" y2="${H - padB}" stroke="#E6482E" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
+            <line id="eqCrosshair" x1="0" y1="${padT}" x2="0" y2="${H - padB}" stroke="${cAccent}" stroke-width="1" stroke-dasharray="2 2" opacity="0" />
             ${segmentsSvg}
             ${dotsSvg}
-            <text x="${padL}" y="${H - 7}" text-anchor="start" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">START (${firstDate})</text>
-            <text x="${W - padR}" y="${H - 7}" text-anchor="end" fill="#6B6A65" font-family="IBM Plex Mono, monospace" font-size="10.5">#${chronoTrades.length} (${lastDate})</text>
+            <text x="${padL}" y="${H - 7}" text-anchor="start" fill="${cMuted}" font-family="IBM Plex Mono, monospace" font-size="10.5">START (${firstDate})</text>
+            <text x="${W - padR}" y="${H - 7}" text-anchor="end" fill="${cMuted}" font-family="IBM Plex Mono, monospace" font-size="10.5">#${chronoTrades.length} (${lastDate})</text>
           </svg>
         `;
 
-        // Podpięcie interaktywnego podglądu punktów (hover + kliknięcie)
         const svgEl = elEquityChartWrap.querySelector('svg');
         const crosshair = svgEl.querySelector('#eqCrosshair');
 
@@ -3863,7 +4048,6 @@ body::after {
           hit.addEventListener('click', () => activatePoint(idx));
         });
 
-        // Domyślnie pokaż telemetrię ostatniego punktu
         activatePoint(points.length - 1);
       }
 
@@ -3903,7 +4087,6 @@ body::after {
         emptyEl.style.display = 'none';
         tableWrap.style.display = '';
 
-        // Tabela i karty sortowane od najnowszych do najstarszych
         const sortedDesc = [...filtered].sort((a, b) => compareTradesChrono(b, a));
 
         tbody.innerHTML = sortedDesc.map((t) => {
@@ -3920,7 +4103,7 @@ body::after {
 
           return `
             <tr>
-              <td class="mono" style="white-space:nowrap; font-size:0.78rem; color:var(--text-secondary);">${escapeHtml(formatDisplayDate(t.date))}</td>
+              <td class="mono" style="white-space:nowrap; font-size:0.78rem; color:var(--text-muted);">${escapeHtml(formatDisplayDate(t.date))}</td>
               <td class="mono"><strong>${escapeHtml(t.pair)}</strong></td>
               <td><span class="dir-pill ${dirCls}">${escapeHtml(t.direction)}</span></td>
               <td class="num ${pnlCls}"><strong>${fmtSigned(t.pnlUsdt, 2)}</strong></td>
@@ -3931,15 +4114,15 @@ body::after {
                   ${buildManualTagHtml(info)}
                 </div>
               </td>
-              <td class="num ${rCls}" style="${hasR ? '' : 'color:var(--text-secondary);'}">${rTxt}</td>
-              <td class="num" style="white-space:nowrap; color:var(--text-secondary);">${maeTxt} / ${mfeTxt}</td>
+              <td class="num ${rCls}" style="${hasR ? '' : 'color:var(--text-muted);'}">${rTxt}</td>
+              <td class="num" style="white-space:nowrap; color:var(--text-muted);">${maeTxt} / ${mfeTxt}</td>
               <td>
                 <div class="note-cell" title="Kliknij, aby rozwinąć notatkę" data-expand-note>${t.note ? escapeHtml(t.note) : '<span style="opacity:0.45;">—</span>'}</div>
               </td>
               <td class="num" style="white-space:nowrap;">
                 <div class="row-actions">
-                  <button type="button" class="btn btn-sm" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
-                  <button type="button" class="btn btn-sm btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
+                  <button type="button" class="btn btn-table" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
+                  <button type="button" class="btn btn-table btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
                 </div>
               </td>
             </tr>
@@ -3983,7 +4166,7 @@ body::after {
                 </div>
                 <div class="trade-card-metric">
                   <div class="m-lbl">R-Multiple</div>
-                  <div class="m-val ${rCls}" style="${hasR ? '' : 'color:var(--text-secondary);'}">${rTxt}</div>
+                  <div class="m-val ${rCls}" style="${hasR ? '' : 'color:var(--text-muted);'}">${rTxt}</div>
                 </div>
               </div>
               <div class="trade-card-extra">
@@ -3991,15 +4174,15 @@ body::after {
                 ${t.note ? `<div>${escapeHtml(t.note)}</div>` : ''}
               </div>
               <div class="trade-card-actions">
-                <button type="button" class="btn btn-sm" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
-                <button type="button" class="btn btn-sm btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
+                <button type="button" class="btn" data-edit-id="${escapeHtml(t.id)}">Edytuj</button>
+                <button type="button" class="btn btn-danger-ghost" data-del-id="${escapeHtml(t.id)}">Usuń</button>
               </div>
             </article>
           `;
         }).join('');
       }
 
-      /* Delegacja zdarzeń w tabeli i kartach (Edycja, Usuwanie, Rozwijanie notatek) */
+      /* Delegacja zdarzeń w rejestrze transakcji */
       const handleLogClick = (e) => {
         const noteEl = e.target.closest('[data-expand-note]');
         if (noteEl) {
@@ -4050,8 +4233,9 @@ body::after {
       document.getElementById('exportJsonBtn').addEventListener('click', () => {
         const payload = {
           app: 'POS-SIZE // JOURNAL — USDT',
-          version: '1.3',
+          version: '2.0',
           exportedAt: new Date().toISOString(),
+          theme: currentTheme,
           startingBalance: getStartingBalanceNum(),
           calcSettings: calcState,
           trades
@@ -4083,6 +4267,10 @@ body::after {
             const importedCalcSettings =
               !Array.isArray(raw) && raw?.calcSettings && typeof raw.calcSettings === 'object'
                 ? raw.calcSettings
+                : null;
+            const importedTheme =
+              !Array.isArray(raw) && (raw?.theme === 'dark' || raw?.theme === 'light')
+                ? raw.theme
                 : null;
 
             if (!list) {
@@ -4139,6 +4327,9 @@ body::after {
                 saveStorage(STORAGE_CALC_KEY, calcState);
                 syncCalcInputsFromState();
                 recalculate();
+              }
+              if (importedTheme) {
+                applyTheme(importedTheme, false);
               }
             };
 
@@ -4226,7 +4417,6 @@ body::after {
           ].map(csvEscape).join(',');
         });
 
-        // BOM UTF-8 dla poprawnego wyświetlania polskich znaków w Excelu i Google Sheets
         const csvContent = '\uFEFF' + [headers.map(csvEscape).join(','), ...rows].join('\r\n');
         const stamp = new Date().toISOString().slice(0, 10);
         downloadFile(csvContent, `trading-journal-usdt-${stamp}.csv`, 'text/csv;charset=utf-8');
@@ -4239,6 +4429,7 @@ body::after {
       elChartModePnlBtn.classList.toggle('active', journalMeta.chartMode === 'pnl');
       elChartModeBalBtn.classList.toggle('active', journalMeta.chartMode === 'balance');
 
+      applyTheme(currentTheme, false);
       syncCalcInputsFromState();
       recalculate();
       renderJournal();
